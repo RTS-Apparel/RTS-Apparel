@@ -1,0 +1,6 @@
+{
+  "name": "RTS Apparel — Luxury Menswear",
+  "description": "Pakistan's premier dark-luxury men's fashion e-commerce platform featuring bespoke Kurta Shalwar, tailored shirts, agent referral commissions, and bilingual AI shopping assistance.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

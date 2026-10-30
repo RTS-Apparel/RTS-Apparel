@@ -1,0 +1,14 @@
+name = "rts-apparel"
+compatibility_date = "2026-10-29"
+compatibility_flags = ["nodejs_compat"]
+
+# Workers AI binding — available as context.env.AI in Pages Functions
+[ai]
+binding = "AI"
+
+# Vite build output directory
+pages_build_output_dir = "dist"
+
+# Observability (recommended — free)
+[observability]
+enabled = true

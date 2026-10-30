@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #FFFFFF;
+  --color-surface: #FAFAFA;
+  --color-surface-elevated: #F5F4F0;
+  --color-border: #E8E0D0;
+  --color-gold: #C9A84C;
+  --color-gold-light: #E2C07A;
+  --color-gold-dark: #9B7B2F;
+  --color-gold-muted: rgba(201, 168, 76, 0.08);
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #4A4A4A;
+  --color-text-muted: #9A9A9A;
+  --color-text-gold: #C9A84C;
+
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-urdu: "Noto Nastaliq Urdu", serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+@layer base {
+  html,
+  body {
+    background-color: #FFFFFF;
+    color: #1A1A1A;
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  .font-serif-display {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+
+  .font-urdu {
+    font-family: var(--font-urdu);
+    line-height: 2.1;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@keyframes goldShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-gold {
+  background: linear-gradient(
+    90deg,
+    #F5F4F0 25%,
+    rgba(201, 168, 76, 0.18) 50%,
+    #F5F4F0 75%
+  );
+  background-size: 200% 100%;
+  animation: goldShimmer 1.8s infinite linear;
+}
