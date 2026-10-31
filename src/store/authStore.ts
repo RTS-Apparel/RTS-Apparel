@@ -42,7 +42,7 @@ export const useAuthStore = create<AuthState>()(
       role: null,
       session: null,
       currentUserId: null,
-      isLoading: false,
+      isLoading: true,
 
       setAuth: ({ user, role, session = null, isLoading = false }) => {
         set({
@@ -56,7 +56,7 @@ export const useAuthStore = create<AuthState>()(
 
       initAuth: async () => {
         if (!isSupabaseConfigured) {
-          set({ isLoading: false });
+          set({ user: null, role: null, session: null, currentUserId: null, isLoading: false });
           return;
         }
 
@@ -93,10 +93,10 @@ export const useAuthStore = create<AuthState>()(
                 isLoading: false,
               });
             } else {
-              set({ isLoading: false });
+              set({ user: null, role: null, session: null, currentUserId: null, isLoading: false });
             }
           } else {
-            set({ isLoading: false });
+            set({ user: null, role: null, session: null, currentUserId: null, isLoading: false });
           }
 
           supabase.auth.onAuthStateChange(async (_event, newSession) => {
@@ -126,6 +126,8 @@ export const useAuthStore = create<AuthState>()(
                   currentUserId: mappedUser.id,
                   isLoading: false,
                 });
+              } else {
+                set({ user: null, role: null, session: null, currentUserId: null, isLoading: false });
               }
             } else if (_event === "SIGNED_OUT") {
               set({
@@ -138,7 +140,7 @@ export const useAuthStore = create<AuthState>()(
             }
           });
         } catch {
-          set({ isLoading: false });
+          set({ user: null, role: null, session: null, currentUserId: null, isLoading: false });
         }
       },
 
@@ -220,36 +222,8 @@ export const useAuthStore = create<AuthState>()(
             }
           }
 
-          // 2. Local / Demo store lookup
-          const users = useDataStore.getState().users;
-          const matched = users.find(
-            (u) => u.email?.toLowerCase() === cleanEmail
-          );
-
-          if (!matched) {
-            set({ isLoading: false });
-            return {
-              success: false,
-              error: "Email ya password galat hai. Dobara try karo.",
-            };
-          }
-
-          if (matched.is_blocked) {
-            set({ isLoading: false });
-            return {
-              success: false,
-              error: "Aapka account block kar diya gaya hai.",
-            };
-          }
-
-          set({
-            user: matched,
-            role: matched.role,
-            session: { user: { id: matched.id, email: matched.email } },
-            currentUserId: matched.id,
-            isLoading: false,
-          });
-          return { success: true, user: matched };
+          set({ user: null, role: null, session: null, currentUserId: null, isLoading: false });
+          return { success: false, error: "Invalid email or password. Supabase authentication is required." };
         } catch (err) {
           set({ isLoading: false });
           return {
@@ -336,41 +310,14 @@ export const useAuthStore = create<AuthState>()(
         useDataStore.getState().addToast("Signed out of ARTS APPAREL", "info");
       },
 
-      switchDemoRole: (role) => {
-        if (role === "guest") {
-          set({
-            user: null,
-            role: null,
-            session: null,
-            currentUserId: null,
-          });
-          useDataStore.getState().addToast("Browsing as Guest", "info");
-          return null;
-        }
-        const users = useDataStore.getState().users;
-        const target = users.find(
-          (u) => u.role === role && u.is_approved && !u.is_blocked
-        );
-        if (target) {
-          set({
-            user: target,
-            role: target.role,
-            session: { user: { id: target.id, email: target.email } },
-            currentUserId: target.id,
-          });
-          useDataStore
-            .getState()
-            .addToast(
-              `Switched to ${target.full_name} (${role.toUpperCase()})`,
-              "info"
-            );
-          return target;
-        }
+      switchDemoRole: (_role) => {
+        // Demo role switching is disabled in production.
         return null;
       },
     }),
     {
-      name: "arts-apparel-auth-v2",
+      name: "arts-apparel-auth-v3",
+      partialize: (state) => ({ currentUserId: state.currentUserId }),
     }
   )
 );
