@@ -21,13 +21,13 @@ import { pageVariants } from "../../lib/animations";
 
 export const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user, isAdmin, login, switchDemoRole } = useAuth();
+  const { user, isAdmin, login } = useAuth();
   const adminLanguage = useDataStore((s) => s.adminLanguage);
   const setAdminLanguage = useDataStore((s) => s.setAdminLanguage);
   const t = ADMIN_TRANSLATIONS[adminLanguage];
 
-  const [email, setEmail] = useState("admin@rtsapparel.pk");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -55,18 +55,6 @@ export const AdminLoginPage: React.FC = () => {
     setLoading(true);
     const res = await login(normalizedEmail, password);
     if (res.success && res.user?.role === "admin") {
-      setLoading(false);
-      navigate("/admin", { replace: true });
-      return;
-    }
-
-    if (
-      (normalizedEmail === "admin@rtsapparel.pk" ||
-        normalizedEmail === "admin@rts.pk" ||
-        normalizedEmail.includes("admin")) &&
-      password.trim().length >= 4
-    ) {
-      switchDemoRole("admin");
       setLoading(false);
       navigate("/admin", { replace: true });
       return;
@@ -162,7 +150,7 @@ export const AdminLoginPage: React.FC = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@rtsapparel.pk"
+                placeholder="Enter your admin email"
                 className="w-full rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] pl-10 pr-4 py-3 text-sm text-[#1A1A1A] placeholder-[#999999] focus:border-2 focus:border-[#E63946] focus:outline-none"
               />
             </div>
@@ -228,10 +216,6 @@ export const AdminLoginPage: React.FC = () => {
           </button>
         </form>
 
-        <div className="mt-6 pt-5 border-t border-[#E0E0E0] text-[11px] text-[#666666] flex items-center justify-between font-mono">
-          <span>Admin: admin@rtsapparel.pk</span>
-          <span>Pass: admin123</span>
-        </div>
       </div>
 
       {/* Footer note */}
