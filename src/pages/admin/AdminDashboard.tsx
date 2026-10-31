@@ -25,7 +25,6 @@ import {
   CountUpNumber,
 } from "../../lib/animations";
 import { demoDashboardStats } from "../../data/demoData";
-import { SetupGuideBanner } from "./SetupGuide";
 
 export const AdminDashboard: React.FC = () => {
   const orders = useDataStore((s) => s.orders);
@@ -72,7 +71,6 @@ export const AdminDashboard: React.FC = () => {
         />
 
         {/* Supabase Admin Setup Guide Banner */}
-        <SetupGuideBanner />
 
         {/* Stat Cards from demoDashboardStats */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 font-mono tabular-nums">
