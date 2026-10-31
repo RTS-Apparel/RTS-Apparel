@@ -121,10 +121,25 @@ export async function aiChat(
     }
     throw new Error("Empty AI reply");
   } catch {
-    return {
-      success: false,
-      reply:
-        "Yaar seedha WhatsApp karo: 03058165623, main wahan bhi mojood hun! 😄💬",
-    };
+    // Keep the assistant useful even if the AI endpoint is temporarily unavailable.
+    const q = message.toLowerCase();
+    let reply =
+      "Bhai, aap apna sawal thora detail se dobara poochho. Main ARTS APPAREL ke products, sizes, delivery, payment aur return policy mein madad karta hun. 😊👕";
+    if (/delivery|shipping|deliver|parcel|kitne din|kab tak/.test(q)) {
+      reply = "Dost, major cities mein delivery aam tor par 3–5 working days aur baqi areas mein 5–7 days leti hai. 🚚📦";
+    } else if (/size|fit|chest|measurement|chart/.test(q)) {
+      reply = "Bhai, product page par available sizes aur size guide check karo. Aam tor par S, M, L, XL aur XXL milte hain; product ke hisaab se sizes farq ho sakte hain. 👕📏";
+    } else if (/return|refund|exchange|wapas|wapsi/.test(q)) {
+      reply = "Bhai, 7 din ke andar unworn item original tags ke saath return ya free size exchange ke liye request kar sakte ho. 😊🔄";
+    } else if (/payment|cod|cash on delivery|jazzcash|easypaisa|bank/.test(q)) {
+      reply = "Dost, payment ke liye Cash on Delivery (COD), JazzCash, EasyPaisa aur Bank Transfer ke options available hain. 💳✨";
+    } else if (/track|tracking|order status|mera order/.test(q)) {
+      reply = "Bhai, website ke Track Order page par apna order number enter karo taake status check kar sako. 📦🔍";
+    } else if (/discount|sale|offer|promo/.test(q)) {
+      reply = "Dost, current discounts aur offers ke liye homepage aur product prices check karo; available offer checkout par nazar aa sakta hai. 🔥🛍️";
+    } else if (/address|location|shop|store|contact|whatsapp|number/.test(q)) {
+      reply = "Bhai, ARTS APPAREL ka store Club Road, New Cafe Sajawal ke qareeb, Sadiqabad mein hai. Zaroorat par WhatsApp: 03058165623 📍💬";
+    }
+    return { success: false, reply };
   }
 }
