@@ -252,16 +252,7 @@ export const LoginPage: React.FC = () => {
           </button>
         </form>
 
-        <p className="text-xs text-[#666666] text-center">
-          New to ARTS APPAREL?{" "}
-          <Link
-            to="/signup"
-            className="text-[#E63946] font-semibold hover:underline inline-flex items-center gap-1"
-          >
-            <UserPlus size={14} />
-            <span>Create Account</span>
-          </Link>
-        </p>
+
       </div>
     </motion.main>
   );
