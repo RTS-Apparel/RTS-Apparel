@@ -37,7 +37,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
       className={`inline-flex items-center gap-2.5 select-none shrink-0 whitespace-nowrap ${className}`}
     >
       <img
-        src="https://kommodo.ai/i/teVvjKPRCu515Q0wyHeG"
+        src="https://kommodo.ai/i/3gfGMpWjrnGDbwux0UBH"
         alt="ARTS APPAREL Logo"
         onLoad={() => setImgVisible(true)}
         onError={() => setImgVisible(false)}
