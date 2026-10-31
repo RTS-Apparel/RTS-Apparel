@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useProducts } from "../hooks/useProducts";
 import { useDataStore } from "../store/dataStore";
 import { ProductGrid } from "../components/products/ProductGrid";
+import { OptimizedImage } from "../components/common/OptimizedImage";
 import {
   CUSTOMER_TRANSLATIONS,
   getBannerSubtitle,
@@ -24,17 +25,6 @@ import {
 } from "../lib/animations";
 import { demoBanners } from "../data/demoData";
 
-const HERO_PARTICLES = [
-  { id: 1, left: "8%", top: "16%", color: "#E63946", duration: 9, delay: 0 },
-  { id: 2, left: "22%", top: "74%", color: "#FFFFFF", duration: 11, delay: 1 },
-  { id: 3, left: "38%", top: "22%", color: "#E63946", duration: 10, delay: 0.5 },
-  { id: 4, left: "52%", top: "82%", color: "#FFFFFF", duration: 12, delay: 1.5 },
-  { id: 5, left: "66%", top: "28%", color: "#E63946", duration: 10.5, delay: 0.8 },
-  { id: 6, left: "78%", top: "68%", color: "#FFFFFF", duration: 11.5, delay: 2 },
-  { id: 7, left: "88%", top: "18%", color: "#E63946", duration: 9.5, delay: 1.2 },
-  { id: 8, left: "93%", top: "78%", color: "#E63946", duration: 12.5, delay: 0.3 },
-];
-
 export const HomePage: React.FC = () => {
   const {
     categories,
@@ -46,6 +36,8 @@ export const HomePage: React.FC = () => {
   } = useProducts();
   const language = useDataStore((s) => s.language);
   const t = CUSTOMER_TRANSLATIONS[language];
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const slides =
     activeBanners.length > 0
@@ -54,18 +46,17 @@ export const HomePage: React.FC = () => {
           ...b,
           title_en: b.title,
           subtitle_en: b.subtitle,
-          created_at: "2024-11-01T00:00:00Z",
+          created_at: new Date().toISOString(),
         }));
 
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [failedBannerImgs, setFailedBannerImgs] = useState<Record<string, boolean>>({});
 
-  // Auto-play 4s slider
+  // Auto-slide every 5 seconds
   useEffect(() => {
     if (slides.length <= 1) return;
     const timer = window.setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 4000);
+    }, 5000);
     return () => window.clearInterval(timer);
   }, [slides.length]);
 
@@ -81,213 +72,147 @@ export const HomePage: React.FC = () => {
   const displaySale = saleItems.length > 0 ? saleItems : saleProducts;
 
   return (
-    <div className="space-y-20 pb-12 bg-[#FFFFFF]">
-      {/* HERO SLIDER SECTION: 3 slides from demoBanners, auto-play 4s, #1A1A1A bg, #FFFFFF & #E63946 text */}
-      <section className="hero-gradient-mesh relative min-h-[78vh] flex items-center border-b-2 border-[#E63946] overflow-hidden bg-[#1A1A1A]">
-        <AnimatePresence mode="wait">
-          {heroBanner && (
-            <motion.div
-              key={`bg-${heroBanner.id}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.6 }}
-              className="absolute inset-0 overflow-hidden"
-            >
-              {!failedBannerImgs[heroBanner.image_url] && (
-                <img
+    <div className="space-y-16 pb-12 bg-[#FFFFFF]">
+      {/* HERO BANNER SECTION:
+          - Height: 500px desktop, 280px mobile
+          - object-fit: cover, object-position: top center
+          - Dark overlay: linear-gradient(to right, rgba(0,0,0,0.75) 40%, transparent)
+          - Text always on LEFT side, white color
+          - Auto-slide: every 5 seconds
+          - Dots navigation below banner */}
+      <div>
+        <section className="relative h-[280px] md:h-[500px] w-full flex items-center border-b-2 border-[#E63946] overflow-hidden bg-[#1A1A1A]">
+          <AnimatePresence mode="wait">
+            {heroBanner && (
+              <motion.div
+                key={`bg-${heroBanner.id}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="absolute inset-0 overflow-hidden"
+              >
+                <OptimizedImage
                   src={heroBanner.image_url}
                   alt={heroTitle}
-                  loading="lazy"
-                  onError={() =>
-                    setFailedBannerImgs((prev) => ({
-                      ...prev,
-                      [heroBanner.image_url]: true,
-                    }))
-                  }
-                  className="w-full h-full object-cover object-center opacity-25 scale-105 transition-transform duration-1000"
+                  priority={currentSlide === 0}
+                  style={{ width: "100%", height: "100%" }}
                 />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#1A1A1A] via-[#1A1A1A]/90 to-transparent" />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Subtle Floating Dots */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 overflow-hidden"
-        >
-          {HERO_PARTICLES.map((p) => (
-            <motion.span
-              key={p.id}
-              style={{
-                left: p.left,
-                top: p.top,
-                width: 4,
-                height: 4,
-                backgroundColor: p.color,
-              }}
-              animate={{
-                y: [0, -28, 12, 0],
-                x: [0, 16, -12, 0],
-                opacity: [0.25, 0.4, 0.2, 0.25],
-              }}
-              transition={{
-                duration: p.duration,
-                delay: p.delay,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="absolute rounded-full opacity-25"
-            />
-          ))}
-        </div>
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center w-full">
-          <div className="lg:col-span-7 space-y-6">
-            {/* Tag/label above heading */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-[6px] bg-[#E63946] text-[#FFFFFF] text-xs uppercase tracking-[0.18em] font-semibold">
-              <Sparkles className="w-3.5 h-3.5 text-[#FFFFFF]" />
-              <span>{t.heroBadge}</span>
-            </div>
-
-            {/* Slide Heading */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`content-${heroBanner?.id || currentSlide}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.4 }}
-                className="space-y-5"
-              >
-                <h1 className="font-serif-display text-4xl sm:text-6xl font-bold text-[#FFFFFF] leading-[1.12] flex flex-wrap gap-x-3 gap-y-1">
-                  {heroWords.map((word, idx) => (
-                    <span
-                      key={`${word}-${idx}`}
-                      className={
-                        idx === heroWords.length - 1 ||
-                        word.toLowerCase().includes("special") ||
-                        word.toLowerCase().includes("2024") ||
-                        word.toLowerCase().includes("collection")
-                          ? "text-[#E63946]"
-                          : "text-[#FFFFFF]"
-                      }
-                    >
-                      {word}
-                    </span>
-                  ))}
-                </h1>
-
-                <p className="text-[#CCCCCC] text-base sm:text-lg max-w-xl leading-relaxed">
-                  {heroSubtitle}
-                </p>
+                {/* Dark overlay on image so text is readable */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(to right, rgba(0,0,0,0.75) 40%, transparent)",
+                  }}
+                />
               </motion.div>
-            </AnimatePresence>
-
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              <motion.div whileHover={buttonHover} whileTap={buttonTap}>
-                <Link
-                  to={heroBanner?.link_url || "/category/shirts"}
-                  className="btn-primary-futuristic group relative px-8 py-4 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-xs uppercase tracking-[0.18em] hover:bg-[#C1121F] transition-all flex items-center gap-3"
-                >
-                  <span>{heroCta}</span>
-                  <ArrowRight className="w-4 h-4 text-[#FFFFFF] group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </motion.div>
-            </div>
-
-            {/* Slider Controls & Dots */}
-            {slides.length > 1 && (
-              <div className="flex items-center gap-4 pt-4">
-                <div className="flex items-center gap-2">
-                  {slides.map((s, idx) => (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() => setCurrentSlide(idx)}
-                      aria-label={`Slide ${idx + 1}: ${s.title || s.title_en}`}
-                      className={`h-2.5 rounded-full transition-all ${
-                        currentSlide === idx
-                          ? "w-8 bg-[#E63946]"
-                          : "w-2.5 bg-[#FFFFFF]/40 hover:bg-[#FFFFFF]"
-                      }`}
-                    />
-                  ))}
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setCurrentSlide((prev) =>
-                        prev === 0 ? slides.length - 1 : prev - 1
-                      )
-                    }
-                    aria-label="Previous slide"
-                    className="p-2 rounded-[6px] bg-[#2A2A2A] text-[#FFFFFF] hover:bg-[#E63946] transition-colors"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setCurrentSlide((prev) => (prev + 1) % slides.length)
-                    }
-                    aria-label="Next slide"
-                    className="p-2 rounded-[6px] bg-[#2A2A2A] text-[#FFFFFF] hover:bg-[#E63946] transition-colors"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
             )}
+          </AnimatePresence>
+
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex items-center">
+            <div className="max-w-xl space-y-3 md:space-y-5 text-left">
+              {/* Tag/label above heading */}
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[6px] bg-[#E63946] text-[#FFFFFF] text-[10px] sm:text-xs uppercase tracking-[0.18em] font-semibold">
+                <Sparkles className="w-3.5 h-3.5 text-[#FFFFFF]" />
+                <span>{t.heroBadge}</span>
+              </div>
+
+              {/* Slide Heading & Subtitle — Always on LEFT side, white color */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`content-${heroBanner?.id || currentSlide}`}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.35 }}
+                  className="space-y-2 md:space-y-4"
+                >
+                  <h1 className="font-serif-display text-2xl sm:text-4xl md:text-5xl font-bold text-[#FFFFFF] leading-[1.15] flex flex-wrap gap-x-2.5 gap-y-1">
+                    {heroWords.map((word, idx) => (
+                      <span
+                        key={`${word}-${idx}`}
+                        className={
+                          idx === heroWords.length - 1 ||
+                          word.toLowerCase().includes("special") ||
+                          word.toLowerCase().includes("collection")
+                            ? "text-[#E63946]"
+                            : "text-[#FFFFFF]"
+                        }
+                      >
+                        {word}
+                      </span>
+                    ))}
+                  </h1>
+
+                  <p className="text-[#FFFFFF] text-xs sm:text-base md:text-lg max-w-lg leading-relaxed opacity-95">
+                    {heroSubtitle}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <motion.div whileHover={buttonHover} whileTap={buttonTap}>
+                  <Link
+                    to={heroBanner?.link_url || "/category/shirts"}
+                    className="btn-primary-futuristic group relative px-5 py-2.5 md:px-7 md:py-3.5 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-xs uppercase tracking-[0.18em] hover:bg-[#C1121F] transition-all inline-flex items-center gap-2.5"
+                  >
+                    <span>{heroCta}</span>
+                    <ArrowRight className="w-4 h-4 text-[#FFFFFF] group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </motion.div>
+              </div>
+            </div>
           </div>
 
-          {heroBanner && (
-            <div className="lg:col-span-5 hidden lg:block">
-              <div className="rounded-xl border-2 border-[#E63946] p-3 bg-[#1A1A1A] shadow-2xl overflow-hidden">
-                <AnimatePresence mode="wait">
-                  {failedBannerImgs[heroBanner.image_url] ? (
-                    <motion.div
-                      key={`fallback-card-${heroBanner.id}`}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="w-full aspect-[4/3] rounded-lg bg-[#1A1A1A] flex items-center justify-center p-6 text-center border border-[#333333]"
-                    >
-                      <span
-                        className="text-[#FFFFFF] font-bold tracking-[0.18em] uppercase text-xl"
-                        style={{ fontFamily: "'Playfair Display', serif" }}
-                      >
-                        ARTS APPAREL
-                      </span>
-                    </motion.div>
-                  ) : (
-                    <motion.img
-                      key={`img-${heroBanner.id}`}
-                      src={heroBanner.image_url}
-                      alt={heroTitle}
-                      loading="lazy"
-                      onError={() =>
-                        setFailedBannerImgs((prev) => ({
-                          ...prev,
-                          [heroBanner.image_url]: true,
-                        }))
-                      }
-                      initial={{ opacity: 0, scale: 0.96 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 1.02 }}
-                      transition={{ duration: 0.45, ease: "easeOut" }}
-                      className="w-full aspect-[4/3] rounded-lg object-cover hover:scale-105 transition-transform duration-700"
-                    />
-                  )}
-                </AnimatePresence>
-              </div>
-            </div>
+          {/* Left / Right Slide Arrows on Desktop */}
+          {slides.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={() =>
+                  setCurrentSlide((prev) =>
+                    prev === 0 ? slides.length - 1 : prev - 1
+                  )
+                }
+                aria-label="Previous slide"
+                className="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-[#1A1A1A]/80 text-[#FFFFFF] hover:bg-[#E63946] transition-colors border border-[#333333]"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setCurrentSlide((prev) => (prev + 1) % slides.length)
+                }
+                aria-label="Next slide"
+                className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-[#1A1A1A]/80 text-[#FFFFFF] hover:bg-[#E63946] transition-colors border border-[#333333]"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </>
           )}
-        </div>
-      </section>
+        </section>
+
+        {/* Dots navigation below banner */}
+        {slides.length > 1 && (
+          <div className="flex items-center justify-center gap-2.5 py-3.5 bg-[#FFFFFF]">
+            {slides.map((s, idx) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => setCurrentSlide(idx)}
+                aria-label={`Slide ${idx + 1}: ${s.title || s.title_en}`}
+                className={`h-2.5 rounded-full transition-all duration-300 ${
+                  currentSlide === idx
+                    ? "w-8 bg-[#E63946]"
+                    : "w-2.5 bg-[#CCCCCC] hover:bg-[#1A1A1A]"
+                }`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Categories Showcase — 5 categories (Shirts, Trousers, Kurta Shalwar, Hoodies, Jackets), each with product count badge */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-8">
@@ -443,6 +368,45 @@ export const HomePage: React.FC = () => {
             categories={categories}
           />
         </section>
+      )}
+
+      {/* Discreet Join Our Team icon button — ONLY on Home page (/) */}
+      {location.pathname === "/" && (
+        <button
+          type="button"
+          onClick={() => navigate("/join-arts-team")}
+          title="Join Our Team"
+          aria-label="Join Our Team"
+          style={{
+            position: "fixed",
+            bottom: "90px",
+            right: "24px",
+            width: "42px",
+            height: "42px",
+            borderRadius: "50%",
+            background: "#1A1A1A",
+            border: "1px solid #E63946",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            zIndex: 999,
+            boxShadow: "0 2px 12px rgba(230,57,70,0.3)",
+            transition: "all 0.2s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "#E63946";
+            const svg = e.currentTarget.querySelector("svg");
+            if (svg) svg.style.color = "#FFFFFF";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "#1A1A1A";
+            const svg = e.currentTarget.querySelector("svg");
+            if (svg) svg.style.color = "#E63946";
+          }}
+        >
+          <Users2 size={18} color="#E63946" />
+        </button>
       )}
     </div>
   );

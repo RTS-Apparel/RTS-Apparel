@@ -138,7 +138,12 @@
   box-shadow: 0 20px 50px rgba(26, 26, 26, 0.22);
 }
 
-/* 6. Skeleton Screen Shimmer (Light theme) */
+/* 6. Skeleton Screen Shimmer */
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 @keyframes skeletonShimmer {
   0% {
     background-position: 200% 0;

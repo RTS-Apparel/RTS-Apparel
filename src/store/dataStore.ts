@@ -131,6 +131,14 @@ const INITIAL_PRODUCTS: Product[] = demoProducts.map((dp, index) => ({
     new Date(Date.now() - (demoProducts.length - index) * 86400000).toISOString(),
 }));
 
+const currentYear = new Date().getFullYear();
+const today = new Date();
+const daysAgo = (n: number) => {
+  const d = new Date(today);
+  d.setDate(d.getDate() - n);
+  return d.toISOString().split("T")[0];
+};
+
 const INITIAL_USERS: User[] = [
   {
     id: "user-admin-1",
@@ -141,7 +149,7 @@ const INITIAL_USERS: User[] = [
     referral_code: "RTS-ADMIN001",
     is_approved: true,
     is_blocked: false,
-    created_at: "2024-09-01T08:00:00Z",
+    created_at: `${daysAgo(60)}T08:00:00Z`,
   },
   ...demoAgents.map((ag, idx) => ({
     id: ag.id,
@@ -166,7 +174,7 @@ const INITIAL_USERS: User[] = [
     join_reason: !ag.is_approved
       ? "Fashion promoter in Sadiqabad & Rahimyar Khan"
       : undefined,
-    created_at: `2024-10-${10 + idx}T10:00:00Z`,
+    created_at: `${daysAgo(30 - idx)}T10:00:00Z`,
   })),
   {
     id: "user-customer-1",
@@ -177,7 +185,7 @@ const INITIAL_USERS: User[] = [
     referral_code: null,
     is_approved: true,
     is_blocked: false,
-    created_at: "2024-10-02T16:00:00Z",
+    created_at: `${daysAgo(25)}T16:00:00Z`,
   },
 ];
 
@@ -287,7 +295,7 @@ const INITIAL_ORDERS: Order[] = demoOrders.map((doItem, idx) => {
         ? "verified"
         : "pending",
     transaction_id:
-      doItem.payment_method === "cod" ? null : `TXN-2024-00${idx + 1}`,
+      doItem.payment_method === "cod" ? null : `TXN-${currentYear}-00${idx + 1}`,
     subtotal: Math.max(0, doItem.total_amount - cityRate),
     delivery_charge: cityRate,
     discount_amount: 0,
@@ -308,8 +316,8 @@ const INITIAL_COMMISSIONS: Commission[] = [
     amount: 550,
     status: "paid",
     admin_note: "Paid via JazzCash",
-    paid_at: "2024-11-11T14:00:00Z",
-    created_at: "2024-11-10T11:20:00Z",
+    paid_at: `${daysAgo(4)}T14:00:00Z`,
+    created_at: `${daysAgo(5)}T11:20:00Z`,
   },
   {
     id: "comm-2",
@@ -319,7 +327,7 @@ const INITIAL_COMMISSIONS: Commission[] = [
     status: "approved",
     admin_note: "10% referral commission",
     paid_at: null,
-    created_at: "2024-11-14T15:45:00Z",
+    created_at: `${daysAgo(2)}T15:45:00Z`,
   },
   {
     id: "comm-3",
@@ -329,7 +337,7 @@ const INITIAL_COMMISSIONS: Commission[] = [
     status: "pending",
     admin_note: "Pending delivery completion",
     paid_at: null,
-    created_at: "2024-11-15T19:10:00Z",
+    created_at: `${daysAgo(0)}T19:10:00Z`,
   },
 ];
 
@@ -343,7 +351,7 @@ const INITIAL_WITHDRAWALS: WithdrawalRequest[] = [
     status: "pending",
     paid_at: null,
     admin_note: null,
-    created_at: "2024-11-14T18:00:00Z",
+    created_at: `${daysAgo(2)}T18:00:00Z`,
   },
   {
     id: "wd-2",
@@ -354,7 +362,7 @@ const INITIAL_WITHDRAWALS: WithdrawalRequest[] = [
     status: "pending",
     paid_at: null,
     admin_note: null,
-    created_at: "2024-11-15T10:00:00Z",
+    created_at: `${daysAgo(1)}T10:00:00Z`,
   },
 ];
 
@@ -383,7 +391,7 @@ const INITIAL_BANNERS: Banner[] = demoBanners.map((b) => ({
   cta_link: b.link_url,
   display_order: b.display_order,
   is_active: b.is_active,
-  created_at: "2024-11-01T00:00:00Z",
+  created_at: `${daysAgo(10)}T00:00:00Z`,
 }));
 
 const INITIAL_SETTINGS: SiteSettings = {
@@ -786,7 +794,7 @@ export const useDataStore = create<DataState>()(
         const state = get();
         const nextSequence = state.orders.length + 1;
         const orderId = `ord-${Date.now()}`;
-        const orderNumber = formatOrderNumber(nextSequence, 2026);
+        const orderNumber = formatOrderNumber(nextSequence, new Date().getFullYear());
 
         let matchedAgent: User | undefined;
         if (payload.referral_code) {
@@ -1118,7 +1126,7 @@ export const useDataStore = create<DataState>()(
       },
     }),
     {
-      name: "arts-apparel-data-v7",
+      name: "arts-apparel-data-v8",
       partialize: (state) => ({
         categories: state.categories,
         products: state.products,

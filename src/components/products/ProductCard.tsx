@@ -10,6 +10,8 @@ import {
 } from "../../lib/utils";
 import { useDataStore } from "../../store/dataStore";
 import { useCart } from "../../hooks/useCart";
+import { useInView } from "../../hooks/useInView";
+import { OptimizedImage } from "../common/OptimizedImage";
 import {
   CUSTOMER_TRANSLATIONS,
   getCategoryName,
@@ -32,9 +34,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const wishlist = useDataStore((s) => s.wishlist);
   const toggleWishlist = useDataStore((s) => s.toggleWishlist);
   const { addItem } = useCart();
+  const { ref, inView } = useInView();
 
-  const [imgLoaded, setImgLoaded] = useState(false);
-  const [imgError, setImgError] = useState(false);
   const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
 
   const t = CUSTOMER_TRANSLATIONS[language];
@@ -87,6 +88,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <motion.div
+      ref={ref}
       custom={index}
       variants={cardVariants}
       initial="initial"
@@ -107,35 +109,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         to={`/product/${product.id}`}
         className="group h-full rounded-xl bg-[#FFFFFF] border border-[#E0E0E0] hover:border-[#E63946] transition-all duration-300 flex flex-col overflow-hidden shadow-xs hover:shadow-md"
       >
-        {/* Product image area: aspect 4:3, object-fit cover, lazy loading, #1A1A1A fallback */}
-        <div className="relative aspect-[4/3] overflow-hidden bg-[#F5F5F5]">
-          {!imgLoaded && !imgError && (
-            <div className="absolute inset-0 skeleton-shimmer" />
-          )}
-          {imgError || !product.images?.[0] ? (
-            <div className="w-full h-full bg-[#1A1A1A] flex items-center justify-center p-4 text-center">
-              <span
-                className="text-[#FFFFFF] font-bold tracking-[0.16em] uppercase text-sm"
-                style={{ fontFamily: "'Playfair Display', serif" }}
-              >
-                ARTS APPAREL
-              </span>
-            </div>
-          ) : (
-            <img
-              src={product.images[0]}
-              alt={displayTitle}
-              loading="lazy"
-              onLoad={() => setImgLoaded(true)}
-              onError={() => setImgError(true)}
-              className={`w-full h-full object-cover object-center group-hover:scale-[1.06] transition-all duration-500 ${
-                imgLoaded ? "opacity-100" : "opacity-0"
-              }`}
+        {/* Product image area using OptimizedImage and useInView */}
+        <div className="relative overflow-hidden bg-[#1A1A1A]" style={{ height: "220px" }}>
+          {inView ? (
+            <OptimizedImage
+              src={`${product.images[0]}?w=400&q=70&fm=webp&fit=crop`}
+              alt={product.name_en || displayTitle}
+              priority={false}
+              style={{ height: "220px" }}
+              className="group-hover:scale-[1.06] transition-transform duration-500"
             />
+          ) : (
+            <div style={{ height: "220px", background: "#1A1A1A" }} />
           )}
 
           {/* Discount & New badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+          <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
             {discountPercent > 0 && (
               <span
                 style={{ transform: "rotate(-3deg)" }}
@@ -158,7 +147,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             whileTap={{ scale: 0.9 }}
             onClick={handleToggleWish}
             aria-label={t.wishlist}
-            className="absolute top-3 right-3 p-2 rounded-full bg-[#FFFFFF] border border-[#E0E0E0] hover:border-[#E63946] transition-colors shadow-xs"
+            className="absolute top-3 right-3 z-10 p-2 rounded-full bg-[#FFFFFF] border border-[#E0E0E0] hover:border-[#E63946] transition-colors shadow-xs"
           >
             <Heart
               className={`w-4 h-4 ${
