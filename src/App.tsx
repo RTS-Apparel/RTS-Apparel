@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
@@ -217,16 +217,7 @@ const AnimatedRoutes: React.FC = () => {
             </StorefrontLayout>
           }
         />
-        <Route
-          path="/signup"
-          element={
-            <StorefrontLayout>
-              <PageMotion>
-                <Signup />
-              </PageMotion>
-            </StorefrontLayout>
-          }
-        />
+        <Route path="/signup" element={<Navigate to="/login" replace />} />
         <Route
           path="/pending-approval"
           element={
