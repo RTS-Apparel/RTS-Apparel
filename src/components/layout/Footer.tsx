@@ -199,12 +199,12 @@ export const Footer: React.FC = () => {
                 WhatsApp: 03058165623
               </a>
             </li>
-            {siteSettings.contact_email && (
-              <li className="flex items-center gap-2.5">
-                <Mail className="w-4 h-4 text-[#E63946] shrink-0" />
-                <span>{siteSettings.contact_email}</span>
-              </li>
-            )}
+            <li className="flex items-center gap-2.5">
+              <Mail className="w-4 h-4 text-[#E63946] shrink-0" />
+              <a href="mailto:artsapparel@gmail.com" className="hover:text-[#E63946] transition-colors">
+                artsapparel@gmail.com
+              </a>
+            </li>
           </ul>
         </div>
       </div>
