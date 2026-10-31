@@ -639,7 +639,7 @@ export const demoSiteSettings: DemoSiteSettings = {
   bank_iban: "PK00MEZN0000001234567890",
   whatsapp_number: "923058165623",
   contact_phone: "03058165623",
-  contact_email: "info@artsapparel.pk",
+  contact_email: "artsapparel@gmail.com",
   shop_address: "Club Road Near New Cafe Sajawal Sadiqabad, Sadiqabad Pakistan",
   facebook_url: "",
   tiktok_url: "",
