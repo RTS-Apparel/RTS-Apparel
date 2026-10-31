@@ -58,7 +58,6 @@ import AdminDeliveryRates from "./pages/admin/DeliveryRates";
 import AdminBanners from "./pages/admin/Banners";
 import AdminReports from "./pages/admin/Reports";
 import AdminSiteSettings from "./pages/admin/SiteSettings";
-import SetupGuide from "./pages/admin/SetupGuide";
 
 const PageMotion: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <motion.div
@@ -559,17 +558,6 @@ const AnimatedRoutes: React.FC = () => {
             <ProtectedRoute requiredRole="admin">
               <PageMotion>
                 <AdminSiteSettings />
-              </PageMotion>
-              <ToastContainer />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/setup-guide"
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <PageMotion>
-                <SetupGuide />
               </PageMotion>
               <ToastContainer />
             </ProtectedRoute>
