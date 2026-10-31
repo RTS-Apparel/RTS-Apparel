@@ -19,21 +19,21 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
     size === "sm"
       ? "text-base sm:text-lg tracking-[0.06em]"
       : size === "lg"
-      ? "text-xl sm:text-3xl lg:text-4xl tracking-[0.04em] sm:tracking-[0.06em]"
+      ? "text-xl sm:text-3xl lg:text-[2.5rem] leading-none tracking-[0.02em] sm:tracking-[0.04em]"
       : "text-xl sm:text-2xl tracking-[0.06em]";
 
   const taglineSizeClass =
     size === "sm"
       ? "text-[10px] tracking-[0.14em]"
       : size === "lg"
-      ? "text-[9px] sm:text-xs lg:text-sm tracking-[0.1em] sm:tracking-[0.18em]"
+      ? "text-[9px] sm:text-xs lg:text-sm tracking-[0.08em] sm:tracking-[0.14em]"
       : "text-[11px] sm:text-xs tracking-[0.16em]";
 
   const logoSizeClass =
     size === "sm"
       ? "h-12 w-12 sm:h-14 sm:w-14"
       : size === "lg"
-      ? "h-[68px] w-[68px] sm:h-24 sm:w-24 lg:h-28 lg:w-28"
+      ? "h-[76px] w-[76px] sm:h-[104px] sm:w-[104px] lg:h-[132px] lg:w-[132px]"
       : "h-[76px] w-[76px] sm:h-[84px] sm:w-[84px]";
 
   const apparelTextColor = variant === "dark" ? "#FFFFFF" : "#1A1A1A";
