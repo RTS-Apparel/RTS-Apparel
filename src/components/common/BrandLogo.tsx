@@ -33,7 +33,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
     size === "sm"
       ? "h-12 w-12 sm:h-14 sm:w-14"
       : size === "lg"
-      ? "h-[88px] w-[88px] sm:h-[116px] sm:w-[116px] lg:h-[148px] lg:w-[148px]"
+      ? "h-[84px] w-[84px] sm:h-[112px] sm:w-[112px] lg:h-[156px] lg:w-[156px]"
       : "h-[76px] w-[76px] sm:h-[84px] sm:w-[84px]";
 
   const apparelTextColor = variant === "dark" ? "#FFFFFF" : "#1A1A1A";
