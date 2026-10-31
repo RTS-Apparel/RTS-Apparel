@@ -24,8 +24,8 @@ export const Footer: React.FC = () => {
     siteSettings.physical_address?.trim() ||
     "Club Road Near New Cafe Sajawal Sadiqabad, Sadiqabad Pakistan";
   const shopPhone = siteSettings.whatsapp_number?.trim() || "03058165623";
-  const facebookUrl = siteSettings.facebook_url?.trim() || "https://facebook.com";
-  const tiktokUrl = siteSettings.tiktok_url?.trim() || "https://tiktok.com";
+  const facebookUrl = siteSettings.facebook_url?.trim() || "https://www.facebook.com/share/1E3Yv7ro6S/";
+  const tiktokUrl = siteSettings.tiktok_url?.trim() || "https://www.tiktok.com/@artsapparel3?_r=1&_t=ZS-9AzeKQChL6N";
 
   return (
     <footer className="bg-[#1A1A1A] border-t border-[#333333] text-[#CCCCCC] mt-20 relative z-10">
