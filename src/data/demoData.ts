@@ -613,22 +613,22 @@ export const demoOrders: DemoOrder[] = [
 ];
 
 export const demoCityRates: DemoCityRate[] = [
-  { city_name: "Sadiqabad", charge: 100 },
-  { city_name: "Rahimyar Khan", charge: 150 },
-  { city_name: "Bahawalpur", charge: 200 },
-  { city_name: "Multan", charge: 200 },
+  { city_name: "Sadiqabad", charge: 250 },
+  { city_name: "Rahimyar Khan", charge: 250 },
+  { city_name: "Bahawalpur", charge: 250 },
+  { city_name: "Multan", charge: 250 },
   { city_name: "Lahore", charge: 250 },
-  { city_name: "Karachi", charge: 300 },
-  { city_name: "Islamabad", charge: 300 },
-  { city_name: "Rawalpindi", charge: 300 },
+  { city_name: "Karachi", charge: 250 },
+  { city_name: "Islamabad", charge: 250 },
+  { city_name: "Rawalpindi", charge: 250 },
   { city_name: "Faisalabad", charge: 250 },
-  { city_name: "Peshawar", charge: 350 },
-  { city_name: "Quetta", charge: 400 },
-  { city_name: "Hyderabad", charge: 300 },
+  { city_name: "Peshawar", charge: 250 },
+  { city_name: "Quetta", charge: 250 },
+  { city_name: "Hyderabad", charge: 250 },
   { city_name: "Sialkot", charge: 250 },
   { city_name: "Gujranwala", charge: 250 },
-  { city_name: "Sukkur", charge: 300 },
-  { city_name: "Larkana", charge: 350 },
+  { city_name: "Sukkur", charge: 250 },
+  { city_name: "Larkana", charge: 250 },
 ];
 
 export const demoSiteSettings: DemoSiteSettings = {
