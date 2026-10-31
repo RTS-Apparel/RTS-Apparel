@@ -304,7 +304,7 @@ const AnimatedRoutes: React.FC = () => {
         />
 
         {/* Private team login: deliberately not linked from public navigation */}
-        <Route path="/team/login" element={<TeamLogin />} />
+        <Route path="/team/login" element={<PageMotion><TeamLogin /></PageMotion>} />
 
         {/* Partner Agent Referral Hub (Protected — Approved Agents Only) */}
         <Route
