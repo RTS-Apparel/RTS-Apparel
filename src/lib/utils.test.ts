@@ -52,7 +52,7 @@ test("generateReferralCode and formatOrderNumber follow RTS conventions", () => 
 });
 
 test("formatPKR, isUrduText, and slugify work accurately", () => {
-  assert.ok(formatPKR(4500).startsWith("₨"));
+  assert.equal(formatPKR(4500), "Rs. 4,500");
   assert.equal(isUrduText("کرتہ شلوار"), true);
   assert.equal(isUrduText("Kurta Shalwar"), false);
   assert.equal(slugify("Kurta Shalwar Collection"), "kurta-shalwar-collection");

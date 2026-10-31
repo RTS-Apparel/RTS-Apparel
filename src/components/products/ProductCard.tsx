@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { ShoppingBag, Heart } from "lucide-react";
+import { ShoppingCart, Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import { Category, Product } from "../../types";
 import {
@@ -34,17 +34,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const { addItem } = useCart();
 
   const [imgLoaded, setImgLoaded] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
 
   const t = CUSTOMER_TRANSLATIONS[language];
   const displayTitle = getProductName(product, language);
-  const displayCat = getCategoryName(category || product.categories, language);
+  const displayCat =
+    product.category_name ||
+    getCategoryName(category || product.categories, language);
 
   const discountPercent = getEffectiveDiscountPercent(
     product,
     category || product.categories
   );
-  const finalPrice = calculateDiscountedPrice(product.price, discountPercent);
+  const finalPrice =
+    product.discounted_price && product.discount_percent === discountPercent
+      ? product.discounted_price
+      : calculateDiscountedPrice(product.price, discountPercent);
   const isWished = wishlist.includes(product.id);
 
   const handleQuickAdd = (e: React.MouseEvent) => {
@@ -70,8 +76,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     const y = e.clientY - rect.top;
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    const rotateX = ((centerY - y) / centerY) * 5;
-    const rotateY = ((x - centerX) / centerX) * 5;
+    const rotateX = ((centerY - y) / centerY) * 4;
+    const rotateY = ((x - centerX) / centerX) * 4;
     setTilt({ rotateX, rotateY });
   };
 
@@ -101,20 +107,34 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         to={`/product/${product.id}`}
         className="group h-full rounded-xl bg-[#FFFFFF] border border-[#E0E0E0] hover:border-[#E63946] transition-all duration-300 flex flex-col overflow-hidden shadow-xs hover:shadow-md"
       >
-        {/* Product image area bg: #F5F5F5 */}
-        <div className="relative aspect-[3/4] overflow-hidden bg-[#F5F5F5]">
-          {!imgLoaded && <div className="absolute inset-0 skeleton-shimmer" />}
-          <img
-            src={product.images[0]}
-            alt={displayTitle}
-            loading="lazy"
-            onLoad={() => setImgLoaded(true)}
-            className={`w-full h-full object-cover object-center group-hover:scale-[1.08] transition-all duration-500 ${
-              imgLoaded ? "opacity-100" : "opacity-0"
-            }`}
-          />
+        {/* Product image area: aspect 4:3, object-fit cover, lazy loading, #1A1A1A fallback */}
+        <div className="relative aspect-[4/3] overflow-hidden bg-[#F5F5F5]">
+          {!imgLoaded && !imgError && (
+            <div className="absolute inset-0 skeleton-shimmer" />
+          )}
+          {imgError || !product.images?.[0] ? (
+            <div className="w-full h-full bg-[#1A1A1A] flex items-center justify-center p-4 text-center">
+              <span
+                className="text-[#FFFFFF] font-bold tracking-[0.16em] uppercase text-sm"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                ARTS APPAREL
+              </span>
+            </div>
+          ) : (
+            <img
+              src={product.images[0]}
+              alt={displayTitle}
+              loading="lazy"
+              onLoad={() => setImgLoaded(true)}
+              onError={() => setImgError(true)}
+              className={`w-full h-full object-cover object-center group-hover:scale-[1.06] transition-all duration-500 ${
+                imgLoaded ? "opacity-100" : "opacity-0"
+              }`}
+            />
+          )}
 
-          {/* Discount badge: bg #E63946, color #FFFFFF, position absolute top-left */}
+          {/* Discount & New badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-1.5">
             {discountPercent > 0 && (
               <span
@@ -124,9 +144,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 -{discountPercent}%
               </span>
             )}
+            {product.is_new && (
+              <span className="inline-block rounded bg-[#1A1A1A] text-[#FFFFFF] text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 shadow-sm">
+                NEW
+              </span>
+            )}
           </div>
 
-          {/* Wishlist Heart: Empty #CCCCCC, Filled #E63946 */}
+          {/* Wishlist Heart */}
           <motion.button
             type="button"
             whileHover={{ scale: 1.15 }}
@@ -156,7 +181,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
 
           <div className="space-y-3">
-            <div className="pt-2 border-t border-[#E0E0E0] flex items-baseline justify-between">
+            <div className="pt-2 border-t border-[#E0E0E0] flex items-baseline justify-between gap-2">
               <div className="flex items-baseline gap-2 font-mono tabular-nums">
                 <span className="text-sm font-bold text-[#E63946]">
                   {formatPKR(finalPrice)}
@@ -167,19 +192,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                   </span>
                 )}
               </div>
-              <span className="text-[10px] font-mono uppercase tracking-wider text-[#666666]">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-[#666666] truncate">
                 {product.sizes.join(" · ")}
               </span>
             </div>
 
-            {/* Add to Cart button: bg #1A1A1A, color #FFFFFF, hover bg #E63946, color #FFFFFF */}
             <button
               type="button"
               onClick={handleQuickAdd}
               className="w-full rounded-[6px] bg-[#1A1A1A] hover:bg-[#E63946] text-[#FFFFFF] py-2.5 px-3 flex items-center justify-center gap-2 text-xs font-semibold transition-colors duration-200"
               title={t.addToCart}
             >
-              <ShoppingBag className="w-4 h-4 text-[#FFFFFF]" />
+              <ShoppingCart size={16} className="text-[#FFFFFF]" />
               <span>{t.addToCart}</span>
             </button>
           </div>

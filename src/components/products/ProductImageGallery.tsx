@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, ImageOff } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface ProductImageGalleryProps {
@@ -16,6 +16,12 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
   const [activeIndex, setActiveIndex] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [failedUrls, setFailedUrls] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    setActiveIndex(0);
+    setIsZoomed(false);
+  }, [images]);
 
   const label = alt || title || "ARTS APPAREL Garment";
   const safeImages = (images || []).filter(Boolean);
@@ -45,41 +51,67 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
     setTouchStartX(null);
   };
 
+  const markFailed = (url: string) => {
+    setFailedUrls((prev) => ({ ...prev, [url]: true }));
+  };
+
   if (safeImages.length === 0) {
     return (
-      <div className="rounded-xl bg-[#F5F5F5] border border-[#E0E0E0] aspect-[3/4] flex flex-col items-center justify-center p-8 text-center">
-        <ImageOff className="w-12 h-12 text-[#666666] mb-3" />
-        <p className="text-sm font-serif-display text-[#1A1A1A] font-semibold">
-          ARTS APPAREL Preview Placeholder
-        </p>
-        <p className="text-xs text-[#666666] mt-1">
-          No gallery images uploaded for this garment yet.
-        </p>
+      <div className="rounded-xl bg-[#1A1A1A] border border-[#E0E0E0] aspect-[4/3] flex flex-col items-center justify-center p-8 text-center">
+        <span
+          className="text-[#FFFFFF] font-bold tracking-[0.18em] uppercase text-lg"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          ARTS APPAREL
+        </span>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Main large image: aspect 4:3, object-fit cover, fade animation on thumbnail click */}
       <div
-        className="w-full rounded-xl bg-[#F5F5F5] border border-[#E0E0E0] hover:border-[#E63946] aspect-[3/4] overflow-hidden relative group select-none transition-colors"
+        className="w-full rounded-xl bg-[#F5F5F5] border border-[#E0E0E0] hover:border-[#E63946] aspect-[4/3] overflow-hidden relative group select-none transition-colors"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
         <AnimatePresence mode="wait">
-          <motion.img
-            key={currentImage + activeIndex}
-            src={currentImage}
-            alt={label}
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: isZoomed ? 1.45 : 1 }}
-            exit={{ opacity: 0, scale: 1.02 }}
-            transition={{ duration: 0.32, ease: "easeOut" }}
-            onClick={() => setIsZoomed((prev) => !prev)}
-            className={`w-full h-full object-cover cursor-zoom-in ${
-              isZoomed ? "cursor-zoom-out" : "group-hover:scale-105 transition-transform duration-500"
-            }`}
-          />
+          {failedUrls[currentImage] ? (
+            <motion.div
+              key={`fallback-${activeIndex}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.28 }}
+              className="w-full h-full bg-[#1A1A1A] flex items-center justify-center p-6 text-center"
+            >
+              <span
+                className="text-[#FFFFFF] font-bold tracking-[0.18em] uppercase text-lg"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                ARTS APPAREL
+              </span>
+            </motion.div>
+          ) : (
+            <motion.img
+              key={currentImage + activeIndex}
+              src={currentImage}
+              alt={label}
+              loading="lazy"
+              onError={() => markFailed(currentImage)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1, scale: isZoomed ? 1.45 : 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              onClick={() => setIsZoomed((prev) => !prev)}
+              className={`w-full h-full object-cover cursor-zoom-in ${
+                isZoomed
+                  ? "cursor-zoom-out"
+                  : "group-hover:scale-105 transition-transform duration-500"
+              }`}
+            />
+          )}
         </AnimatePresence>
 
         {/* Zoom Toggle Button */}
@@ -122,6 +154,7 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
         )}
       </div>
 
+      {/* Thumbnail strip below (all 3 images, clickable) */}
       {safeImages.length > 1 && (
         <div className="flex items-center gap-3 overflow-x-auto pb-1">
           {safeImages.map((img, idx) => (
@@ -129,17 +162,30 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
               key={idx}
               type="button"
               onClick={() => setActiveIndex(idx)}
-              className={`relative aspect-square w-20 h-20 rounded-lg border overflow-hidden shrink-0 transition-all bg-[#F5F5F5] ${
+              className={`relative aspect-[4/3] w-24 h-18 rounded-lg border overflow-hidden shrink-0 transition-all bg-[#F5F5F5] ${
                 activeIndex === idx
                   ? "border-[#E63946] ring-2 ring-[#E63946]/50 scale-105"
                   : "border-[#E0E0E0] opacity-75 hover:opacity-100 hover:border-[#E63946]"
               }`}
             >
-              <img
-                src={img}
-                alt={`${label} thumbnail ${idx + 1}`}
-                className="w-full h-full object-cover"
-              />
+              {failedUrls[img] ? (
+                <div className="w-full h-full bg-[#1A1A1A] flex items-center justify-center p-1 text-center">
+                  <span
+                    className="text-[#FFFFFF] font-bold tracking-wider uppercase text-[9px]"
+                    style={{ fontFamily: "'Playfair Display', serif" }}
+                  >
+                    ARTS APPAREL
+                  </span>
+                </div>
+              ) : (
+                <img
+                  src={img}
+                  alt={`${label} thumbnail ${idx + 1}`}
+                  loading="lazy"
+                  onError={() => markFailed(img)}
+                  className="w-full h-full object-cover"
+                />
+              )}
             </button>
           ))}
         </div>

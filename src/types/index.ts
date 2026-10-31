@@ -10,6 +10,8 @@ export interface User {
   phone: string;
   role: UserRole;
   referral_code: string | null;
+  total_referrals?: number;
+  total_commission_earned?: number;
   is_approved: boolean;
   is_blocked: boolean;
   payment_method?: "jazzcash" | "easypaisa" | "bank_transfer";
@@ -42,14 +44,18 @@ export interface Product {
   description_ur: string | null;
   description_roman_ur?: string | null;
   category_id: string;
+  category_slug?: string;
+  category_name?: string;
   price: number;
   discount_percent: number;
+  discounted_price?: number;
   images: string[];
   sizes: string[];
   colors: string[];
   stock: number;
   is_active: boolean;
   is_featured: boolean;
+  is_new?: boolean;
   created_at: string;
   updated_at?: string;
   categories?: Category;
@@ -155,8 +161,10 @@ export interface SiteSettings {
   bank_account_title: string;
   bank_iban: string;
   whatsapp_number: string;
+  contact_phone?: string;
   contact_email: string;
   physical_address: string;
+  shop_address?: string;
   instagram_url: string;
   facebook_url: string;
   tiktok_url: string;
@@ -164,12 +172,15 @@ export interface SiteSettings {
 
 export interface Banner {
   id: string;
+  title?: string;
   title_en?: string;
   title_ur?: string;
   title_roman_ur?: string;
+  subtitle?: string;
   subtitle_en?: string;
   subtitle_ur?: string;
   subtitle_roman_ur?: string;
+  cta_text?: string;
   image_url: string;
   link_url: string | null;
   cta_link?: string;

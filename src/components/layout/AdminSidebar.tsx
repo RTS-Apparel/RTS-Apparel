@@ -3,17 +3,16 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Package,
-  Tags,
-  ShoppingCart,
-  Percent,
-  UserCheck,
+  Grid3X3,
+  ShoppingBag,
+  Tag,
   Users,
   Image,
   Settings,
   LogOut,
   Globe,
   Coins,
-  WalletCards,
+  Wallet,
   Truck,
   BarChart3,
 } from "lucide-react";
@@ -35,13 +34,13 @@ export const AdminSidebar: React.FC = () => {
   const navItems = [
     { label: t.dashboard, path: "/admin/dashboard", icon: LayoutDashboard },
     { label: t.products, path: "/admin/products", icon: Package },
-    { label: t.categories, path: "/admin/categories", icon: Tags },
-    { label: t.orders, path: "/admin/orders", icon: ShoppingCart },
+    { label: t.categories, path: "/admin/categories", icon: Grid3X3 },
+    { label: t.orders, path: "/admin/orders", icon: ShoppingBag },
     { label: t.customers, path: "/admin/customers", icon: Users },
-    { label: t.discounts, path: "/admin/discounts", icon: Percent },
-    { label: t.teamMembers, path: "/admin/team", icon: UserCheck },
+    { label: t.discounts, path: "/admin/discounts", icon: Tag },
+    { label: t.teamMembers, path: "/admin/team", icon: Users },
     { label: t.commissions, path: "/admin/commissions", icon: Coins },
-    { label: t.withdrawals, path: "/admin/withdrawals", icon: WalletCards },
+    { label: t.withdrawals, path: "/admin/withdrawals", icon: Wallet },
     { label: t.deliveryCharges, path: "/admin/delivery", icon: Truck },
     { label: t.banners, path: "/admin/banners", icon: Image },
     { label: t.reports, path: "/admin/reports", icon: BarChart3 },
@@ -50,7 +49,7 @@ export const AdminSidebar: React.FC = () => {
 
   const handleAdminLogout = () => {
     logout();
-    navigate("/admin");
+    navigate("/login");
   };
 
   return (
@@ -111,7 +110,8 @@ export const AdminSidebar: React.FC = () => {
                   }`}
                 >
                   <Icon
-                    className={`w-4 h-4 shrink-0 ${
+                    size={18}
+                    className={`shrink-0 ${
                       active ? "text-[#E63946]" : "text-[#CCCCCC]"
                     }`}
                   />
@@ -129,7 +129,7 @@ export const AdminSidebar: React.FC = () => {
           onClick={handleAdminLogout}
           className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-[6px] text-xs uppercase tracking-wider font-semibold bg-[#2A2A2A] border border-[#333333] text-[#CCCCCC] hover:bg-[#C1121F] hover:border-[#C1121F] hover:text-[#FFFFFF] transition-colors"
         >
-          <LogOut className="w-4 h-4" />
+          <LogOut size={18} />
           <span>{t.logout}</span>
         </button>
       </div>

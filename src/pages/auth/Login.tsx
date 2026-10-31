@@ -1,45 +1,171 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
-import { UserCheck, Eye, EyeOff } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { LogIn, UserPlus, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { useAuth } from "../../hooks/useAuth";
+import { supabase, isSupabaseConfigured } from "../../lib/supabase";
+import { useAuthStore } from "../../store/authStore";
 import { useDataStore } from "../../store/dataStore";
 import { CUSTOMER_TRANSLATIONS } from "../../lib/i18n";
 import { pageVariants } from "../../lib/animations";
+import { User, UserRole } from "../../types";
 
 export const LoginPage: React.FC = () => {
-  const { login, switchDemoRole } = useAuth();
+  const setAuth = useAuthStore((s) => s.setAuth);
   const language = useDataStore((s) => s.language);
   const t = CUSTOMER_TRANSLATIONS[language];
 
-  const [email, setEmail] = useState("customer@rts.pk");
-  const [password, setPassword] = useState("••••••••");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>("");
   const navigate = useNavigate();
-  const location = useLocation();
-  const from = (location.state as { from?: string })?.from || "/account";
 
-  const handleQuickRoleLogin = (role: "customer" | "agent") => {
-    switchDemoRole(role);
-    if (role === "agent") navigate("/team");
-    else navigate(from);
-  };
+  async function handleLogin(loginEmail: string, loginPassword: string) {
+    setLoading(true);
+    setError("");
+
+    const normalizedEmail = loginEmail.trim().toLowerCase();
+
+    if (isSupabaseConfigured) {
+      const { data, error: signInError } =
+        await supabase.auth.signInWithPassword({
+          email: normalizedEmail,
+          password: loginPassword,
+        });
+
+      if (!signInError && data?.user) {
+        // Fetch user role from users table
+        const { data: userData } = await supabase
+          .from("users")
+          .select("role, is_approved, is_blocked, full_name, phone, referral_code")
+          .eq("id", data.user.id)
+          .single();
+
+        if (!userData) {
+          // User exists in auth but not in users table — create entry
+          const defaultName = data.user.email?.split("@")[0] || "User";
+          await supabase.from("users").insert({
+            id: data.user.id,
+            full_name: defaultName,
+            role: "customer",
+            is_approved: false,
+            is_blocked: false,
+          });
+          const createdUser: User = {
+            id: data.user.id,
+            email: data.user.email || normalizedEmail,
+            full_name: defaultName,
+            phone: "",
+            role: "customer",
+            referral_code: null,
+            is_approved: false,
+            is_blocked: false,
+            created_at: new Date().toISOString(),
+          };
+          setAuth({
+            user: createdUser,
+            role: "customer",
+            session: data.session,
+            isLoading: false,
+          });
+          setLoading(false);
+          navigate("/account");
+          return;
+        }
+
+        if (userData.is_blocked) {
+          await supabase.auth.signOut();
+          setError("Aapka account block kar diya gaya hai.");
+          setLoading(false);
+          return;
+        }
+
+        const mappedUser: User = {
+          id: data.user.id,
+          email: data.user.email || normalizedEmail,
+          full_name: userData.full_name || data.user.email?.split("@")[0] || "User",
+          phone: userData.phone || "",
+          role: (userData.role as UserRole) || "customer",
+          referral_code: userData.referral_code || null,
+          is_approved: Boolean(userData.is_approved),
+          is_blocked: Boolean(userData.is_blocked),
+          created_at: new Date().toISOString(),
+        };
+
+        setAuth({
+          user: mappedUser,
+          role: mappedUser.role,
+          session: data.session,
+          isLoading: false,
+        });
+
+        // Redirect based on role
+        if (userData.role === "admin") {
+          navigate("/admin");
+        } else if (userData.role === "agent" && userData.is_approved) {
+          navigate("/team");
+        } else if (userData.role === "agent" && !userData.is_approved) {
+          navigate("/pending-approval");
+        } else {
+          navigate("/account");
+        }
+        setLoading(false);
+        return;
+      }
+
+      // If Supabase returned an auth error and email doesn't match local fallback users, return error
+      const localUsers = useDataStore.getState().users;
+      const localMatch = localUsers.find(
+        (u) => u.email?.toLowerCase() === normalizedEmail
+      );
+      if (!localMatch) {
+        setError("Email ya password galat hai. Dobara try karo.");
+        setLoading(false);
+        return;
+      }
+    }
+
+    // Local / Demo user verification when Supabase is not configured or for seeded accounts
+    const users = useDataStore.getState().users;
+    const matched = users.find(
+      (u) => u.email?.toLowerCase() === normalizedEmail
+    );
+
+    if (!matched || loginPassword.trim().length < 4) {
+      setError("Email ya password galat hai. Dobara try karo.");
+      setLoading(false);
+      return;
+    }
+
+    if (matched.is_blocked) {
+      setError("Aapka account block kar diya gaya hai.");
+      setLoading(false);
+      return;
+    }
+
+    setAuth({
+      user: matched,
+      role: matched.role,
+      session: { user: { id: matched.id, email: matched.email } },
+      isLoading: false,
+    });
+
+    if (matched.role === "admin") {
+      navigate("/admin");
+    } else if (matched.role === "agent" && matched.is_approved) {
+      navigate("/team");
+    } else if (matched.role === "agent" && !matched.is_approved) {
+      navigate("/pending-approval");
+    } else {
+      navigate("/account");
+    }
+    setLoading(false);
+  }
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    const res = await login(email, password);
-    if (res.success && res.user) {
-      if (res.user.role === "agent") navigate("/team");
-      else navigate(from);
-      return;
-    }
-    if (email.toLowerCase().includes("agent")) {
-      handleQuickRoleLogin("agent");
-    } else {
-      handleQuickRoleLogin("customer");
-    }
+    await handleLogin(email, password);
   };
 
   return (
@@ -61,8 +187,9 @@ export const LoginPage: React.FC = () => {
         </div>
 
         {error && (
-          <div className="p-3 rounded-[6px] bg-[#F8D7DA] border border-[#E63946] text-xs text-[#E63946] font-medium">
-            {error}
+          <div className="p-3 rounded-[6px] bg-[#F8D7DA] border border-[#E63946] text-xs text-[#E63946] font-medium flex items-center gap-2">
+            <AlertCircle size={16} className="shrink-0" />
+            <span>{error}</span>
           </div>
         )}
 
@@ -80,6 +207,7 @@ export const LoginPage: React.FC = () => {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="name@example.com"
               className="w-full rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] px-3.5 py-2.5 text-sm text-[#1A1A1A] focus:border-2 focus:border-[#E63946] focus:outline-none"
             />
           </div>
@@ -97,6 +225,7 @@ export const LoginPage: React.FC = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
                 className="w-full rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] px-3.5 py-2.5 pr-10 text-sm text-[#1A1A1A] focus:border-2 focus:border-[#E63946] focus:outline-none"
               />
               <button
@@ -115,43 +244,22 @@ export const LoginPage: React.FC = () => {
           </div>
           <button
             type="submit"
-            className="w-full py-3.5 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-xs uppercase tracking-[0.2em] hover:bg-[#C1121F] transition-colors btn-primary-futuristic"
+            disabled={loading}
+            className="w-full py-3.5 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-xs uppercase tracking-[0.2em] hover:bg-[#C1121F] transition-colors btn-primary-futuristic flex items-center justify-center gap-2"
           >
-            {t.signIn}
+            <LogIn size={16} />
+            <span>{loading ? "Signing In..." : "Login"}</span>
           </button>
         </form>
-
-        <div className="pt-5 border-t border-[#E0E0E0] space-y-3">
-          <p className="text-[11px] uppercase tracking-wider text-[#666666] text-center font-medium">
-            Instant Demo Account Access
-          </p>
-          <div className="grid grid-cols-1 gap-2">
-            <button
-              type="button"
-              onClick={() => handleQuickRoleLogin("customer")}
-              className="py-2.5 px-4 rounded-[6px] bg-[#F5F5F5] border border-[#E0E0E0] hover:border-[#E63946] text-xs text-[#1A1A1A] font-medium flex items-center justify-between transition-colors"
-            >
-              <span>Customer Account (Hamza Raza)</span>
-              <UserCheck className="w-4 h-4 text-[#E63946]" />
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickRoleLogin("agent")}
-              className="py-2.5 px-4 rounded-[6px] bg-[#F5F5F5] border border-[#E0E0E0] hover:border-[#E63946] text-xs text-[#1A1A1A] font-medium flex items-center justify-between transition-colors"
-            >
-              <span>Partner Agent Hub (Ali Raza — RTS-ALI123)</span>
-              <UserCheck className="w-4 h-4 text-[#E63946]" />
-            </button>
-          </div>
-        </div>
 
         <p className="text-xs text-[#666666] text-center">
           New to ARTS APPAREL?{" "}
           <Link
             to="/signup"
-            className="text-[#E63946] font-semibold hover:underline"
+            className="text-[#E63946] font-semibold hover:underline inline-flex items-center gap-1"
           >
-            {t.signUp}
+            <UserPlus size={14} />
+            <span>Create Account</span>
           </Link>
         </p>
       </div>

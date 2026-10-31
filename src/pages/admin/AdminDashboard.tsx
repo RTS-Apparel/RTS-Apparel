@@ -3,11 +3,14 @@ import { Link } from "react-router-dom";
 import {
   TrendingUp,
   ShoppingBag,
-  UserPlus,
-  WalletCards,
-  Shirt,
+  Clock,
   Users,
+  UserCheck,
+  Package,
+  Wallet,
   LayoutDashboard,
+  Plus,
+  Eye,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useDataStore } from "../../store/dataStore";
@@ -21,30 +24,18 @@ import {
   statCardVariants,
   CountUpNumber,
 } from "../../lib/animations";
+import { demoDashboardStats } from "../../data/demoData";
+import { SetupGuideBanner } from "./SetupGuide";
 
 export const AdminDashboard: React.FC = () => {
   const orders = useDataStore((s) => s.orders);
   const products = useDataStore((s) => s.products);
   const users = useDataStore((s) => s.users);
   const commissions = useDataStore((s) => s.commissions);
-  const withdrawals = useDataStore((s) => s.withdrawalRequests);
   const adminLanguage = useDataStore((s) => s.adminLanguage);
 
   const t = ADMIN_TRANSLATIONS[adminLanguage];
 
-  const totalRevenue = orders
-    .filter((o) => o.status !== "cancelled")
-    .reduce((sum, o) => sum + o.total_amount, 0);
-
-  const pendingOrdersCount = orders.filter(
-    (o) => o.status === "pending"
-  ).length;
-  const pendingAgentsCount = users.filter(
-    (u) => u.role === "agent" && !u.is_approved
-  ).length;
-  const pendingWithdrawalsCount = withdrawals.filter(
-    (w) => w.status === "pending"
-  ).length;
   const activeAgents = users.filter(
     (u) => u.role === "agent" && u.is_approved && !u.is_blocked
   );
@@ -63,7 +54,7 @@ export const AdminDashboard: React.FC = () => {
         <PageHeading
           title="Dashboard"
           subtitle="Welcome back, Admin 👋"
-          icon={<LayoutDashboard className="w-5 h-5" />}
+          icon={<LayoutDashboard size={22} />}
           breadcrumbs={[
             { label: "Home", to: "/" },
             { label: "Admin" },
@@ -72,15 +63,19 @@ export const AdminDashboard: React.FC = () => {
           actions={
             <Link
               to="/admin/products/new"
-              className="h-10 px-4 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-xs flex items-center justify-center hover:bg-[#C1121F] shadow-xs transition-colors"
+              className="h-10 px-4 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-xs flex items-center justify-center gap-1.5 hover:bg-[#C1121F] shadow-xs transition-colors"
             >
-              + {t.addProduct}
+              <Plus size={16} />
+              <span>{t.addProduct}</span>
             </Link>
           }
         />
 
-        {/* 6 Live Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 font-mono tabular-nums">
+        {/* Supabase Admin Setup Guide Banner */}
+        <SetupGuideBanner />
+
+        {/* Stat Cards from demoDashboardStats */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 font-mono tabular-nums">
           <motion.div
             custom={0}
             variants={statCardVariants}
@@ -89,12 +84,15 @@ export const AdminDashboard: React.FC = () => {
             whileHover="hover"
             className="group p-4 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] border-t-[3px] border-t-[#E63946] hover:border-[#E63946] transition-all space-y-1 shadow-xs"
           >
-            <TrendingUp className="w-4 h-4 text-[#E63946] group-hover:rotate-[5deg] transition-transform" />
+            <TrendingUp size={24} color="#E63946" className="group-hover:rotate-[5deg] transition-transform" />
             <p className="text-[20px] font-bold text-[#1A1A1A] pt-1">
-              <CountUpNumber value={totalRevenue} prefix="Rs. " />
+              <CountUpNumber
+                value={demoDashboardStats.today_revenue}
+                prefix="Rs. "
+              />
             </p>
             <p className="text-[11px] font-sans text-[#666666]">
-              {t.totalRevenue}
+              Today Revenue ({demoDashboardStats.today_orders} orders)
             </p>
           </motion.div>
 
@@ -104,19 +102,18 @@ export const AdminDashboard: React.FC = () => {
             initial="initial"
             animate="animate"
             whileHover="hover"
+            className="group p-4 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] border-t-[3px] border-t-[#E63946] hover:border-[#E63946] transition-all space-y-1 shadow-xs"
           >
-            <Link
-              to="/admin/orders"
-              className="group block p-4 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] border-t-[3px] border-t-[#E63946] hover:border-[#E63946] transition-all space-y-1 shadow-xs h-full"
-            >
-              <ShoppingBag className="w-4 h-4 text-[#E63946] group-hover:rotate-[5deg] transition-transform" />
-              <p className="text-[24px] font-bold text-[#1A1A1A] pt-1">
-                <CountUpNumber value={pendingOrdersCount} />
-              </p>
-              <p className="text-[11px] font-sans text-[#666666]">
-                {t.pendingOrders}
-              </p>
-            </Link>
+            <TrendingUp size={24} color="#E63946" className="group-hover:rotate-[5deg] transition-transform" />
+            <p className="text-[20px] font-bold text-[#1A1A1A] pt-1">
+              <CountUpNumber
+                value={demoDashboardStats.total_revenue}
+                prefix="Rs. "
+              />
+            </p>
+            <p className="text-[11px] font-sans text-[#666666]">
+              {t.totalRevenue}
+            </p>
           </motion.div>
 
           <motion.div
@@ -127,15 +124,15 @@ export const AdminDashboard: React.FC = () => {
             whileHover="hover"
           >
             <Link
-              to="/admin/team"
+              to="/admin/orders"
               className="group block p-4 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] border-t-[3px] border-t-[#E63946] hover:border-[#E63946] transition-all space-y-1 shadow-xs h-full"
             >
-              <UserPlus className="w-4 h-4 text-[#E63946] group-hover:rotate-[5deg] transition-transform" />
+              <ShoppingBag size={24} color="#E63946" className="group-hover:rotate-[5deg] transition-transform" />
               <p className="text-[24px] font-bold text-[#1A1A1A] pt-1">
-                <CountUpNumber value={pendingAgentsCount} />
+                <CountUpNumber value={demoDashboardStats.total_orders} />
               </p>
               <p className="text-[11px] font-sans text-[#666666]">
-                {t.agentApprovals}
+                Total Orders
               </p>
             </Link>
           </motion.div>
@@ -148,15 +145,15 @@ export const AdminDashboard: React.FC = () => {
             whileHover="hover"
           >
             <Link
-              to="/admin/withdrawals"
+              to="/admin/orders"
               className="group block p-4 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] border-t-[3px] border-t-[#E63946] hover:border-[#E63946] transition-all space-y-1 shadow-xs h-full"
             >
-              <WalletCards className="w-4 h-4 text-[#E63946] group-hover:rotate-[5deg] transition-transform" />
+              <Clock size={24} color="#F59E0B" className="group-hover:rotate-[5deg] transition-transform" />
               <p className="text-[24px] font-bold text-[#1A1A1A] pt-1">
-                <CountUpNumber value={pendingWithdrawalsCount} />
+                <CountUpNumber value={demoDashboardStats.pending_orders} />
               </p>
               <p className="text-[11px] font-sans text-[#666666]">
-                {t.pendingPayouts}
+                {t.pendingOrders}
               </p>
             </Link>
           </motion.div>
@@ -169,15 +166,17 @@ export const AdminDashboard: React.FC = () => {
             whileHover="hover"
           >
             <Link
-              to="/admin/products"
+              to="/admin/team"
               className="group block p-4 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] border-t-[3px] border-t-[#E63946] hover:border-[#E63946] transition-all space-y-1 shadow-xs h-full"
             >
-              <Shirt className="w-4 h-4 text-[#E63946] group-hover:rotate-[5deg] transition-transform" />
+              <UserCheck size={24} color="#E63946" className="group-hover:rotate-[5deg] transition-transform" />
               <p className="text-[24px] font-bold text-[#1A1A1A] pt-1">
-                <CountUpNumber value={products.length} />
+                <CountUpNumber
+                  value={demoDashboardStats.pending_agent_approvals}
+                />
               </p>
               <p className="text-[11px] font-sans text-[#666666]">
-                {t.catalogItems}
+                {t.agentApprovals}
               </p>
             </Link>
           </motion.div>
@@ -190,21 +189,84 @@ export const AdminDashboard: React.FC = () => {
             whileHover="hover"
           >
             <Link
+              to="/admin/withdrawals"
+              className="group block p-4 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] border-t-[3px] border-t-[#E63946] hover:border-[#E63946] transition-all space-y-1 shadow-xs h-full"
+            >
+              <Wallet size={24} color="#E63946" className="group-hover:rotate-[5deg] transition-transform" />
+              <p className="text-[24px] font-bold text-[#1A1A1A] pt-1">
+                <CountUpNumber value={demoDashboardStats.pending_withdrawals} />
+              </p>
+              <p className="text-[11px] font-sans text-[#666666]">
+                {t.pendingPayouts}
+              </p>
+            </Link>
+          </motion.div>
+
+          <motion.div
+            custom={6}
+            variants={statCardVariants}
+            initial="initial"
+            animate="animate"
+            whileHover="hover"
+          >
+            <Link
+              to="/admin/products"
+              className="group block p-4 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] border-t-[3px] border-t-[#E63946] hover:border-[#E63946] transition-all space-y-1 shadow-xs h-full"
+            >
+              <Package size={24} color="#E63946" className="group-hover:rotate-[5deg] transition-transform" />
+              <p className="text-[24px] font-bold text-[#1A1A1A] pt-1">
+                <CountUpNumber value={products.length || demoDashboardStats.total_products} />
+              </p>
+              <p className="text-[11px] font-sans text-[#666666]">
+                {t.catalogItems}
+              </p>
+            </Link>
+          </motion.div>
+
+          <motion.div
+            custom={7}
+            variants={statCardVariants}
+            initial="initial"
+            animate="animate"
+            whileHover="hover"
+          >
+            <Link
               to="/admin/team"
               className="group block p-4 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] border-t-[3px] border-t-[#E63946] hover:border-[#E63946] transition-all space-y-1 shadow-xs h-full"
             >
-              <Users className="w-4 h-4 text-[#E63946] group-hover:rotate-[5deg] transition-transform" />
+              <UserCheck size={24} color="#E63946" className="group-hover:rotate-[5deg] transition-transform" />
               <p className="text-[24px] font-bold text-[#1A1A1A] pt-1">
-                <CountUpNumber value={activeAgents.length} />
+                <CountUpNumber value={activeAgents.length || demoDashboardStats.active_agents} />
               </p>
               <p className="text-[11px] font-sans text-[#666666]">
                 {t.activeAgents}
               </p>
             </Link>
           </motion.div>
+
+          <motion.div
+            custom={8}
+            variants={statCardVariants}
+            initial="initial"
+            animate="animate"
+            whileHover="hover"
+          >
+            <Link
+              to="/admin/customers"
+              className="group block p-4 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] border-t-[3px] border-t-[#E63946] hover:border-[#E63946] transition-all space-y-1 shadow-xs h-full"
+            >
+              <Users size={24} color="#E63946" className="group-hover:rotate-[5deg] transition-transform" />
+              <p className="text-[24px] font-bold text-[#1A1A1A] pt-1">
+                <CountUpNumber value={demoDashboardStats.total_customers} />
+              </p>
+              <p className="text-[11px] font-sans text-[#666666]">
+                Total Customers
+              </p>
+            </Link>
+          </motion.div>
         </div>
 
-        {/* Recent Orders Table */}
+        {/* Recent Orders Table from demoOrders */}
         <div className="rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] p-6 space-y-4 shadow-xs">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-serif-display font-bold text-[#1A1A1A]">
@@ -261,9 +323,10 @@ export const AdminDashboard: React.FC = () => {
                     <td className="py-3.5 px-4 text-right font-sans">
                       <Link
                         to={`/admin/orders/${ord.id}`}
-                        className="font-semibold text-[#E63946] hover:underline inline-block"
+                        className="font-semibold text-[#E63946] hover:underline inline-flex items-center gap-1"
                       >
-                        Manage →
+                        <Eye size={15} />
+                        <span>Manage</span>
                       </Link>
                     </td>
                   </motion.tr>
@@ -273,7 +336,7 @@ export const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Top Agents & Top Products */}
+        {/* Top Agents (from demoAgents) & Top Products */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] p-6 space-y-4 shadow-xs">
             <h2 className="text-base font-serif-display font-bold text-[#1A1A1A]">
@@ -282,10 +345,14 @@ export const AdminDashboard: React.FC = () => {
             <div className="space-y-3">
               {activeAgents.map((ag) => {
                 const agComms = commissions.filter((c) => c.agent_id === ag.id);
-                const earned = agComms.reduce(
-                  (sum, c) => sum + (c.amount || 0),
-                  0
-                );
+                const referralsCount =
+                  ag.total_referrals !== undefined
+                    ? ag.total_referrals
+                    : agComms.length;
+                const earned =
+                  ag.total_commission_earned !== undefined
+                    ? ag.total_commission_earned
+                    : agComms.reduce((sum, c) => sum + (c.amount || 0), 0);
                 return (
                   <div
                     key={ag.id}
@@ -296,7 +363,11 @@ export const AdminDashboard: React.FC = () => {
                         {ag.full_name}
                       </p>
                       <p className="font-mono text-[#666666]">
-                        Code: <span className="text-[#E63946] font-bold">{ag.referral_code}</span> · {agComms.length} orders
+                        Code:{" "}
+                        <span className="text-[#E63946] font-bold">
+                          {ag.referral_code}
+                        </span>{" "}
+                        · {referralsCount} referrals
                       </p>
                     </div>
                     <span className="font-mono font-bold text-[#E63946] tabular-nums">

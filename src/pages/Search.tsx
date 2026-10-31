@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Search as SearchIcon } from "lucide-react";
+import { Search as SearchIcon, SearchX } from "lucide-react";
 import { motion } from "framer-motion";
 import { useProducts } from "../hooks/useProducts";
 import { useDataStore } from "../store/dataStore";
@@ -60,13 +60,19 @@ export const SearchPage: React.FC = () => {
   const matchedProducts = activeProducts.filter((prod) => {
     if (!query.trim() && keywords.length === 0) return true;
 
-    if (!aiUsed) {
-      const qLower = query.trim().toLowerCase();
-      return (
-        prod.name_en.toLowerCase().includes(qLower) ||
+    const qLower = query.trim().toLowerCase();
+    // Always match directly on name_en, name_ur, or category_name first
+    if (
+      qLower &&
+      (prod.name_en.toLowerCase().includes(qLower) ||
         (prod.name_ur || "").toLowerCase().includes(qLower) ||
-        (prod.name_roman_ur || "").toLowerCase().includes(qLower)
-      );
+        (prod.category_name || "").toLowerCase().includes(qLower))
+    ) {
+      return true;
+    }
+
+    if (!aiUsed) {
+      return (prod.name_roman_ur || "").toLowerCase().includes(qLower);
     }
 
     const cat = categories.find((c) => c.id === prod.category_id);
@@ -75,18 +81,16 @@ export const SearchPage: React.FC = () => {
       prod.name_ur || "",
       prod.name_roman_ur || "",
       prod.description_en || "",
-      prod.description_ur || "",
-      prod.description_roman_ur || "",
+      prod.category_name || "",
       cat?.name_en || "",
       cat?.name_ur || "",
-      cat?.name_roman_ur || "",
       ...prod.colors,
     ]
       .join(" ")
       .toLowerCase();
 
     const searchTerms =
-      keywords.length > 0 ? keywords : [query.trim().toLowerCase()];
+      keywords.length > 0 ? keywords : [qLower];
     return searchTerms.some((term) =>
       haystack.includes(term.toLowerCase().trim())
     );
@@ -112,7 +116,7 @@ export const SearchPage: React.FC = () => {
       <div className="rounded-xl bg-[#FFFFFF] border border-[#E0E0E0] p-6 md:p-8 space-y-5 shadow-xs">
         <form onSubmit={handleSubmit} className="flex gap-3">
           <div className="relative flex-1">
-            <SearchIcon className="w-4 h-4 text-[#666666] absolute left-3.5 top-3.5" />
+            <SearchIcon size={16} className="text-[#666666] absolute left-3.5 top-3.5" />
             <input
               type="search"
               value={query}
@@ -124,9 +128,10 @@ export const SearchPage: React.FC = () => {
           </div>
           <button
             type="submit"
-            className="btn-primary-futuristic h-11 px-6 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-sm hover:bg-[#C1121F] transition-colors whitespace-nowrap"
+            className="btn-primary-futuristic h-11 px-6 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-sm hover:bg-[#C1121F] transition-colors whitespace-nowrap inline-flex items-center gap-2"
           >
-            {t.searchGo}
+            <SearchIcon size={16} />
+            <span>{t.searchGo}</span>
           </button>
         </form>
 
@@ -155,7 +160,8 @@ export const SearchPage: React.FC = () => {
         <ProductGrid
           products={matchedProducts}
           categories={categories}
-          emptyMessage={`No garments found matching "${query}". Try searching for Kurta, Shirt, Gurkha, or Jacket.`}
+          emptyIcon={<SearchX size={64} />}
+          emptyMessage="Bhai koi product nahi mila! Koi aur search karo 😊"
         />
       )}
     </motion.div>

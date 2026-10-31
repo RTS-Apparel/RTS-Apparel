@@ -39,6 +39,7 @@ export const AccountWishlist: React.FC = () => {
         <ProductGrid
           products={wishlistedProducts}
           categories={categories}
+          emptyIcon={<Heart size={64} />}
           emptyMessage="Your wishlist is currently empty. Click the heart icon on any garment to save it here."
         />
       </div>

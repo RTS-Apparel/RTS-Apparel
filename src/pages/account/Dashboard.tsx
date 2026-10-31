@@ -48,18 +48,6 @@ export const AccountDashboard: React.FC = () => {
             { label: "Account" },
             { label: "My Account" },
           ]}
-          actions={
-            <Link
-              to="/team"
-              onClick={() => {
-                if (user?.role !== "agent") switchDemoRole("agent");
-              }}
-              className="h-10 px-4 rounded-[6px] bg-[#E63946] text-[#FFFFFF] text-xs font-semibold flex items-center gap-2 hover:bg-[#C1121F] transition-colors"
-            >
-              <Award className="w-4 h-4" />
-              <span>Agent Dashboard</span>
-            </Link>
-          }
         />
 
         {/* Summary Metric Cards */}

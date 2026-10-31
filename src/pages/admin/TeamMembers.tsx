@@ -105,10 +105,14 @@ export const AdminTeamMembers: React.FC = () => {
                   const agComms = commissions.filter(
                     (c) => c.agent_id === ag.id
                   );
-                  const totalComm = agComms.reduce(
-                    (s, c) => s + (c.amount || 0),
-                    0
-                  );
+                  const referralsCount =
+                    ag.total_referrals !== undefined
+                      ? ag.total_referrals
+                      : agComms.length;
+                  const totalComm =
+                    ag.total_commission_earned !== undefined
+                      ? ag.total_commission_earned
+                      : agComms.reduce((s, c) => s + (c.amount || 0), 0);
                   return (
                     <motion.tr
                       key={ag.id}
@@ -128,13 +132,13 @@ export const AdminTeamMembers: React.FC = () => {
                         )}
                       </td>
                       <td className="py-3.5 px-4 text-[#666666]">
-                        {ag.phone} · {ag.email}
+                        {ag.phone} {ag.email ? `· ${ag.email}` : ""}
                       </td>
                       <td className="py-3.5 px-4 font-bold text-[#E63946]">
                         {ag.referral_code || "Pending Approval"}
                       </td>
                       <td className="py-3.5 px-4 text-right text-[#1A1A1A] font-semibold">
-                        {agComms.length}
+                        {referralsCount}
                       </td>
                       <td className="py-3.5 px-4 text-right font-bold text-[#E63946]">
                         {formatPKR(totalComm)}

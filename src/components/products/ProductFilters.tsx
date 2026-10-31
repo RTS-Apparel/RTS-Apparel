@@ -14,18 +14,24 @@ interface ProductFiltersProps {
   onlyDiscounted: boolean;
   setOnlyDiscounted: (d: boolean) => void;
   onReset: () => void;
+  availableSizes?: string[];
+  availableColors?: string[];
 }
 
-const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
-const COLORS = [
-  "Obsidian Black",
-  "Emerald",
-  "Ivory",
+const DEFAULT_SIZES = ["S", "M", "L", "XL", "XXL", "28", "30", "32", "34", "36", "38"];
+const DEFAULT_COLORS = [
   "White",
+  "Black",
   "Navy",
+  "Grey",
+  "Blue",
   "Olive",
-  "Cognac",
+  "Beige",
   "Charcoal",
+  "Brown",
+  "Green",
+  "Maroon",
+  "Cream",
 ];
 
 export const ProductFilters: React.FC<ProductFiltersProps> = ({
@@ -38,9 +44,18 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
   onlyDiscounted,
   setOnlyDiscounted,
   onReset,
+  availableSizes,
+  availableColors,
 }) => {
   const language = useDataStore((s) => s.language);
   const t = CUSTOMER_TRANSLATIONS[language];
+
+  const sizes =
+    availableSizes && availableSizes.length > 0 ? availableSizes : DEFAULT_SIZES;
+  const colors =
+    availableColors && availableColors.length > 0
+      ? availableColors
+      : DEFAULT_COLORS;
 
   return (
     <aside className="rounded-xl bg-[#FFFFFF] border border-[#E0E0E0] p-5 space-y-6 sticky top-28 shadow-xs">
@@ -76,7 +91,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
           >
             {t.all}
           </button>
-          {SIZES.map((sz) => (
+          {sizes.map((sz) => (
             <button
               key={sz}
               type="button"
@@ -110,7 +125,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
           >
             {t.all}
           </button>
-          {COLORS.map((clr) => (
+          {colors.map((clr) => (
             <button
               key={clr}
               type="button"
@@ -141,9 +156,9 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
         </div>
         <input
           type="range"
-          min={3000}
-          max={35000}
-          step={500}
+          min={1500}
+          max={15000}
+          step={250}
           value={maxPrice}
           onChange={(e) => setMaxPrice(Number(e.target.value))}
           aria-label={t.maxPrice}

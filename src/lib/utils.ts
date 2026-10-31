@@ -1,6 +1,6 @@
 export function formatPKR(amount: number): string {
   const rounded = Math.round(Number(amount) || 0);
-  return `₨ ${rounded.toLocaleString("en-PK")}`;
+  return `Rs. ${rounded.toLocaleString("en-US")}`;
 }
 
 /**

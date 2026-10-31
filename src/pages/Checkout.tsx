@@ -5,7 +5,11 @@ import {
   CreditCard,
   Award,
   CheckCircle2,
-  ShieldCheck,
+  ClipboardCheck,
+  Banknote,
+  Smartphone,
+  Building2,
+  PackageCheck,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useCart } from "../hooks/useCart";
@@ -167,7 +171,7 @@ export const CheckoutPage: React.FC = () => {
           {/* Step 1: Delivery Address & City */}
           <div className="rounded-xl bg-[#FFFFFF] border border-[#E0E0E0] p-6 space-y-4 shadow-xs">
             <div className="flex items-center gap-2 text-sm font-semibold text-[#1A1A1A]">
-              <MapPin className="w-4 h-4 text-[#E63946]" />
+              <MapPin size={20} className="text-[#E63946]" />
               <h2>{t.deliveryDestination}</h2>
             </div>
 
@@ -250,7 +254,7 @@ export const CheckoutPage: React.FC = () => {
           {/* Step 2: Pakistan Payment Methods */}
           <div className="rounded-xl bg-[#FFFFFF] border border-[#E0E0E0] p-6 space-y-4 shadow-xs">
             <div className="flex items-center gap-2 text-sm font-semibold text-[#1A1A1A]">
-              <CreditCard className="w-4 h-4 text-[#E63946]" />
+              <CreditCard size={20} className="text-[#E63946]" />
               <h2>{t.paymentMethodTitle}</h2>
             </div>
 
@@ -260,46 +264,54 @@ export const CheckoutPage: React.FC = () => {
                   id: "cod",
                   title: t.codTitle,
                   sub: t.codSub,
+                  icon: Banknote,
                 },
                 {
                   id: "jazzcash",
                   title: t.jazzcashTitle,
                   sub: `Account: ${siteSettings.jazzcash_number}`,
+                  icon: Smartphone,
                 },
                 {
                   id: "easypaisa",
                   title: t.easypaisaTitle,
                   sub: `Account: ${siteSettings.easypaisa_number}`,
+                  icon: Smartphone,
                 },
                 {
                   id: "bank_transfer",
                   title: t.bankTransferTitle,
                   sub: siteSettings.bank_name,
+                  icon: Building2,
                 },
-              ].map((method) => (
-                <button
-                  key={method.id}
-                  type="button"
-                  onClick={() => setPaymentMethod(method.id as PaymentMethod)}
-                  className={`p-4 rounded-xl border text-left transition-all ${
-                    paymentMethod === method.id
-                      ? "bg-[#F5F5F5] border-2 border-[#E63946]"
-                      : "bg-[#FFFFFF] border-[#E0E0E0] hover:border-[#E63946]"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-[#1A1A1A]">
-                      {method.title}
-                    </span>
-                    {paymentMethod === method.id && (
-                      <CheckCircle2 className="w-4 h-4 text-[#E63946]" />
-                    )}
-                  </div>
-                  <p className="text-[11px] font-mono text-[#666666] mt-1">
-                    {method.sub}
-                  </p>
-                </button>
-              ))}
+              ].map((method) => {
+                const MethodIcon = method.icon;
+                return (
+                  <button
+                    key={method.id}
+                    type="button"
+                    onClick={() => setPaymentMethod(method.id as PaymentMethod)}
+                    className={`p-4 rounded-xl border text-left transition-all ${
+                      paymentMethod === method.id
+                        ? "bg-[#F5F5F5] border-2 border-[#E63946]"
+                        : "bg-[#FFFFFF] border-[#E0E0E0] hover:border-[#E63946]"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-[#1A1A1A] inline-flex items-center gap-2">
+                        <MethodIcon size={20} className="text-[#E63946]" />
+                        <span>{method.title}</span>
+                      </span>
+                      {paymentMethod === method.id && (
+                        <CheckCircle2 className="w-4 h-4 text-[#E63946]" />
+                      )}
+                    </div>
+                    <p className="text-[11px] font-mono text-[#666666] mt-1">
+                      {method.sub}
+                    </p>
+                  </button>
+                );
+              })}
             </div>
 
             {paymentMethod !== "cod" && (
@@ -396,11 +408,14 @@ export const CheckoutPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Summary Column */}
+        {/* Right Summary Column (Step 3 Order Review) */}
         <div className="lg:col-span-5 rounded-xl bg-[#FFFFFF] border border-[#E0E0E0] p-6 space-y-5 sticky top-28 shadow-sm">
-          <h2 className="text-lg font-serif-display font-semibold text-[#1A1A1A]">
-            {t.orderReviewTitle}
-          </h2>
+          <div className="flex items-center gap-2">
+            <ClipboardCheck size={20} className="text-[#E63946]" />
+            <h2 className="text-lg font-serif-display font-semibold text-[#1A1A1A]">
+              {t.orderReviewTitle}
+            </h2>
+          </div>
 
           <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
             {enrichedItems.map((item) => {
@@ -476,7 +491,7 @@ export const CheckoutPage: React.FC = () => {
             whileTap={buttonTap}
             className="btn-primary-futuristic w-full h-12 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[#C1121F] transition-colors"
           >
-            <ShieldCheck className="w-4 h-4 text-[#FFFFFF]" />
+            <PackageCheck size={16} className="text-[#FFFFFF]" />
             <span>
               {t.placeOrder} — {formatPKR(grandTotal)}
             </span>

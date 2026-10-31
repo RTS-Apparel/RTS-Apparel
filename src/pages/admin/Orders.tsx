@@ -7,6 +7,7 @@ import { OrderStatus } from "../../types";
 import { formatPKR } from "../../lib/utils";
 import { AdminSidebar } from "../../components/layout/AdminSidebar";
 import { PageHeading } from "../../components/layout/PageHeading";
+import { OrderStatusBadge } from "../../components/orders/OrderStatusBadge";
 import { pageVariants } from "../../lib/animations";
 
 export const AdminOrders: React.FC = () => {
@@ -114,24 +115,27 @@ export const AdminOrders: React.FC = () => {
                       {ord.payment_method} ({ord.payment_status})
                     </td>
                     <td className="py-3.5 px-4 font-sans">
-                      <select
-                        value={ord.status}
-                        aria-label={`Change status for ${ord.order_number}`}
-                        onChange={(e) =>
-                          updateOrderStatus(
-                            ord.id,
-                            e.target.value as OrderStatus
-                          )
-                        }
-                        className="h-8 px-2 rounded-[4px] bg-[#FFFFFF] border border-[#E0E0E0] text-xs text-[#1A1A1A] font-semibold focus:outline-none focus:border-[#E63946]"
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="packed">Packed</option>
-                        <option value="shipped">Shipped</option>
-                        <option value="delivered">Delivered</option>
-                        <option value="cancelled">Cancelled</option>
-                      </select>
+                      <div className="flex items-center gap-2">
+                        <OrderStatusBadge status={ord.status} />
+                        <select
+                          value={ord.status}
+                          aria-label={`Change status for ${ord.order_number}`}
+                          onChange={(e) =>
+                            updateOrderStatus(
+                              ord.id,
+                              e.target.value as OrderStatus
+                            )
+                          }
+                          className="h-8 px-2 rounded-[4px] bg-[#FFFFFF] border border-[#E0E0E0] text-xs text-[#1A1A1A] font-semibold focus:outline-none focus:border-[#E63946]"
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="confirmed">Confirmed</option>
+                          <option value="packed">Packed</option>
+                          <option value="shipped">Shipped</option>
+                          <option value="delivered">Delivered</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
+                      </div>
                     </td>
                     <td className="py-3.5 px-4 text-right font-bold text-[#E63946]">
                       {formatPKR(ord.total_amount)}

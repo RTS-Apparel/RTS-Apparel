@@ -1,8 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import {
+  Link as LinkIcon,
   Copy,
-  Share2,
+  MessageCircle,
   TrendingUp,
   Users,
   Clock,
@@ -79,7 +80,7 @@ export const TeamDashboard: React.FC = () => {
         <PageHeading
           title="Agent Dashboard"
           subtitle="Track your referrals and earnings"
-          icon={<Award className="w-5 h-5" />}
+          icon={<Award size={22} />}
           breadcrumbs={[
             { label: "Home", to: "/" },
             { label: "Agent Hub" },
@@ -90,8 +91,9 @@ export const TeamDashboard: React.FC = () => {
         {/* Referral Code Box: bg #1A1A1A, Code text #FFFFFF monospace, Border 2px solid #E63946, Copy button bg #E63946 color #FFFFFF */}
         <div className="rounded-[8px] bg-[#1A1A1A] border-2 border-[#E63946] p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-md">
           <div className="space-y-1">
-            <p className="text-xs font-medium text-[#CCCCCC]">
-              Your Unique ARTS APPAREL Partner Referral Code
+            <p className="text-xs font-medium text-[#CCCCCC] flex items-center gap-1.5">
+              <LinkIcon size={16} className="text-[#E63946]" />
+              <span>Your Unique ARTS APPAREL Partner Referral Code</span>
             </p>
             <p className="text-3xl font-mono font-bold text-[#FFFFFF] tracking-wider">
               {referralCode}
@@ -109,7 +111,7 @@ export const TeamDashboard: React.FC = () => {
               onClick={handleCopyCode}
               className="h-11 px-5 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-xs flex items-center gap-2 hover:bg-[#C1121F] transition-colors"
             >
-              <Copy className="w-4 h-4" />
+              <Copy size={16} />
               <span>Copy Code</span>
             </motion.button>
             <motion.a
@@ -120,7 +122,7 @@ export const TeamDashboard: React.FC = () => {
               rel="noreferrer"
               className="h-11 px-5 rounded-[6px] bg-[#22C55E] text-[#FFFFFF] font-semibold text-xs flex items-center gap-2 hover:opacity-90 transition-opacity"
             >
-              <Share2 className="w-4 h-4" />
+              <MessageCircle size={16} />
               <span>Share on WhatsApp</span>
             </motion.a>
           </div>
@@ -136,7 +138,7 @@ export const TeamDashboard: React.FC = () => {
             whileHover="hover"
             className="group p-6 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] border-t-[3px] border-t-[#E63946] hover:border-[#E63946] transition-all space-y-1 shadow-xs"
           >
-            <ShoppingBag className="w-5 h-5 text-[#E63946] group-hover:rotate-[5deg] transition-transform" />
+            <ShoppingBag size={20} className="text-[#E63946] group-hover:rotate-[5deg] transition-transform" />
             <p className="text-[24px] font-bold text-[#1A1A1A] pt-2">
               <CountUpNumber value={todaysSales} prefix="Rs. " />
             </p>
@@ -153,7 +155,7 @@ export const TeamDashboard: React.FC = () => {
             whileHover="hover"
             className="group p-6 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] border-t-[3px] border-t-[#E63946] hover:border-[#E63946] transition-all space-y-1 shadow-xs"
           >
-            <Users className="w-5 h-5 text-[#E63946] group-hover:rotate-[5deg] transition-transform" />
+            <Users size={20} className="text-[#E63946] group-hover:rotate-[5deg] transition-transform" />
             <p className="text-[24px] font-bold text-[#1A1A1A] pt-2">
               <CountUpNumber value={myOrders.length} />
             </p>
@@ -170,7 +172,7 @@ export const TeamDashboard: React.FC = () => {
             whileHover="hover"
             className="group p-6 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] border-t-[3px] border-t-[#E63946] hover:border-[#E63946] transition-all space-y-1 shadow-xs"
           >
-            <Clock className="w-5 h-5 text-[#E63946] group-hover:rotate-[5deg] transition-transform" />
+            <Clock size={20} className="text-[#E63946] group-hover:rotate-[5deg] transition-transform" />
             <p className="text-[24px] font-bold text-[#1A1A1A] pt-2">
               <CountUpNumber value={pendingAmount} prefix="Rs. " />
             </p>
@@ -187,7 +189,7 @@ export const TeamDashboard: React.FC = () => {
             whileHover="hover"
             className="group p-6 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] border-t-[3px] border-t-[#E63946] hover:border-[#E63946] transition-all space-y-1 shadow-xs"
           >
-            <TrendingUp className="w-5 h-5 text-[#E63946] group-hover:rotate-[5deg] transition-transform" />
+            <TrendingUp size={20} className="text-[#E63946] group-hover:rotate-[5deg] transition-transform" />
             <p className="text-[24px] font-bold text-[#1A1A1A] pt-2">
               <CountUpNumber value={totalEarned} prefix="Rs. " />
             </p>

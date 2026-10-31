@@ -1,13 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
-  ShoppingBag,
+  ShoppingCart,
   Search,
   User,
   Menu,
   X,
   Truck,
-  Award,
   LogOut,
   Globe,
   Heart,
@@ -218,19 +217,9 @@ export const Navbar: React.FC = () => {
               aria-label={t.searchGo}
               className="absolute right-2.5 text-[#1A1A1A] hover:text-[#E63946]"
             >
-              <Search className="w-4 h-4" />
+              <Search size={18} />
             </motion.button>
           </form>
-
-          {user?.role === "agent" && (
-            <Link
-              to="/team"
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] text-xs bg-[#1A1A1A] text-[#FFFFFF] hover:bg-[#E63946] transition-colors font-semibold"
-            >
-              <Award className="w-3.5 h-3.5 text-[#FFFFFF]" />
-              <span>{t.agentHub}</span>
-            </Link>
-          )}
 
           <motion.div
             whileHover={{ scale: 1.15 }}
@@ -242,7 +231,7 @@ export const Navbar: React.FC = () => {
               aria-label={t.wishlist}
               className="relative p-2 text-[#1A1A1A] hover:text-[#E63946] transition-colors"
             >
-              <Heart className="w-5 h-5" />
+              <Heart size={20} />
               <AnimatePresence mode="popLayout">
                 {wishlist.length > 0 && (
                   <motion.span
@@ -267,7 +256,7 @@ export const Navbar: React.FC = () => {
                 className="p-2 text-[#1A1A1A] hover:text-[#E63946] transition-colors flex items-center gap-1.5 text-xs"
                 title={user.full_name}
               >
-                <User className="w-5 h-5 text-[#1A1A1A]" />
+                <User size={20} className="text-[#1A1A1A]" />
                 <span className="hidden xl:inline max-w-[100px] truncate text-[#1A1A1A] font-semibold">
                   {user.full_name}
                 </span>
@@ -286,7 +275,7 @@ export const Navbar: React.FC = () => {
               to="/login"
               className="p-2 text-[#1A1A1A] hover:text-[#E63946] transition-colors flex items-center gap-1 text-xs uppercase tracking-wider font-semibold"
             >
-              <User className="w-5 h-5" />
+              <User size={20} />
               <span className="hidden sm:inline">{t.signIn}</span>
             </Link>
           )}
@@ -305,7 +294,7 @@ export const Navbar: React.FC = () => {
             aria-label={t.shoppingBag}
             className="relative p-2 text-[#1A1A1A] hover:text-[#E63946] transition-colors"
           >
-            <ShoppingBag className="w-5 h-5" />
+            <ShoppingCart size={20} />
             <AnimatePresence mode="popLayout">
               {totalCount > 0 && (
                 <motion.span
@@ -343,7 +332,7 @@ export const Navbar: React.FC = () => {
                 className="bg-[#FFFFFF] border border-[#E0E0E0] rounded-[6px] text-sm text-[#1A1A1A] px-3 py-2.5 pr-10 w-full focus:border-2 focus:border-[#E63946] focus:outline-none placeholder:text-[#999999]"
               />
               <button type="submit" className="absolute right-3 text-[#1A1A1A] hover:text-[#E63946]">
-                <Search className="w-4 h-4" />
+                <Search size={18} />
               </button>
             </form>
 

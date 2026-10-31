@@ -4,10 +4,11 @@ import {
   Trash2,
   Plus,
   Minus,
-  ShoppingBag,
+  ShoppingCart,
   ArrowRight,
   Tag,
-  MapPin,
+  Truck,
+  CreditCard,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useCart } from "../hooks/useCart";
@@ -57,7 +58,7 @@ export const CartPage: React.FC = () => {
         exit="exit"
         className="max-w-4xl mx-auto px-4 py-20 text-center space-y-5"
       >
-        <ShoppingBag className="w-14 h-14 text-[#666666] mx-auto" />
+        <ShoppingCart size={48} className="text-[#999999] mx-auto" />
         <h1 className="text-3xl font-serif-display font-bold text-[#1A1A1A]">
           {t.emptyBagTitle}
         </h1>
@@ -149,7 +150,7 @@ export const CartPage: React.FC = () => {
                       }
                       className="w-8 h-8 flex items-center justify-center text-[#1A1A1A] hover:text-[#E63946]"
                     >
-                      <Minus className="w-3.5 h-3.5" />
+                      <Minus size={16} />
                     </button>
                     <span className="w-8 text-center font-mono text-xs font-bold tabular-nums text-[#1A1A1A]">
                       {item.quantity}
@@ -166,7 +167,7 @@ export const CartPage: React.FC = () => {
                       }
                       className="w-8 h-8 flex items-center justify-center text-[#1A1A1A] hover:text-[#E63946]"
                     >
-                      <Plus className="w-3.5 h-3.5" />
+                      <Plus size={16} />
                     </button>
                   </div>
 
@@ -181,7 +182,7 @@ export const CartPage: React.FC = () => {
                       }
                       className="text-xs text-[#666666] hover:text-[#C1121F] inline-flex items-center gap-1 mt-1 font-medium"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 size={16} />
                       <span>{t.remove}</span>
                     </button>
                   </div>
@@ -203,7 +204,7 @@ export const CartPage: React.FC = () => {
               htmlFor="cart-city"
               className="text-xs text-[#1A1A1A] flex items-center gap-1.5 font-medium"
             >
-              <MapPin className="w-3.5 h-3.5 text-[#E63946]" />
+              <Truck size={16} className="text-[#E63946]" />
               <span>{t.selectDeliveryCity}</span>
             </label>
             <select
@@ -222,7 +223,7 @@ export const CartPage: React.FC = () => {
 
           <form onSubmit={handleApplyReferral} className="space-y-2">
             <label className="text-xs text-[#1A1A1A] flex items-center gap-1.5 font-medium">
-              <Tag className="w-3.5 h-3.5 text-[#E63946]" />
+              <Tag size={16} className="text-[#E63946]" />
               <span>{t.agentReferralCode}</span>
             </label>
             <div className="flex gap-2">
@@ -293,8 +294,8 @@ export const CartPage: React.FC = () => {
             to="/checkout"
             className="btn-primary-futuristic w-full h-12 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[#C1121F] transition-colors"
           >
+            <CreditCard size={16} className="text-[#FFFFFF]" />
             <span>{t.proceedToCheckout}</span>
-            <ArrowRight className="w-4 h-4 text-[#FFFFFF]" />
           </Link>
         </div>
       </div>

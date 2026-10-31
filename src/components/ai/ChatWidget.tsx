@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { X, ArrowUp } from "lucide-react";
+import { MessageCircle, Send, ChevronDown, Bot } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { aiChat } from "../../lib/ai";
 
@@ -106,25 +106,30 @@ export const ChatWidget: React.FC = () => {
           >
             {/* Header: bg #1A1A1A, title "A(white)RTS(red) APPAREL(white)", status green dot */}
             <div className="px-4 py-3.5 bg-[#1A1A1A] border-b border-[#333333] flex items-center justify-between shrink-0">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3
-                    className="text-base font-bold tracking-wider uppercase"
-                    style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}
-                  >
-                    <span className="text-[#FFFFFF]">A</span>
-                    <span className="text-[#E63946]">RTS</span>
-                    <span className="text-[#FFFFFF]"> APPAREL</span>
-                  </h3>
-                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#22C55E]/15 border border-[#22C55E]/40 text-[10px] font-medium text-[#22C55E]">
-                    <span className="w-2 h-2 rounded-full bg-[#22C55E] animate-ping" />
-                    <span className="w-2 h-2 rounded-full bg-[#22C55E] -ml-3.5" />
-                    <span>Online</span>
-                  </span>
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-[#E63946] text-[#FFFFFF] flex items-center justify-center shrink-0">
+                  <Bot size={20} />
                 </div>
-                <p className="text-xs font-medium text-[#CCCCCC] mt-0.5">
-                  Support Assistant 🤖
-                </p>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3
+                      className="text-base font-bold tracking-wider uppercase"
+                      style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}
+                    >
+                      <span className="text-[#FFFFFF]">A</span>
+                      <span className="text-[#E63946]">RTS</span>
+                      <span className="text-[#FFFFFF]"> APPAREL</span>
+                    </h3>
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#22C55E]/15 border border-[#22C55E]/40 text-[10px] font-medium text-[#22C55E]">
+                      <span className="w-2 h-2 rounded-full bg-[#22C55E] animate-ping" />
+                      <span className="w-2 h-2 rounded-full bg-[#22C55E] -ml-3.5" />
+                      <span>Online</span>
+                    </span>
+                  </div>
+                  <p className="text-xs font-medium text-[#CCCCCC] mt-0.5">
+                    Support Assistant 🤖
+                  </p>
+                </div>
               </div>
 
               <button
@@ -133,7 +138,7 @@ export const ChatWidget: React.FC = () => {
                 aria-label="Close Support Assistant"
                 className="p-2 rounded-lg text-[#CCCCCC] hover:text-[#FFFFFF] hover:bg-[#2A2A2A] transition-colors"
               >
-                <X className="w-5 h-5" />
+                <ChevronDown size={20} />
               </button>
             </div>
 
@@ -240,7 +245,7 @@ export const ChatWidget: React.FC = () => {
                 aria-label="Send message"
                 className="w-11 h-11 rounded-[6px] bg-[#E63946] hover:bg-[#C1121F] text-[#FFFFFF] flex items-center justify-center shrink-0 transition-colors"
               >
-                <ArrowUp className="w-5 h-5" />
+                <Send size={18} />
               </motion.button>
             </form>
           </motion.div>
@@ -259,19 +264,7 @@ export const ChatWidget: React.FC = () => {
               </span>
             )}
 
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#FFFFFF"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-            </svg>
+            <MessageCircle size={24} />
           </button>
         )}
       </AnimatePresence>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { X, Plus, Minus, Trash2, ShoppingBag, Tag, Truck } from "lucide-react";
+import { X, Plus, Minus, Trash2, ShoppingCart, Tag, Truck, CreditCard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../../hooks/useCart";
 import { useCartStore } from "../../store/cartStore";
@@ -63,7 +63,7 @@ export const CartDrawer: React.FC = () => {
             {/* Dark Header */}
             <div className="p-5 border-b border-[#333333] flex items-center justify-between bg-[#1A1A1A]">
               <div className="flex items-center gap-2.5">
-                <ShoppingBag className="w-5 h-5 text-[#E63946]" />
+                <ShoppingCart className="w-5 h-5 text-[#E63946]" />
                 <h2 className="text-lg font-serif-display font-semibold text-[#FFFFFF]">
                   Your Shopping Bag
                 </h2>
@@ -81,7 +81,7 @@ export const CartDrawer: React.FC = () => {
             <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-[#FFFFFF]">
               {enrichedItems.length === 0 ? (
                 <div className="text-center py-16 space-y-4">
-                  <ShoppingBag className="w-12 h-12 text-[#666666] mx-auto" />
+                  <ShoppingCart size={48} className="text-[#999999] mx-auto" />
                   <p className="text-sm text-[#666666]">
                     Your ARTS APPAREL bag is currently empty.
                   </p>
@@ -151,7 +151,7 @@ export const CartDrawer: React.FC = () => {
                                 aria-label="Decrease quantity"
                                 className="w-7 h-7 rounded bg-[#FFFFFF] border border-[#E0E0E0] flex items-center justify-center text-[#1A1A1A] hover:border-[#E63946]"
                               >
-                                <Minus className="w-3.5 h-3.5" />
+                                <Minus size={16} />
                               </button>
                               <span className="text-xs font-mono w-6 text-center tabular-nums text-[#1A1A1A] font-semibold">
                                 {item.quantity}
@@ -169,7 +169,7 @@ export const CartDrawer: React.FC = () => {
                                 aria-label="Increase quantity"
                                 className="w-7 h-7 rounded bg-[#FFFFFF] border border-[#E0E0E0] flex items-center justify-center text-[#1A1A1A] hover:border-[#E63946]"
                               >
-                                <Plus className="w-3.5 h-3.5" />
+                                <Plus size={16} />
                               </button>
                             </div>
 
@@ -185,7 +185,7 @@ export const CartDrawer: React.FC = () => {
                               aria-label={`Remove ${item.product.name_en}`}
                               className="text-[#666666] hover:text-[#E63946] p-1"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 size={16} />
                             </button>
                           </div>
                         </div>
@@ -203,7 +203,7 @@ export const CartDrawer: React.FC = () => {
                     htmlFor="drawer-city"
                     className="text-xs text-[#1A1A1A] flex items-center gap-1.5 font-medium"
                   >
-                    <Truck className="w-3.5 h-3.5 text-[#E63946]" />
+                    <Truck size={16} className="text-[#E63946]" />
                     <span>Delivery City:</span>
                   </label>
                   <select
@@ -222,7 +222,7 @@ export const CartDrawer: React.FC = () => {
 
                 <form onSubmit={handleApplyCode} className="space-y-1.5">
                   <label className="text-xs text-[#1A1A1A] flex items-center gap-1.5 font-medium">
-                    <Tag className="w-3.5 h-3.5 text-[#E63946]" />
+                    <Tag size={16} className="text-[#E63946]" />
                     <span>Partner Agent Referral Code (e.g. RTS-ALI123)</span>
                   </label>
                   <div className="flex gap-2">
@@ -297,9 +297,10 @@ export const CartDrawer: React.FC = () => {
                   <Link
                     to="/checkout"
                     onClick={() => setDrawerOpen(false)}
-                    className="btn-primary-futuristic h-11 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-sm flex items-center justify-center hover:bg-[#C1121F] transition-colors"
+                    className="btn-primary-futuristic h-11 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-sm flex items-center justify-center gap-1.5 hover:bg-[#C1121F] transition-colors"
                   >
-                    Checkout
+                    <CreditCard size={16} />
+                    <span>Checkout</span>
                   </Link>
                 </div>
               </div>

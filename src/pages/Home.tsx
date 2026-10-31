@@ -1,7 +1,13 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { ArrowRight, Sparkles, Award } from "lucide-react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  ArrowRight,
+  Sparkles,
+  ChevronLeft,
+  ChevronRight,
+  Users2,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useProducts } from "../hooks/useProducts";
 import { useDataStore } from "../store/dataStore";
 import { ProductGrid } from "../components/products/ProductGrid";
@@ -16,6 +22,7 @@ import {
   buttonHover,
   buttonTap,
 } from "../lib/animations";
+import { demoBanners } from "../data/demoData";
 
 const HERO_PARTICLES = [
   { id: 1, left: "8%", top: "16%", color: "#E63946", duration: 9, delay: 0 },
@@ -40,26 +47,71 @@ export const HomePage: React.FC = () => {
   const language = useDataStore((s) => s.language);
   const t = CUSTOMER_TRANSLATIONS[language];
 
-  const heroBanner = activeBanners[0];
-  const heroTitle = getBannerTitle(heroBanner, language);
-  const heroSubtitle = getBannerSubtitle(heroBanner, language);
+  const slides =
+    activeBanners.length > 0
+      ? activeBanners
+      : demoBanners.map((b) => ({
+          ...b,
+          title_en: b.title,
+          subtitle_en: b.subtitle,
+          created_at: "2024-11-01T00:00:00Z",
+        }));
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [failedBannerImgs, setFailedBannerImgs] = useState<Record<string, boolean>>({});
+
+  // Auto-play 4s slider
+  useEffect(() => {
+    if (slides.length <= 1) return;
+    const timer = window.setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 4000);
+    return () => window.clearInterval(timer);
+  }, [slides.length]);
+
+  const heroBanner = slides[currentSlide] || slides[0];
+  const heroTitle =
+    heroBanner?.title || getBannerTitle(heroBanner, language);
+  const heroSubtitle =
+    heroBanner?.subtitle || getBannerSubtitle(heroBanner, language);
+  const heroCta = heroBanner?.cta_text || t.shopNow;
   const heroWords = heroTitle.split(/\s+/);
+
+  const saleItems = activeProducts.filter((p) => p.discount_percent > 0);
+  const displaySale = saleItems.length > 0 ? saleItems : saleProducts;
 
   return (
     <div className="space-y-20 pb-12 bg-[#FFFFFF]">
-      {/* HERO SECTION: bg #1A1A1A, Heading #FFFFFF, Accent words #E63946, Subheading #CCCCCC, Primary CTA bg #E63946 text #FFFFFF, Secondary CTA border 2px #FFFFFF text #FFFFFF bg transparent, Tag above heading bg #E63946 text #FFFFFF */}
+      {/* HERO SLIDER SECTION: 3 slides from demoBanners, auto-play 4s, #1A1A1A bg, #FFFFFF & #E63946 text */}
       <section className="hero-gradient-mesh relative min-h-[78vh] flex items-center border-b-2 border-[#E63946] overflow-hidden bg-[#1A1A1A]">
-        {heroBanner && (
-          <div className="absolute inset-0 overflow-hidden">
-            <img
-              src={heroBanner.image_url}
-              alt={heroTitle}
-              loading="lazy"
-              className="w-full h-full object-cover object-center opacity-20 scale-105 transition-transform duration-1000"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#1A1A1A] via-[#1A1A1A]/90 to-transparent" />
-          </div>
-        )}
+        <AnimatePresence mode="wait">
+          {heroBanner && (
+            <motion.div
+              key={`bg-${heroBanner.id}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.6 }}
+              className="absolute inset-0 overflow-hidden"
+            >
+              {!failedBannerImgs[heroBanner.image_url] && (
+                <img
+                  src={heroBanner.image_url}
+                  alt={heroTitle}
+                  loading="lazy"
+                  onError={() =>
+                    setFailedBannerImgs((prev) => ({
+                      ...prev,
+                      [heroBanner.image_url]: true,
+                    }))
+                  }
+                  className="w-full h-full object-cover object-center opacity-25 scale-105 transition-transform duration-1000"
+                />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#1A1A1A] via-[#1A1A1A]/90 to-transparent" />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Subtle Floating Dots */}
         <div
@@ -92,98 +144,152 @@ export const HomePage: React.FC = () => {
           ))}
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center w-full">
           <div className="lg:col-span-7 space-y-6">
-            {/* Tag/label above heading: bg #E63946, color #FFFFFF */}
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45 }}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-[6px] bg-[#E63946] text-[#FFFFFF] text-xs uppercase tracking-[0.18em] font-semibold"
-            >
+            {/* Tag/label above heading */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-[6px] bg-[#E63946] text-[#FFFFFF] text-xs uppercase tracking-[0.18em] font-semibold">
               <Sparkles className="w-3.5 h-3.5 text-[#FFFFFF]" />
               <span>{t.heroBadge}</span>
-            </motion.div>
+            </div>
 
-            {/* Heading: #FFFFFF, Accent words: #E63946 */}
-            <h1 className="font-serif-display text-4xl sm:text-6xl font-bold text-[#FFFFFF] leading-[1.12] flex flex-wrap gap-x-3 gap-y-1">
-              {heroWords.map((word, idx) => (
-                <motion.span
-                  key={`${word}-${idx}`}
-                  initial={{ opacity: 0, y: 60 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    delay: idx * 0.1,
-                    duration: 0.5,
-                    ease: "easeOut",
-                  }}
-                  className={
-                    word.toLowerCase().includes("sharp") ||
-                    word.toLowerCase().includes("shaan")
-                      ? "text-[#E63946]"
-                      : "text-[#FFFFFF]"
-                  }
-                >
-                  {word}
-                </motion.span>
-              ))}
-            </h1>
+            {/* Slide Heading */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`content-${heroBanner?.id || currentSlide}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.4 }}
+                className="space-y-5"
+              >
+                <h1 className="font-serif-display text-4xl sm:text-6xl font-bold text-[#FFFFFF] leading-[1.12] flex flex-wrap gap-x-3 gap-y-1">
+                  {heroWords.map((word, idx) => (
+                    <span
+                      key={`${word}-${idx}`}
+                      className={
+                        idx === heroWords.length - 1 ||
+                        word.toLowerCase().includes("special") ||
+                        word.toLowerCase().includes("2024") ||
+                        word.toLowerCase().includes("collection")
+                          ? "text-[#E63946]"
+                          : "text-[#FFFFFF]"
+                      }
+                    >
+                      {word}
+                    </span>
+                  ))}
+                </h1>
 
-            {/* Subheading/paragraph: color #CCCCCC */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.5 }}
-              className="text-[#CCCCCC] text-base sm:text-lg max-w-xl leading-relaxed"
-            >
-              {heroSubtitle}
-            </motion.p>
+                <p className="text-[#CCCCCC] text-base sm:text-lg max-w-xl leading-relaxed">
+                  {heroSubtitle}
+                </p>
+              </motion.div>
+            </AnimatePresence>
 
             <div className="flex flex-wrap items-center gap-4 pt-2">
-              {/* Primary CTA button: bg #E63946, color #FFFFFF */}
               <motion.div whileHover={buttonHover} whileTap={buttonTap}>
                 <Link
-                  to={heroBanner?.link_url || "/category/kurta-shalwar"}
+                  to={heroBanner?.link_url || "/category/shirts"}
                   className="btn-primary-futuristic group relative px-8 py-4 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-xs uppercase tracking-[0.18em] hover:bg-[#C1121F] transition-all flex items-center gap-3"
                 >
-                  <span>{t.shopNow}</span>
+                  <span>{heroCta}</span>
                   <ArrowRight className="w-4 h-4 text-[#FFFFFF] group-hover:translate-x-1 transition-transform" />
                 </Link>
               </motion.div>
-
-              {/* Secondary CTA button: border 2px #FFFFFF, color #FFFFFF, bg transparent */}
-              <motion.div whileHover={buttonHover} whileTap={buttonTap}>
-                <Link
-                  to="/signup?tab=agent"
-                  className="px-7 py-4 rounded-[6px] border-2 border-[#FFFFFF] text-[#FFFFFF] bg-transparent hover:bg-[#FFFFFF] hover:text-[#1A1A1A] text-xs uppercase tracking-[0.18em] transition-colors font-semibold inline-block"
-                >
-                  {t.joinAgentNetwork}
-                </Link>
-              </motion.div>
             </div>
+
+            {/* Slider Controls & Dots */}
+            {slides.length > 1 && (
+              <div className="flex items-center gap-4 pt-4">
+                <div className="flex items-center gap-2">
+                  {slides.map((s, idx) => (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => setCurrentSlide(idx)}
+                      aria-label={`Slide ${idx + 1}: ${s.title || s.title_en}`}
+                      className={`h-2.5 rounded-full transition-all ${
+                        currentSlide === idx
+                          ? "w-8 bg-[#E63946]"
+                          : "w-2.5 bg-[#FFFFFF]/40 hover:bg-[#FFFFFF]"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setCurrentSlide((prev) =>
+                        prev === 0 ? slides.length - 1 : prev - 1
+                      )
+                    }
+                    aria-label="Previous slide"
+                    className="p-2 rounded-[6px] bg-[#2A2A2A] text-[#FFFFFF] hover:bg-[#E63946] transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setCurrentSlide((prev) => (prev + 1) % slides.length)
+                    }
+                    aria-label="Next slide"
+                    className="p-2 rounded-[6px] bg-[#2A2A2A] text-[#FFFFFF] hover:bg-[#E63946] transition-colors"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {heroBanner && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.94, rotateY: -8 }}
-              animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-              transition={{ duration: 0.65, ease: "easeOut" }}
-              className="lg:col-span-5 hidden lg:block"
-            >
+            <div className="lg:col-span-5 hidden lg:block">
               <div className="rounded-xl border-2 border-[#E63946] p-3 bg-[#1A1A1A] shadow-2xl overflow-hidden">
-                <img
-                  src={heroBanner.image_url}
-                  alt={heroTitle}
-                  loading="lazy"
-                  className="w-full aspect-[4/5] rounded-lg object-cover hover:scale-105 transition-transform duration-700"
-                />
+                <AnimatePresence mode="wait">
+                  {failedBannerImgs[heroBanner.image_url] ? (
+                    <motion.div
+                      key={`fallback-card-${heroBanner.id}`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="w-full aspect-[4/3] rounded-lg bg-[#1A1A1A] flex items-center justify-center p-6 text-center border border-[#333333]"
+                    >
+                      <span
+                        className="text-[#FFFFFF] font-bold tracking-[0.18em] uppercase text-xl"
+                        style={{ fontFamily: "'Playfair Display', serif" }}
+                      >
+                        ARTS APPAREL
+                      </span>
+                    </motion.div>
+                  ) : (
+                    <motion.img
+                      key={`img-${heroBanner.id}`}
+                      src={heroBanner.image_url}
+                      alt={heroTitle}
+                      loading="lazy"
+                      onError={() =>
+                        setFailedBannerImgs((prev) => ({
+                          ...prev,
+                          [heroBanner.image_url]: true,
+                        }))
+                      }
+                      initial={{ opacity: 0, scale: 0.96 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 1.02 }}
+                      transition={{ duration: 0.45, ease: "easeOut" }}
+                      className="w-full aspect-[4/3] rounded-lg object-cover hover:scale-105 transition-transform duration-700"
+                    />
+                  )}
+                </AnimatePresence>
               </div>
-            </motion.div>
+            </div>
           )}
         </div>
       </section>
 
-      {/* Categories Showcase — Card bg: #1A1A1A, Category name: #FFFFFF, Border: 2px solid transparent, Hover border: 2px solid #E63946 */}
+      {/* Categories Showcase — 5 categories (Shirts, Trousers, Kurta Shalwar, Hoodies, Jackets), each with product count badge */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-8">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -214,7 +320,8 @@ export const HomePage: React.FC = () => {
         >
           {categories.map((cat, idx) => {
             const count = activeProducts.filter(
-              (p) => p.category_id === cat.id
+              (p) =>
+                p.category_id === cat.id || p.category_slug === cat.slug
             ).length;
             const catName = getCategoryName(cat, language);
             return (
@@ -231,13 +338,18 @@ export const HomePage: React.FC = () => {
                   to={`/category/${cat.slug}`}
                   className="group relative overflow-hidden rounded-xl bg-[#1A1A1A] border-2 border-transparent hover:border-[#E63946] p-6 transition-all flex flex-col justify-between space-y-4 h-full shadow-md"
                 >
-                  <div className="relative z-10">
-                    <h3 className="font-serif-display text-lg font-bold text-[#FFFFFF] group-hover:-translate-y-0.5 transition-all duration-300">
-                      {catName}
-                    </h3>
-                    <p className="text-xs text-[#CCCCCC] mt-1 font-mono">
-                      {count} {t.itemsCount}
-                    </p>
+                  <div className="relative z-10 flex items-start justify-between gap-2">
+                    <div>
+                      <h3 className="font-serif-display text-lg font-bold text-[#FFFFFF] group-hover:-translate-y-0.5 transition-all duration-300">
+                        {catName}
+                      </h3>
+                      <p className="text-xs text-[#CCCCCC] mt-1 font-mono">
+                        {count} {t.itemsCount}
+                      </p>
+                    </div>
+                    <span className="px-2.5 py-0.5 rounded-full bg-[#E63946] text-[#FFFFFF] text-xs font-mono font-bold shrink-0">
+                      {count}
+                    </span>
                   </div>
                   <span className="relative z-10 text-xs font-semibold text-[#FFFFFF] flex items-center gap-1 group-hover:text-[#E63946] transition-colors duration-300">
                     <span>{t.viewDepartment}</span>
@@ -250,7 +362,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Featured Collection */}
+      {/* Featured Collection (demoProducts where is_featured=true) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-8">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -276,12 +388,12 @@ export const HomePage: React.FC = () => {
         </motion.div>
 
         <ProductGrid
-          products={featuredProducts.slice(0, 4)}
+          products={featuredProducts.slice(0, 8)}
           categories={categories}
         />
       </section>
 
-      {/* New Arrivals */}
+      {/* New Arrivals (demoProducts sorted by created_at desc) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-8">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -301,13 +413,13 @@ export const HomePage: React.FC = () => {
         </motion.div>
 
         <ProductGrid
-          products={newArrivals.slice(0, 4)}
+          products={newArrivals.slice(0, 8)}
           categories={categories}
         />
       </section>
 
-      {/* Luxury Sale & Special Offers */}
-      {saleProducts.length > 0 && (
+      {/* Sale Section (demoProducts where discount_percent > 0) */}
+      {displaySale.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-8">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -327,53 +439,11 @@ export const HomePage: React.FC = () => {
           </motion.div>
 
           <ProductGrid
-            products={saleProducts.slice(0, 4)}
+            products={displaySale.slice(0, 8)}
             categories={categories}
           />
         </section>
       )}
-
-      {/* Partner Agent Network Callout */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="rounded-2xl bg-[#1A1A1A] border-2 border-[#E63946] p-8 md:p-12 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-xl"
-        >
-          <div className="space-y-3 max-w-2xl">
-            <span className="text-xs font-mono uppercase tracking-[0.2em] text-[#E63946] font-semibold flex items-center gap-2">
-              <Award className="w-4 h-4 text-[#E63946]" />
-              <span>{t.sec5Kicker}</span>
-            </span>
-            <h2 className="font-serif-display text-2xl sm:text-3xl font-bold text-[#FFFFFF]">
-              {t.partnerHeading}
-            </h2>
-            <p className="text-sm text-[#CCCCCC] leading-relaxed">
-              {t.partnerSub}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3 shrink-0">
-            <motion.div whileHover={buttonHover} whileTap={buttonTap}>
-              <Link
-                to="/signup?tab=agent"
-                className="btn-primary-futuristic inline-block px-6 py-3.5 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-xs uppercase tracking-wider hover:bg-[#C1121F]"
-              >
-                {t.applyAgentAccount}
-              </Link>
-            </motion.div>
-            <motion.div whileHover={buttonHover} whileTap={buttonTap}>
-              <Link
-                to="/team"
-                className="inline-block px-6 py-3.5 rounded-[6px] border-2 border-[#FFFFFF] text-[#FFFFFF] font-semibold text-xs uppercase tracking-wider hover:bg-[#FFFFFF] hover:text-[#1A1A1A] transition-colors"
-              >
-                {t.openAgentDashboard}
-              </Link>
-            </motion.div>
-          </div>
-        </motion.div>
-      </section>
     </div>
   );
 };

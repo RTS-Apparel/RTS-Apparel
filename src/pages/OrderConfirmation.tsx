@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams, Link } from "react-router-dom";
-import { CheckCircle, PackageSearch, ArrowRight } from "lucide-react";
+import { PackageCheck, MapPin, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useDataStore } from "../store/dataStore";
 import { formatPKR } from "../lib/utils";
@@ -37,7 +37,7 @@ export const OrderConfirmationPage: React.FC = () => {
       <div className="rounded-xl bg-[#FFFFFF] border-2 border-[#E63946] p-6 md:p-8 space-y-6 shadow-md">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E0E0E0] pb-6">
           <div className="flex items-start gap-4">
-            <CheckCircle className="w-10 h-10 text-[#22C55E] shrink-0 mt-1" />
+            <PackageCheck size={48} color="#22C55E" className="shrink-0 mt-1" />
             <div>
               <p className="text-xs font-mono font-bold text-[#22C55E] uppercase tracking-wider">
                 Order Confirmed · آرڈر بک ہو گیا ہے
@@ -58,7 +58,7 @@ export const OrderConfirmationPage: React.FC = () => {
             to={`/track?order=${encodeURIComponent(order.order_number)}`}
             className="h-10 px-4 rounded-[6px] border-2 border-[#1A1A1A] text-[#1A1A1A] font-semibold text-xs flex items-center gap-2 hover:bg-[#1A1A1A] hover:text-[#FFFFFF] transition-colors whitespace-nowrap self-start"
           >
-            <PackageSearch className="w-4 h-4" />
+            <MapPin size={16} />
             <span>Track Live Status</span>
           </Link>
         </div>

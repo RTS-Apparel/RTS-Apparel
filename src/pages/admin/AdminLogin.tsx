@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   AlertCircle,
   Loader2,
+  LogIn,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "../../hooks/useAuth";
@@ -33,7 +34,7 @@ export const AdminLoginPage: React.FC = () => {
 
   useEffect(() => {
     if (user && isAdmin) {
-      navigate("/admin/dashboard", { replace: true });
+      navigate("/admin", { replace: true });
     }
   }, [user, isAdmin, navigate]);
 
@@ -55,7 +56,7 @@ export const AdminLoginPage: React.FC = () => {
     const res = await login(normalizedEmail, password);
     if (res.success && res.user?.role === "admin") {
       setLoading(false);
-      navigate("/admin/dashboard", { replace: true });
+      navigate("/admin", { replace: true });
       return;
     }
 
@@ -67,7 +68,7 @@ export const AdminLoginPage: React.FC = () => {
     ) {
       switchDemoRole("admin");
       setLoading(false);
-      navigate("/admin/dashboard", { replace: true });
+      navigate("/admin", { replace: true });
       return;
     }
 
@@ -215,11 +216,14 @@ export const AdminLoginPage: React.FC = () => {
                 </span>
               </>
             ) : (
-              <span>
-                {adminLanguage === "roman_ur"
-                  ? "Admin Portal Mein Dakhil Hon"
-                  : "Sign In to Admin Panel"}
-              </span>
+              <>
+                <LogIn size={16} />
+                <span>
+                  {adminLanguage === "roman_ur"
+                    ? "Admin Portal Mein Dakhil Hon"
+                    : "Sign In to Admin Panel"}
+                </span>
+              </>
             )}
           </button>
         </form>

@@ -1,14 +1,14 @@
 import React from "react";
-import { Check, Clock, Package, Truck, CheckCircle2, XCircle } from "lucide-react";
+import { ClipboardList, CheckCircle, Package, Truck, Home, XCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { OrderStatus } from "../../types";
 
 const STEPS: { key: OrderStatus; label: string; icon: React.ElementType }[] = [
-  { key: "pending", label: "Order Placed", icon: Clock },
-  { key: "confirmed", label: "Confirmed", icon: Check },
+  { key: "pending", label: "Order Placed", icon: ClipboardList },
+  { key: "confirmed", label: "Confirmed", icon: CheckCircle },
   { key: "packed", label: "Atelier Packed", icon: Package },
   { key: "shipped", label: "Dispatched", icon: Truck },
-  { key: "delivered", label: "Delivered", icon: CheckCircle2 },
+  { key: "delivered", label: "Delivered", icon: Home },
 ];
 
 export const OrderStatusTimeline: React.FC<{ status: OrderStatus }> = ({
@@ -17,7 +17,7 @@ export const OrderStatusTimeline: React.FC<{ status: OrderStatus }> = ({
   if (status === "cancelled") {
     return (
       <div className="p-4 rounded-xl bg-[#F8D7DA] border border-[#E63946]/30 flex items-center gap-3 text-xs text-[#721C24] font-semibold">
-        <XCircle className="w-5 h-5 shrink-0" />
+        <XCircle size={20} className="shrink-0" />
         <span>This order has been cancelled.</span>
       </div>
     );
@@ -55,7 +55,7 @@ export const OrderStatusTimeline: React.FC<{ status: OrderStatus }> = ({
                   : "bg-[#E0E0E0] text-[#999999]"
               }`}
             >
-              <Icon className="w-4 h-4" />
+              <Icon size={20} />
             </div>
             <span className="text-xs font-semibold">{step.label}</span>
           </motion.div>

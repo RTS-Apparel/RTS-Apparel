@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import {
-  ShoppingBag,
+  ShoppingCart,
   Heart,
   Sparkles,
   Check,
   Truck,
-  ShieldCheck,
   Zap,
+  Share2,
+  CheckCircle,
+  XCircle,
+  Ruler,
+  RotateCcw,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useProducts } from "../hooks/useProducts";
@@ -34,6 +38,7 @@ export const ProductDetail: React.FC = () => {
   const language = useDataStore((s) => s.language);
   const wishlist = useDataStore((s) => s.wishlist);
   const toggleWishlist = useDataStore((s) => s.toggleWishlist);
+  const addToast = useDataStore((s) => s.addToast);
 
   const t = CUSTOMER_TRANSLATIONS[language];
 
@@ -107,6 +112,11 @@ export const ProductDetail: React.FC = () => {
   const handleBuyNow = () => {
     addItem(product.id, selectedSize, selectedColor, quantity);
     navigate("/checkout");
+  };
+
+  const handleShareProduct = () => {
+    navigator.clipboard?.writeText(window.location.href).catch(() => {});
+    addToast("Product link copied to clipboard!");
   };
 
   return (
@@ -184,10 +194,20 @@ export const ProductDetail: React.FC = () => {
                 {t.selectSize}:{" "}
                 <strong className="text-[#1A1A1A]">{selectedSize}</strong>
               </span>
-              <span className="text-[#E63946] font-mono font-semibold">
-                {product.stock > 0
-                  ? `${product.stock} ${t.piecesAvailable}`
-                  : t.outOfStock}
+              <span className="font-mono font-semibold inline-flex items-center gap-1.5">
+                {product.stock > 0 ? (
+                  <>
+                    <CheckCircle size={14} color="#22C55E" />
+                    <span className="text-[#22C55E]">
+                      {product.stock} {t.piecesAvailable}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <XCircle size={14} color="#E63946" />
+                    <span className="text-[#E63946]">{t.outOfStock}</span>
+                  </>
+                )}
               </span>
             </div>
             <div className="flex flex-wrap gap-2.5">
@@ -270,7 +290,7 @@ export const ProductDetail: React.FC = () => {
                 }
                 className="btn-primary-futuristic flex-1 h-12 px-6 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[#C1121F] disabled:bg-[#E0E0E0] disabled:text-[#999999] transition-colors"
               >
-                <ShoppingBag className="w-4 h-4 text-[#FFFFFF]" />
+                <ShoppingCart size={16} className="text-[#FFFFFF]" />
                 <span>
                   {t.addToCart} — {formatPKR(finalPrice * quantity)}
                 </span>
@@ -287,13 +307,23 @@ export const ProductDetail: React.FC = () => {
                 }`}
               >
                 <Heart
-                  className={`w-4 h-4 ${
+                  size={20}
+                  className={
                     isWished ? "fill-[#E63946] text-[#E63946]" : "text-[#CCCCCC]"
-                  }`}
+                  }
                 />
                 <span className="hidden sm:inline">
                   {isWished ? t.saved : t.wishlist}
                 </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleShareProduct}
+                aria-label="Share product"
+                className="h-12 px-3.5 rounded-[6px] border border-[#E0E0E0] bg-[#FFFFFF] text-[#1A1A1A] hover:border-[#E63946] hover:text-[#E63946] flex items-center justify-center transition-colors"
+              >
+                <Share2 size={16} />
               </button>
             </div>
 
@@ -305,7 +335,7 @@ export const ProductDetail: React.FC = () => {
               onClick={handleBuyNow}
               className="w-full h-11 rounded-[6px] border-2 border-[#1A1A1A] text-[#1A1A1A] font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#1A1A1A] hover:text-[#FFFFFF] disabled:bg-[#E0E0E0] disabled:text-[#999999] transition-colors"
             >
-              <Zap className="w-4 h-4" />
+              <Zap size={16} />
               <span>{t.buyNow}</span>
             </motion.button>
           </div>
@@ -327,24 +357,26 @@ export const ProductDetail: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setActiveTab("sizing")}
-                className={`pb-2.5 font-semibold border-b-2 transition-colors ${
+                className={`pb-2.5 font-semibold border-b-2 transition-colors inline-flex items-center gap-1.5 ${
                   activeTab === "sizing"
                     ? "border-[#E63946] text-[#E63946]"
                     : "border-transparent text-[#666666] hover:text-[#1A1A1A]"
                 }`}
               >
-                {t.sizeGuide}
+                <Ruler size={16} />
+                <span>{t.sizeGuide}</span>
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab("delivery")}
-                className={`pb-2.5 font-semibold border-b-2 transition-colors ${
+                className={`pb-2.5 font-semibold border-b-2 transition-colors inline-flex items-center gap-1.5 ${
                   activeTab === "delivery"
                     ? "border-[#E63946] text-[#E63946]"
                     : "border-transparent text-[#666666] hover:text-[#1A1A1A]"
                 }`}
               >
-                {t.deliveryExchange}
+                <Truck size={16} />
+                <span>{t.deliveryExchange}</span>
               </button>
             </div>
 
@@ -362,23 +394,26 @@ export const ProductDetail: React.FC = () => {
                 </ul>
               )}
               {activeTab === "sizing" && (
-                <p>
-                  Standard Pakistani tailored fit: S (Chest 38&quot;), M (Chest
-                  40&quot;), L (Chest 42&quot;), XL (Chest 44&quot;), XXL (Chest
-                  46&quot;).
+                <p className="flex items-center gap-2">
+                  <Ruler size={16} className="text-[#E63946] shrink-0" />
+                  <span>
+                    Standard Pakistani tailored fit: S (Chest 38&quot;), M (Chest
+                    40&quot;), L (Chest 42&quot;), XL (Chest 44&quot;), XXL (Chest
+                    46&quot;).
+                  </span>
                 </p>
               )}
               {activeTab === "delivery" && (
                 <div className="space-y-1.5">
                   <p className="flex items-center gap-2">
-                    <Truck className="w-3.5 h-3.5 text-[#E63946]" />
+                    <Truck size={16} className="text-[#E63946] shrink-0" />
                     <span>
                       Sadiqabad Rs. 150 · Lahore Rs. 200 · Karachi/Islamabad Rs.
                       250 · Rest of Pakistan Rs. 280–350
                     </span>
                   </p>
                   <p className="flex items-center gap-2">
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#E63946]" />
+                    <RotateCcw size={16} className="text-[#E63946] shrink-0" />
                     <span>
                       7-day complimentary size exchange on unworn garments with
                       tags attached.

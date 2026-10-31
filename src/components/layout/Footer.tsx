@@ -8,6 +8,7 @@ import {
   Truck,
   Banknote,
   MessageCircle,
+  Facebook,
 } from "lucide-react";
 import { useDataStore } from "../../store/dataStore";
 import { CUSTOMER_TRANSLATIONS, getCategoryName } from "../../lib/i18n";
@@ -23,8 +24,8 @@ export const Footer: React.FC = () => {
     siteSettings.physical_address?.trim() ||
     "Club Road Near New Cafe Sajawal Sadiqabad, Sadiqabad Pakistan";
   const shopPhone = siteSettings.whatsapp_number?.trim() || "03058165623";
-  const facebookUrl = siteSettings.facebook_url?.trim() || "";
-  const tiktokUrl = siteSettings.tiktok_url?.trim() || "";
+  const facebookUrl = siteSettings.facebook_url?.trim() || "https://facebook.com";
+  const tiktokUrl = siteSettings.tiktok_url?.trim() || "https://tiktok.com";
 
   return (
     <footer className="bg-[#1A1A1A] border-t border-[#333333] text-[#CCCCCC] mt-20 relative z-10">
@@ -79,44 +80,28 @@ export const Footer: React.FC = () => {
             {t.footerTagline}
           </p>
 
-          {(facebookUrl || tiktokUrl) && (
-            <div className="flex items-center gap-3 pt-2">
-              {facebookUrl && (
-                <a
-                  href={facebookUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="ARTS APPAREL Facebook"
-                  className="w-9 h-9 rounded-lg bg-[#2A2A2A] border border-[#333333] hover:border-[#E63946] text-[#CCCCCC] hover:text-[#E63946] flex items-center justify-center transition-colors"
-                >
-                  <svg
-                    className="w-4 h-4 fill-current"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
-                  </svg>
-                </a>
-              )}
-              {tiktokUrl && (
-                <a
-                  href={tiktokUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="ARTS APPAREL TikTok"
-                  className="w-9 h-9 rounded-lg bg-[#2A2A2A] border border-[#333333] hover:border-[#E63946] text-[#CCCCCC] hover:text-[#E63946] flex items-center justify-center transition-colors"
-                >
-                  <svg
-                    className="w-4 h-4 fill-current"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
-                  </svg>
-                </a>
-              )}
-            </div>
-          )}
+          <div className="flex items-center gap-3 pt-2">
+            <a
+              href={facebookUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="ARTS APPAREL Facebook"
+              className="w-9 h-9 rounded-lg bg-[#2A2A2A] border border-[#333333] hover:border-[#E63946] text-[#CCCCCC] hover:text-[#E63946] flex items-center justify-center transition-colors"
+            >
+              <Facebook size={18} />
+            </a>
+            <a
+              href={tiktokUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="ARTS APPAREL TikTok"
+              className="w-9 h-9 rounded-lg bg-[#2A2A2A] border border-[#333333] hover:border-[#E63946] text-[#CCCCCC] hover:text-[#E63946] flex items-center justify-center transition-colors"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/>
+              </svg>
+            </a>
+          </div>
         </div>
 
         <div>
@@ -164,14 +149,6 @@ export const Footer: React.FC = () => {
                 className="text-[#CCCCCC] hover:text-[#E63946] transition-colors"
               >
                 {t.myOrders}
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/signup?tab=agent"
-                className="text-[#CCCCCC] hover:text-[#E63946] transition-colors"
-              >
-                {t.joinAgentNetwork}
               </Link>
             </li>
             <li>

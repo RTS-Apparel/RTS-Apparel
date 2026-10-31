@@ -124,9 +124,10 @@ export const TrackOrderPage: React.FC = () => {
           </p>
           <button
             type="submit"
-            className="btn-primary-futuristic h-11 px-6 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-xs hover:bg-[#C1121F] transition-colors shrink-0"
+            className="btn-primary-futuristic h-11 px-6 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-xs hover:bg-[#C1121F] transition-colors shrink-0 inline-flex items-center gap-2"
           >
-            {t.trackBtn}
+            <MapPin size={16} />
+            <span>{t.trackBtn}</span>
           </button>
         </div>
 

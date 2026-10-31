@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import Navbar from "./components/layout/Navbar";
@@ -9,7 +9,9 @@ import { ToastContainer } from "./components/common/Toast";
 import { ScrollProgressBar } from "./components/common/ScrollProgressBar";
 import { CustomCursor } from "./components/common/CustomCursor";
 import { PageLoader } from "./components/common/PageLoader";
-import { FloatingParticles, pageVariants } from "./lib/animations";
+import { ProtectedRoute } from "./components/common/ProtectedRoute";
+import { pageVariants } from "./lib/animations";
+import { useAuthStore } from "./store/authStore";
 
 import Home from "./pages/Home";
 import Category from "./pages/Category";
@@ -21,9 +23,11 @@ import TrackOrder from "./pages/TrackOrder";
 import Search from "./pages/Search";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import AgentApply from "./pages/AgentApply";
 
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
+import PendingApproval from "./pages/auth/PendingApproval";
 
 import AccountDashboard from "./pages/account/Dashboard";
 import AccountOrders from "./pages/account/Orders";
@@ -54,6 +58,7 @@ import AdminDeliveryRates from "./pages/admin/DeliveryRates";
 import AdminBanners from "./pages/admin/Banners";
 import AdminReports from "./pages/admin/Reports";
 import AdminSiteSettings from "./pages/admin/SiteSettings";
+import SetupGuide from "./pages/admin/SetupGuide";
 
 const PageMotion: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <motion.div
@@ -189,6 +194,18 @@ const AnimatedRoutes: React.FC = () => {
           }
         />
 
+        {/* Secret Agent Application Page (no public links) */}
+        <Route
+          path="/join-arts-team"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <AgentApply />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+
         {/* Auth Routes */}
         <Route
           path="/login"
@@ -210,122 +227,154 @@ const AnimatedRoutes: React.FC = () => {
             </StorefrontLayout>
           }
         />
-
-        {/* Customer Account Hub */}
         <Route
-          path="/account"
+          path="/pending-approval"
           element={
             <StorefrontLayout>
               <PageMotion>
-                <AccountDashboard />
+                <PendingApproval />
               </PageMotion>
             </StorefrontLayout>
+          }
+        />
+
+        {/* Customer Account Hub (Protected) */}
+        <Route
+          path="/account"
+          element={
+            <ProtectedRoute>
+              <StorefrontLayout>
+                <PageMotion>
+                  <AccountDashboard />
+                </PageMotion>
+              </StorefrontLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/account/orders"
           element={
-            <StorefrontLayout>
-              <PageMotion>
-                <AccountOrders />
-              </PageMotion>
-            </StorefrontLayout>
+            <ProtectedRoute>
+              <StorefrontLayout>
+                <PageMotion>
+                  <AccountOrders />
+                </PageMotion>
+              </StorefrontLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/account/orders/:id"
           element={
-            <StorefrontLayout>
-              <PageMotion>
-                <AccountOrderDetail />
-              </PageMotion>
-            </StorefrontLayout>
+            <ProtectedRoute>
+              <StorefrontLayout>
+                <PageMotion>
+                  <AccountOrderDetail />
+                </PageMotion>
+              </StorefrontLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/account/profile"
           element={
-            <StorefrontLayout>
-              <PageMotion>
-                <AccountProfile />
-              </PageMotion>
-            </StorefrontLayout>
+            <ProtectedRoute>
+              <StorefrontLayout>
+                <PageMotion>
+                  <AccountProfile />
+                </PageMotion>
+              </StorefrontLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/account/addresses"
           element={
-            <StorefrontLayout>
-              <PageMotion>
-                <AccountAddresses />
-              </PageMotion>
-            </StorefrontLayout>
+            <ProtectedRoute>
+              <StorefrontLayout>
+                <PageMotion>
+                  <AccountAddresses />
+                </PageMotion>
+              </StorefrontLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/account/wishlist"
           element={
-            <StorefrontLayout>
-              <PageMotion>
-                <AccountWishlist />
-              </PageMotion>
-            </StorefrontLayout>
+            <ProtectedRoute>
+              <StorefrontLayout>
+                <PageMotion>
+                  <AccountWishlist />
+                </PageMotion>
+              </StorefrontLayout>
+            </ProtectedRoute>
           }
         />
 
-        {/* Partner Agent Referral Hub */}
+        {/* Partner Agent Referral Hub (Protected — Approved Agents Only) */}
         <Route
           path="/team"
           element={
-            <StorefrontLayout>
-              <PageMotion>
-                <TeamDashboard />
-              </PageMotion>
-            </StorefrontLayout>
+            <ProtectedRoute requiredRole="agent">
+              <StorefrontLayout>
+                <PageMotion>
+                  <TeamDashboard />
+                </PageMotion>
+              </StorefrontLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/team/referrals"
           element={
-            <StorefrontLayout>
-              <PageMotion>
-                <MyReferrals />
-              </PageMotion>
-            </StorefrontLayout>
+            <ProtectedRoute requiredRole="agent">
+              <StorefrontLayout>
+                <PageMotion>
+                  <MyReferrals />
+                </PageMotion>
+              </StorefrontLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/team/commission"
           element={
-            <StorefrontLayout>
-              <PageMotion>
-                <Commission />
-              </PageMotion>
-            </StorefrontLayout>
+            <ProtectedRoute requiredRole="agent">
+              <StorefrontLayout>
+                <PageMotion>
+                  <Commission />
+                </PageMotion>
+              </StorefrontLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/team/withdrawal"
           element={
-            <StorefrontLayout>
-              <PageMotion>
-                <Withdrawal />
-              </PageMotion>
-            </StorefrontLayout>
+            <ProtectedRoute requiredRole="agent">
+              <StorefrontLayout>
+                <PageMotion>
+                  <Withdrawal />
+                </PageMotion>
+              </StorefrontLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/team/profile"
           element={
-            <StorefrontLayout>
-              <PageMotion>
-                <TeamProfile />
-              </PageMotion>
-            </StorefrontLayout>
+            <ProtectedRoute requiredRole="agent">
+              <StorefrontLayout>
+                <PageMotion>
+                  <TeamProfile />
+                </PageMotion>
+              </StorefrontLayout>
+            </ProtectedRoute>
           }
         />
 
-        {/* Admin Panel (Separate Layout — No Storefront Navbar/Footer) */}
+        {/* Admin Panel (Separate Layout — Protected by requiredRole="admin") */}
         <Route
           path="/admin/login"
           element={
@@ -340,188 +389,199 @@ const AnimatedRoutes: React.FC = () => {
         <Route
           path="/admin"
           element={
-            <>
+            <ProtectedRoute requiredRole="admin">
               <PageMotion>
                 <AdminDashboard />
               </PageMotion>
               <ToastContainer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/dashboard"
           element={
-            <>
+            <ProtectedRoute requiredRole="admin">
               <PageMotion>
                 <AdminDashboard />
               </PageMotion>
               <ToastContainer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/products"
           element={
-            <>
+            <ProtectedRoute requiredRole="admin">
               <PageMotion>
                 <AdminProducts />
               </PageMotion>
               <ToastContainer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/products/new"
           element={
-            <>
+            <ProtectedRoute requiredRole="admin">
               <PageMotion>
                 <AdminProductForm />
               </PageMotion>
               <ToastContainer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/products/:id/edit"
           element={
-            <>
+            <ProtectedRoute requiredRole="admin">
               <PageMotion>
                 <AdminProductForm />
               </PageMotion>
               <ToastContainer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/categories"
           element={
-            <>
+            <ProtectedRoute requiredRole="admin">
               <PageMotion>
                 <AdminCategories />
               </PageMotion>
               <ToastContainer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/orders"
           element={
-            <>
+            <ProtectedRoute requiredRole="admin">
               <PageMotion>
                 <AdminOrders />
               </PageMotion>
               <ToastContainer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/orders/:id"
           element={
-            <>
+            <ProtectedRoute requiredRole="admin">
               <PageMotion>
                 <AdminOrderDetail />
               </PageMotion>
               <ToastContainer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/customers"
           element={
-            <>
+            <ProtectedRoute requiredRole="admin">
               <PageMotion>
                 <AdminCustomers />
               </PageMotion>
               <ToastContainer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/discounts"
           element={
-            <>
+            <ProtectedRoute requiredRole="admin">
               <PageMotion>
                 <AdminDiscounts />
               </PageMotion>
               <ToastContainer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/team"
           element={
-            <>
+            <ProtectedRoute requiredRole="admin">
               <PageMotion>
                 <AdminTeamMembers />
               </PageMotion>
               <ToastContainer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/commissions"
           element={
-            <>
+            <ProtectedRoute requiredRole="admin">
               <PageMotion>
                 <AdminCommissions />
               </PageMotion>
               <ToastContainer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/withdrawals"
           element={
-            <>
+            <ProtectedRoute requiredRole="admin">
               <PageMotion>
                 <AdminWithdrawals />
               </PageMotion>
               <ToastContainer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/delivery"
           element={
-            <>
+            <ProtectedRoute requiredRole="admin">
               <PageMotion>
                 <AdminDeliveryRates />
               </PageMotion>
               <ToastContainer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/banners"
           element={
-            <>
+            <ProtectedRoute requiredRole="admin">
               <PageMotion>
                 <AdminBanners />
               </PageMotion>
               <ToastContainer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/reports"
           element={
-            <>
+            <ProtectedRoute requiredRole="admin">
               <PageMotion>
                 <AdminReports />
               </PageMotion>
               <ToastContainer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/settings"
           element={
-            <>
+            <ProtectedRoute requiredRole="admin">
               <PageMotion>
                 <AdminSiteSettings />
               </PageMotion>
               <ToastContainer />
-            </>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/setup-guide"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <PageMotion>
+                <SetupGuide />
+              </PageMotion>
+              <ToastContainer />
+            </ProtectedRoute>
           }
         />
       </Routes>
@@ -530,6 +590,12 @@ const AnimatedRoutes: React.FC = () => {
 };
 
 export function App() {
+  const initAuth = useAuthStore((s) => s.initAuth);
+
+  useEffect(() => {
+    void initAuth();
+  }, [initAuth]);
+
   return (
     <BrowserRouter>
       <PageLoader />

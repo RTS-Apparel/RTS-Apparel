@@ -2,10 +2,10 @@ import React from "react";
 import { NavLink, Link } from "react-router-dom";
 import {
   LayoutDashboard,
-  Users,
-  DollarSign,
+  Users2,
+  Coins,
   Wallet,
-  UserCog,
+  User,
   ShoppingBag,
   LogOut,
 } from "lucide-react";
@@ -16,10 +16,10 @@ export const TeamSidebar: React.FC = () => {
 
   const links = [
     { to: "/team", label: "Partner Overview", icon: LayoutDashboard, end: true },
-    { to: "/team/referrals", label: "My Referrals", icon: Users },
-    { to: "/team/commission", label: "Commissions", icon: DollarSign },
+    { to: "/team/referrals", label: "My Referrals", icon: Users2 },
+    { to: "/team/commission", label: "Commissions", icon: Coins },
     { to: "/team/withdrawal", label: "Withdrawals", icon: Wallet },
-    { to: "/team/profile", label: "Payout & Profile", icon: UserCog },
+    { to: "/team/profile", label: "Payout & Profile", icon: User },
   ];
 
   return (
@@ -50,7 +50,7 @@ export const TeamSidebar: React.FC = () => {
                 }`
               }
             >
-              <Icon className="w-4 h-4 text-[#E63946]" />
+              <Icon size={18} className="text-[#E63946]" />
               <span>{item.label}</span>
             </NavLink>
           );
@@ -60,7 +60,7 @@ export const TeamSidebar: React.FC = () => {
           to="/account"
           className="flex items-center gap-3 px-3.5 py-2.5 rounded-r-lg text-sm font-medium border-l-4 border-transparent text-[#CCCCCC] hover:bg-[#2A2A2A] hover:text-[#FFFFFF] transition-colors mt-2"
         >
-          <ShoppingBag className="w-4 h-4 text-[#E63946]" />
+          <ShoppingBag size={18} className="text-[#E63946]" />
           <span>My Customer Account</span>
         </Link>
       </nav>
@@ -71,7 +71,7 @@ export const TeamSidebar: React.FC = () => {
           onClick={logout}
           className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-[6px] text-sm bg-[#2A2A2A] text-[#CCCCCC] hover:bg-[#C1121F] hover:text-[#FFFFFF] transition-colors font-semibold"
         >
-          <LogOut className="w-4 h-4" />
+          <LogOut size={18} />
           <span>Sign Out</span>
         </button>
       </div>

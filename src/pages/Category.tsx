@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { ChevronRight } from "lucide-react";
+import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useDataStore } from "../store/dataStore";
 import { useProducts } from "../hooks/useProducts";
@@ -20,11 +19,24 @@ export const CategoryPage: React.FC = () => {
 
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
-  const [maxPrice, setMaxPrice] = useState(35000);
+  const [maxPrice, setMaxPrice] = useState(15000);
   const [onlyDiscounted, setOnlyDiscounted] = useState(false);
 
-  const filteredProducts = activeProducts.filter((p) => {
-    if (category && p.category_id !== category.id) return false;
+  const categoryProducts = activeProducts.filter((p) => {
+    if (!slug) return true;
+    if (p.category_slug && p.category_slug === slug) return true;
+    if (category && p.category_id === category.id) return true;
+    return false;
+  });
+
+  const availableSizes = Array.from(
+    new Set(categoryProducts.flatMap((p) => p.sizes))
+  );
+  const availableColors = Array.from(
+    new Set(categoryProducts.flatMap((p) => p.colors))
+  );
+
+  const filteredProducts = categoryProducts.filter((p) => {
     if (selectedSize && !p.sizes.includes(selectedSize)) return false;
     if (
       selectedColor &&
@@ -42,7 +54,7 @@ export const CategoryPage: React.FC = () => {
   const handleReset = () => {
     setSelectedSize("");
     setSelectedColor("");
-    setMaxPrice(35000);
+    setMaxPrice(15000);
     setOnlyDiscounted(false);
   };
 
@@ -80,6 +92,8 @@ export const CategoryPage: React.FC = () => {
             onlyDiscounted={onlyDiscounted}
             setOnlyDiscounted={setOnlyDiscounted}
             onReset={handleReset}
+            availableSizes={availableSizes}
+            availableColors={availableColors}
           />
         </div>
         <div className="lg:col-span-9">

@@ -1,5 +1,5 @@
 import React from "react";
-import { Check, Package, Truck, Home, Clock, XCircle } from "lucide-react";
+import { CheckCircle, Package, Truck, Home, ClipboardList, XCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { OrderStatus } from "../../types";
 
@@ -19,14 +19,14 @@ const STEPS: Array<{
     label: "Order Placed",
     urdu: "آرڈر موصول",
     desc: "Order registered at ARTS APPAREL Atelier",
-    icon: Clock,
+    icon: ClipboardList,
   },
   {
     key: "confirmed",
     label: "Order Confirmed",
     urdu: "تصدیق شدہ",
     desc: "Payment & tailoring specifications verified",
-    icon: Check,
+    icon: CheckCircle,
   },
   {
     key: "packed",

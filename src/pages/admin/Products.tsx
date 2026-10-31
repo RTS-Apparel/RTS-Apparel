@@ -137,7 +137,7 @@ export const AdminProducts: React.FC = () => {
                           <LuxuryImage
                             src={prod.images[0]}
                             alt={prod.name_en}
-                            className="w-11 h-11 rounded border border-[#E0E0E0] object-cover shrink-0 bg-[#F5F5F5]"
+                            className="w-14 h-11 aspect-[4/3] rounded border border-[#E0E0E0] object-cover shrink-0 bg-[#F5F5F5]"
                           />
                           <div>
                             <p className="font-bold text-[#1A1A1A]">
@@ -147,7 +147,7 @@ export const AdminProducts: React.FC = () => {
                         </div>
                       </td>
                       <td className="py-3 px-4 font-sans text-[#666666]">
-                        {getCategoryName(cat, adminLanguage) || "—"}
+                        {prod.category_name || getCategoryName(cat, adminLanguage) || "—"}
                       </td>
                       <td className="py-3 px-4 text-right text-[#E63946] font-bold">
                         {formatPKR(prod.price)}
