@@ -1,5 +1,4 @@
 import { useAuthStore } from "../store/authStore";
-import { useDataStore } from "../store/dataStore";
 
 export function useAuth() {
   const {
@@ -15,11 +14,8 @@ export function useAuth() {
     logout,
     switchDemoRole,
   } = useAuthStore();
-  const users = useDataStore((s) => s.users);
-  const user =
-    storeUser ||
-    (currentUserId ? users.find((u) => u.id === currentUserId) || null : null);
-  const resolvedRole = role || user?.role || null;
+  const user = storeUser;
+  const resolvedRole = user ? role : null;
 
   return {
     user,
