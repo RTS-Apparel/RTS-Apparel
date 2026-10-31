@@ -19,21 +19,21 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
     size === "sm"
       ? "text-base sm:text-lg tracking-[0.06em]"
       : size === "lg"
-      ? "text-2xl sm:text-3xl tracking-[0.08em]"
+      ? "text-xl sm:text-3xl lg:text-4xl tracking-[0.04em] sm:tracking-[0.06em]"
       : "text-xl sm:text-2xl tracking-[0.06em]";
 
   const taglineSizeClass =
     size === "sm"
       ? "text-[10px] tracking-[0.14em]"
       : size === "lg"
-      ? "text-xs sm:text-sm tracking-[0.18em]"
+      ? "text-[9px] sm:text-xs lg:text-sm tracking-[0.1em] sm:tracking-[0.18em]"
       : "text-[11px] sm:text-xs tracking-[0.16em]";
 
   const logoSizeClass =
     size === "sm"
       ? "h-12 w-12 sm:h-14 sm:w-14"
       : size === "lg"
-      ? "h-20 w-20 sm:h-24 sm:w-24"
+      ? "h-[68px] w-[68px] sm:h-24 sm:w-24 lg:h-28 lg:w-28"
       : "h-[76px] w-[76px] sm:h-[84px] sm:w-[84px]";
 
   const apparelTextColor = variant === "dark" ? "#FFFFFF" : "#1A1A1A";
@@ -41,7 +41,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
 
   return (
     <div
-      className={`inline-flex items-center gap-3 select-none shrink-0 whitespace-nowrap ${className}`}
+      className={`inline-flex items-center gap-2 sm:gap-3 lg:gap-4 select-none shrink-0 whitespace-nowrap ${className}`}
     >
       <img
         src="https://cdn.phototourl.com/member/2026-10-31-622505d6-04bd-44dc-8ab9-397e44cb219e.png"
