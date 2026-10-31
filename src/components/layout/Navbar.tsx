@@ -127,7 +127,7 @@ export const Navbar: React.FC = () => {
       </div>
 
       {/* Main Navigation Row */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4 bg-[#FFFFFF]">
+      <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 h-20 sm:h-24 lg:h-28 flex items-center justify-between gap-2 sm:gap-4 bg-[#FFFFFF]">
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -143,7 +143,7 @@ export const Navbar: React.FC = () => {
           </button>
 
           <Link to="/" aria-label="ARTS APPAREL Home">
-            <BrandLogo size="md" showTagline variant="light" />
+            <BrandLogo size="lg" showTagline variant="light" />
           </Link>
         </div>
 
