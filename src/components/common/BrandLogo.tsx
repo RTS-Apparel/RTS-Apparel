@@ -51,10 +51,13 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
           style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}
         >
           <span
-            className="inline-flex items-center justify-center px-1.5 py-0.5 rounded-xs border border-[#333333]"
+            className="inline-flex items-center justify-center px-1.5 py-0.5 rounded-xs border border-[#333333] relative overflow-hidden"
             style={{ backgroundColor: "#1A1A1A", color: "#FFFFFF" }}
           >
-            A
+            <span className="relative inline-flex items-center justify-center font-black" style={{ fontFamily: "serif", fontStyle: "italic", transform: "skewX(-9deg) scale(1.12)", letterSpacing: "-0.09em" }}>
+              A
+              <span aria-hidden="true" className="absolute h-[1.5px] w-[115%] bg-[#E63946] -rotate-[28deg] top-[58%] left-[-8%]" />
+            </span>
           </span>
           <span
             className="inline-flex items-center justify-center px-1.5 py-0.5 rounded-xs ml-0.5"
@@ -62,7 +65,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
           >
             RTS
           </span>
-          <span className="ml-1.5" style={{ color: apparelTextColor }}>
+          <span className="ml-1.5 text-[0.77em]" style={{ color: apparelTextColor }}>
             APPAREL
           </span>
         </span>
