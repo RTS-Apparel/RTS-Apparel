@@ -127,8 +127,8 @@ export const Navbar: React.FC = () => {
       </div>
 
       {/* Main Navigation Row */}
-      <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 h-20 sm:h-24 lg:h-28 flex items-center justify-between gap-2 sm:gap-4 bg-[#FFFFFF]">
-        <div className="flex items-center gap-3">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 h-24 sm:h-28 lg:h-36 flex items-center justify-between gap-2 sm:gap-3 bg-[#FFFFFF]">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <button
             type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -148,7 +148,7 @@ export const Navbar: React.FC = () => {
         </div>
 
         {/* Desktop Category Links */}
-        <nav className="hidden lg:flex items-center gap-2">
+        <nav className="hidden lg:flex items-center gap-1 shrink">
           <Link
             to="/"
             className={`text-xs uppercase tracking-[0.12em] px-3 py-2 rounded-[6px] font-semibold transition-colors ${
