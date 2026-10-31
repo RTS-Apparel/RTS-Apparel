@@ -37,13 +37,11 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
       className={`inline-flex items-center gap-2.5 select-none shrink-0 whitespace-nowrap ${className}`}
     >
       <img
-        src="https://kommodo.ai/i/3gfGMpWjrnGDbwux0UBH"
+        src="https://cdn.phototourl.com/member/2026-10-31-622505d6-04bd-44dc-8ab9-397e44cb219e.png"
         alt="ARTS APPAREL Logo"
         onLoad={() => setImgVisible(true)}
         onError={() => setImgVisible(false)}
-        className={`h-8 w-8 object-contain shrink-0 ${
-          imgVisible ? "block" : "hidden"
-        }`}
+        className={`h-8 w-8 object-contain shrink-0 ${imgVisible ? "block" : "hidden"}`}
       />
       <div className="flex flex-col leading-none whitespace-nowrap">
         <span
