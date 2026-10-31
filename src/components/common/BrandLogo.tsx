@@ -17,31 +17,31 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
 
   const textSizeClass =
     size === "sm"
-      ? "text-sm sm:text-base tracking-[0.08em]"
+      ? "text-base sm:text-lg tracking-[0.06em]"
       : size === "lg"
-      ? "text-xl sm:text-2xl tracking-[0.1em]"
-      : "text-base sm:text-lg tracking-[0.08em]";
+      ? "text-2xl sm:text-3xl tracking-[0.08em]"
+      : "text-xl sm:text-2xl tracking-[0.06em]";
 
   const taglineSizeClass =
     size === "sm"
-      ? "text-[9px] tracking-[0.18em]"
+      ? "text-[10px] tracking-[0.14em]"
       : size === "lg"
-      ? "text-[11px] tracking-[0.22em]"
-      : "text-[9.5px] tracking-[0.2em]";
+      ? "text-xs sm:text-sm tracking-[0.18em]"
+      : "text-[11px] sm:text-xs tracking-[0.16em]";
 
   const logoSizeClass =
     size === "sm"
-      ? "h-10 w-10 sm:h-12 sm:w-12"
+      ? "h-12 w-12 sm:h-14 sm:w-14"
       : size === "lg"
-      ? "h-14 w-14 sm:h-16 sm:w-16"
-      : "h-12 w-12 sm:h-14 sm:w-14";
+      ? "h-20 w-20 sm:h-24 sm:w-24"
+      : "h-16 w-16 sm:h-20 sm:w-20";
 
   const apparelTextColor = variant === "dark" ? "#FFFFFF" : "#1A1A1A";
   const taglineColor = variant === "dark" ? "#CCCCCC" : "#666666";
 
   return (
     <div
-      className={`inline-flex items-center gap-2.5 select-none shrink-0 whitespace-nowrap ${className}`}
+      className={`inline-flex items-center gap-3 select-none shrink-0 whitespace-nowrap ${className}`}
     >
       <img
         src="https://cdn.phototourl.com/member/2026-10-31-622505d6-04bd-44dc-8ab9-397e44cb219e.png"
@@ -50,7 +50,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
         onError={() => setImgVisible(false)}
         className={`${logoSizeClass} object-contain shrink-0 ${imgVisible ? "block" : "hidden"}`}
       />
-      <div className="flex flex-col leading-none whitespace-nowrap">
+      <div className="flex flex-col leading-tight whitespace-nowrap">
         <span
           className={`font-serif-display font-bold uppercase whitespace-nowrap inline-flex items-center ${textSizeClass}`}
           style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}
@@ -61,7 +61,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
           >
             <span className="relative inline-flex items-center justify-center font-black" style={{ fontFamily: "serif", fontStyle: "italic", transform: "skewX(-9deg) scale(1.12)", letterSpacing: "-0.09em" }}>
               A
-              <span aria-hidden="true" className="absolute h-[1.5px] w-[115%] bg-[#E63946] -rotate-[28deg] top-[58%] left-[-8%]" />
+              <span aria-hidden="true" className="absolute h-[2px] w-[115%] bg-[#E63946] -rotate-[28deg] top-[58%] left-[-8%]" />
             </span>
           </span>
           <span
@@ -70,13 +70,13 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
           >
             RTS
           </span>
-          <span className="ml-1.5 text-[0.77em]" style={{ color: apparelTextColor }}>
+          <span className="ml-2 text-[0.77em]" style={{ color: apparelTextColor }}>
             APPAREL
           </span>
         </span>
         {showTagline && (
           <span
-            className={`mt-1 font-semibold uppercase whitespace-nowrap ${taglineSizeClass}`}
+            className={`mt-1.5 font-semibold uppercase whitespace-nowrap ${taglineSizeClass}`}
             style={{ color: taglineColor }}
           >
             Premium Men&apos;s Fashion
