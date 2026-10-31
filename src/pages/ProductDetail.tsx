@@ -88,7 +88,10 @@ export const ProductDetail: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [product, category, language]);
+  // useProducts() enriches products into fresh objects on every render.
+  // Depend on stable identifiers instead of the product object, otherwise
+  // selecting a size/color re-runs this effect and resets the user's choice.
+  }, [product?.id, category?.name_en, language]);
 
   if (!product) {
     return (
