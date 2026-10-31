@@ -29,6 +29,13 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
       ? "text-[11px] tracking-[0.22em]"
       : "text-[9.5px] tracking-[0.2em]";
 
+  const logoSizeClass =
+    size === "sm"
+      ? "h-10 w-10 sm:h-12 sm:w-12"
+      : size === "lg"
+      ? "h-14 w-14 sm:h-16 sm:w-16"
+      : "h-12 w-12 sm:h-14 sm:w-14";
+
   const apparelTextColor = variant === "dark" ? "#FFFFFF" : "#1A1A1A";
   const taglineColor = variant === "dark" ? "#CCCCCC" : "#666666";
 
@@ -41,7 +48,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
         alt="ARTS APPAREL Logo"
         onLoad={() => setImgVisible(true)}
         onError={() => setImgVisible(false)}
-        className={`h-8 w-8 object-contain shrink-0 ${imgVisible ? "block" : "hidden"}`}
+        className={`${logoSizeClass} object-contain shrink-0 ${imgVisible ? "block" : "hidden"}`}
       />
       <div className="flex flex-col leading-none whitespace-nowrap">
         <span
