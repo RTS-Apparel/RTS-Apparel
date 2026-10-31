@@ -186,7 +186,7 @@ export function buildRomanUrduReply(rawMessage: string): string {
     return "Walaikum Assalam Bhai! 👋 अल्हम्दुलिल्लाह sab fit hai, aap sunao? ARTS APPAREL ke orders, sizes ya delivery ke baare mein kuch bhi poochho! 😄✨";
   }
 
-  return "Yaar is baare mein pakka nahi pata 😅 Seedha WhatsApp karo: 03058165623, main wahan bhi mojood hun aur poori madad milegi! 💬😄";
+  return "Bhai, main ARTS APPAREL ke products, available sizes, prices, delivery, payment aur return policy mein madad kar sakta hun. Apna sawal thora detail se batao, main guide karta hun. 😊👕";
 }
 
 export async function onRequest(context: {
