@@ -21,7 +21,7 @@ export const LuxuryImage: React.FC<LuxuryImageProps> = ({
   return (
     <img
       src={imgSrc}
-      alt={alt || "RTS Apparel Luxury Garment"}
+      alt={alt || "ARTS APPAREL Luxury Garment"}
       referrerPolicy="no-referrer"
       onError={() => {
         if (imgSrc !== fallbackSrc) {

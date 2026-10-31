@@ -2,12 +2,12 @@ import React from "react";
 import { OrderStatus } from "../../types";
 
 const STATUS_STYLES: Record<OrderStatus, string> = {
-  pending: "bg-[#D97706]/15 text-[#D97706] border-[#D97706]/30",
-  confirmed: "bg-[#C9A84C]/20 text-[#9B7B2F] border-[#C9A84C]",
-  packed: "bg-[#C9A84C]/20 text-[#9B7B2F] border-[#C9A84C]",
-  shipped: "bg-[#2563EB]/15 text-[#2563EB] border-[#2563EB]/30",
-  delivered: "bg-[#16A34A]/15 text-[#16A34A] border-[#16A34A]/30",
-  cancelled: "bg-[#EF4444]/15 text-[#EF4444] border-[#EF4444]/30",
+  pending: "bg-[#FFF3CD] text-[#856404] border-[#856404]/25",
+  confirmed: "bg-[#D1ECF1] text-[#0C5460] border-[#0C5460]/25",
+  packed: "bg-[#D1ECF1] text-[#0C5460] border-[#0C5460]/25",
+  shipped: "bg-[#E8D5FF] text-[#6A0DAD] border-[#6A0DAD]/25",
+  delivered: "bg-[#D4EDDA] text-[#155724] border-[#155724]/25",
+  cancelled: "bg-[#F8D7DA] text-[#721C24] border-[#721C24]/25",
 };
 
 export const OrderStatusBadge: React.FC<{ status: OrderStatus }> = ({
@@ -15,7 +15,7 @@ export const OrderStatusBadge: React.FC<{ status: OrderStatus }> = ({
 }) => {
   return (
     <span
-      className={`px-3 py-1 rounded-md border font-mono text-xs font-bold uppercase tracking-wider ${
+      className={`px-3 py-1 rounded-[6px] border font-mono text-xs font-bold uppercase tracking-wider inline-block ${
         STATUS_STYLES[status] || STATUS_STYLES.pending
       }`}
     >

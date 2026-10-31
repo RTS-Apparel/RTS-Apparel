@@ -36,7 +36,7 @@ export const CUSTOMER_TRANSLATIONS: Record<
     inStock: "in stock",
 
     // Home Page
-    heroBadge: "Lahore Flagship Atelier · Autumn / Winter 2026",
+    heroBadge: "ARTS APPAREL · Futuristic Dark Luxury · 2026",
     joinAgentNetwork: "Join Partner Agent Network",
     heroPriceCaption: "Bespoke Hand-Finished Plackets & Brass Hardware",
     trustDelivery: "Nationwide Delivery in 3–5 Business Days",
@@ -57,10 +57,10 @@ export const CUSTOMER_TRANSLATIONS: Record<
     sec4Kicker: "04. Seasonal Privilege",
     saleOffers: "Luxury Sale & Special Offers",
     shopAllDiscounted: "Shop All Discounted Pieces →",
-    sec5Kicker: "05. The RTS Partner Network",
-    partnerHeading: "Earn Commissions as an Approved RTS Style Partner",
+    sec5Kicker: "05. The ARTS APPAREL Partner Network",
+    partnerHeading: "Earn Commissions as an Approved ARTS APPAREL Style Partner",
     partnerSub:
-      "Stylists, creators, and menswear enthusiasts across Pakistan earn direct commission on every order placed with their personal RTS referral code. Track real-time referrals and request instant payouts via JazzCash, EasyPaisa, or Bank Transfer.",
+      "Stylists, creators, and menswear enthusiasts across Pakistan earn direct commission on every order placed with their personal ARTS APPAREL referral code. Track real-time referrals and request instant payouts via JazzCash, EasyPaisa, or Bank Transfer.",
     openAgentDashboard: "Open Agent Dashboard",
     applyAgentAccount: "Apply for Agent Account",
 
@@ -122,7 +122,7 @@ export const CUSTOMER_TRANSLATIONS: Record<
     // Track Order
     trackHeading: "Order Tracking",
     trackSub:
-      "Enter both your RTS Order Number and registered Phone Number to verify and inspect live delivery progress.",
+      "Enter both your ARTS APPAREL Order Number and registered Phone Number to verify and inspect live delivery progress.",
     orderNumberPlaceholder: "Order Number (e.g. RTS-2026-0001)",
     phoneVerifyPlaceholder: "Verification Phone Number (e.g. 0301-7766554)",
     trackBtn: "Track Order",
@@ -130,11 +130,11 @@ export const CUSTOMER_TRANSLATIONS: Record<
 
     // Footer
     footerTagline:
-      "Where Pakistani men dress sharp. Bespoke Karandi Kurtas, two-ply Egyptian cotton shirts, and full-grain suede outerwear crafted in Lahore.",
+      "Premium Men's Fashion. Bespoke Karandi Kurtas, two-ply Egyptian cotton shirts, and full-grain suede outerwear by ARTS APPAREL.",
     collections: "Collections",
     clientCare: "Client Care",
     conciergePayments: "Concierge & Payments",
-    aboutAtelier: "About the Atelier",
+    aboutAtelier: "About ARTS APPAREL",
   },
   ur: {
     // Core Prompt Examples & Navigation
@@ -183,8 +183,8 @@ export const CUSTOMER_TRANSLATIONS: Record<
     sec4Kicker: "04. خصوصی رعایت",
     saleOffers: "سیل اور ڈسکاؤنٹ آفرز",
     shopAllDiscounted: "تمام رعایتی ملبوسات دیکھیں ←",
-    sec5Kicker: "05. آر ٹی ایس پارٹنر پروگرام",
-    partnerHeading: "آر ٹی ایس اسٹائل پارٹنر بن کر کمیشن کمائیں",
+    sec5Kicker: "05. آرٹس اپیرل پارٹنر پروگرام",
+    partnerHeading: "ARTS APPAREL اسٹائل پارٹنر بن کر کمیشن کمائیں",
     partnerSub:
       "پاکستان بھر سے اپنے ذاتی ریفرل کوڈ کے ذریعے ہر آرڈر پر کمیشن حاصل کریں اور جاز کیش، ایزی پیسہ یا بینک کے ذریعے فوری رقم نکلوائیں۔",
     openAgentDashboard: "ایجنٹ ڈیش بورڈ کھولیں",
@@ -308,8 +308,8 @@ export const CUSTOMER_TRANSLATIONS: Record<
     sec4Kicker: "04. Khasosi Riayat",
     saleOffers: "Luxury Sale Aur Discount Offers",
     shopAllDiscounted: "Tamam Discounted Libas Dekhein →",
-    sec5Kicker: "05. RTS Partner Network",
-    partnerHeading: "RTS Style Partner Ban Kar Commission Kamayein",
+    sec5Kicker: "05. ARTS APPAREL Partner Network",
+    partnerHeading: "ARTS APPAREL Style Partner Ban Kar Commission Kamayein",
     partnerSub:
       "Apne referral code ke zariye har order par commission hasil karein aur JazzCash, EasyPaisa ya Bank Transfer se payout lein.",
     openAgentDashboard: "Agent Dashboard Kholein",
@@ -422,7 +422,7 @@ export const ADMIN_TRANSLATIONS: Record<
     manageAllOrders: "Manage All Orders →",
     topAgents: "Top Partner Agents",
     topProducts: "Top Performing Garments",
-    adminConsoleTitle: "RTS Apparel Admin Console",
+    adminConsoleTitle: "ARTS APPAREL Admin Console",
     adminConsoleSubtitle: "Store Operations & Executive Overview",
   },
   roman_ur: {
@@ -454,7 +454,7 @@ export const ADMIN_TRANSLATIONS: Record<
     manageAllOrders: "Tamam Orders Dekhein →",
     topAgents: "Behtareen Partner Agents",
     topProducts: "Sab Se Zyada Bikne Wale Libas",
-    adminConsoleTitle: "RTS Apparel Admin Console",
+    adminConsoleTitle: "ARTS APPAREL Admin Console",
     adminConsoleSubtitle: "Store Operations Aur Intizamiya",
   },
 };

@@ -185,9 +185,9 @@ const INITIAL_PRODUCTS: Product[] = [
     description_en:
       "Heavyweight brushed pinpoint Oxford weave with a structured button-down collar and subtle gold monogram embroidery on the left cuff.",
     description_ur:
-      "بہترین آکسفورڈ کاٹن سے تیار کردہ چارکول شرٹ جس کے کف پر RTS کا سنہری مونوگرام موجود ہے۔",
+      "بہترین آکسفورڈ کاٹن سے تیار کردہ چارکول شرٹ جس کے کف پر ARTS کا سنہری مونوگرام موجود ہے۔",
     description_roman_ur:
-      "Behtareen Oxford cotton se tayyar karda charcoal shirt jis ke cuff par RTS ka sunehri monogram maujood hai.",
+      "Behtareen Oxford cotton se tayyar karda charcoal shirt jis ke cuff par ARTS ka sunehri monogram maujood hai.",
     category_id: "cat-shirts",
     price: 6800,
     discount_percent: 0,
@@ -315,8 +315,8 @@ const INITIAL_USERS: User[] = [
   {
     id: "user-admin-1",
     email: "admin@rtsapparel.pk",
-    full_name: "Tariq Mehmood (RTS Owner)",
-    phone: "0300-8451122",
+    full_name: "Tariq Mehmood (ARTS APPAREL Owner)",
+    phone: "03058165623",
     role: "admin",
     referral_code: "RTS-ADMIN001",
     is_approved: true,
@@ -632,6 +632,7 @@ const INITIAL_DELIVERY_RATES: DeliveryRate[] = [
   { id: "city-7", city_name: "Peshawar", charge: 300, is_active: true },
   { id: "city-8", city_name: "Sialkot", charge: 220, is_active: true },
   { id: "city-9", city_name: "Quetta", charge: 350, is_active: true },
+  { id: "city-10", city_name: "Sadiqabad", charge: 150, is_active: true },
 ];
 
 const INITIAL_BANNERS: Banner[] = [
@@ -674,18 +675,18 @@ const INITIAL_BANNERS: Banner[] = [
 ];
 
 const INITIAL_SETTINGS: SiteSettings = {
-  jazzcash_number: "0300-8451122 (RTS Apparel Official)",
-  easypaisa_number: "0345-8451122 (RTS Apparel Official)",
+  jazzcash_number: "03058165623 (ARTS APPAREL Official)",
+  easypaisa_number: "03058165623 (ARTS APPAREL Official)",
   bank_name: "Meezan Bank Limited",
-  bank_account_title: "RTS APPAREL PVT LTD",
+  bank_account_title: "ARTS APPAREL",
   bank_iban: "PK88MEZN0002410105678912",
-  whatsapp_number: "+92 300 8451122",
-  contact_email: "concierge@rtsapparel.pk",
+  whatsapp_number: "03058165623",
+  contact_email: "concierge@artsapparel.pk",
   physical_address:
-    "Flagship Atelier: 48-C MM Alam Road, Gulberg III, Lahore, Pakistan",
-  instagram_url: "https://instagram.com/rtsapparel.pk",
-  facebook_url: "https://facebook.com/rtsapparel.pk",
-  tiktok_url: "https://tiktok.com/@rtsapparel.pk",
+    "Club Road Near New Cafe Sajawal Sadiqabad, Sadiqabad Pakistan",
+  instagram_url: "",
+  facebook_url: "",
+  tiktok_url: "",
 };
 
 const INITIAL_ADDRESSES: SavedAddress[] = [
@@ -1403,7 +1404,7 @@ export const useDataStore = create<DataState>()(
       },
     }),
     {
-      name: "rts-apparel-data-v3",
+      name: "arts-apparel-data-v6",
       partialize: (state) => ({
         categories: state.categories,
         products: state.products,

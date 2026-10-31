@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { Plus, Edit, Trash2, Shirt } from "lucide-react";
+import { motion } from "framer-motion";
 import { useDataStore } from "../../store/dataStore";
 import { formatPKR } from "../../lib/utils";
 import { AdminSidebar } from "../../components/layout/AdminSidebar";
+import { PageHeading } from "../../components/layout/PageHeading";
 import { LuxuryImage } from "../../components/common/LuxuryImage";
 import {
   ADMIN_TRANSLATIONS,
   getCategoryName,
   getProductName,
 } from "../../lib/i18n";
+import { pageVariants } from "../../lib/animations";
 
 export const AdminProducts: React.FC = () => {
   const products = useDataStore((s) => s.products);
@@ -41,29 +44,35 @@ export const AdminProducts: React.FC = () => {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 flex flex-col lg:flex-row gap-8">
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="max-w-7xl mx-auto px-4 md:px-8 py-8 flex flex-col lg:flex-row gap-8 bg-[#F5F5F5] rounded-[8px]"
+    >
       <AdminSidebar />
 
       <div className="flex-1 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-serif-display font-bold text-[#1A1A1A]">
-              {t.products} ({filtered.length})
-            </h1>
-            <p className="text-xs text-[#4A4A4A]">
-              {isRoman
-                ? "Products shamil karein, stock aur qeematein manage karein."
-                : "Add, edit, or manage stock and multilingual descriptions."}
-            </p>
-          </div>
-          <Link
-            to="/admin/products/new"
-            className="h-10 px-4 rounded-lg bg-[#C9A84C] text-[#1A1A1A] font-semibold text-xs flex items-center gap-2 hover:bg-[#E2C07A] self-start shadow-xs"
-          >
-            <Plus className="w-4 h-4" />
-            <span>{t.addProduct}</span>
-          </Link>
-        </div>
+        <PageHeading
+          title="Products"
+          subtitle="Manage your product catalog"
+          icon={<Shirt className="w-5 h-5" />}
+          breadcrumbs={[
+            { label: "Home", to: "/" },
+            { label: "Admin", to: "/admin" },
+            { label: "Products" },
+          ]}
+          actions={
+            <Link
+              to="/admin/products/new"
+              className="h-10 px-4 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-xs flex items-center gap-2 hover:bg-[#C1121F] shadow-xs transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              <span>{t.addProduct}</span>
+            </Link>
+          }
+        />
 
         <div className="flex flex-col sm:flex-row gap-3">
           <input
@@ -75,13 +84,13 @@ export const AdminProducts: React.FC = () => {
                 ? "Product ke naam se filter karein..."
                 : "Filter by product name..."
             }
-            className="flex-1 h-10 px-3.5 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-xs text-[#1A1A1A] focus:outline-none focus:border-[#C9A84C]"
+            className="flex-1 h-10 px-3.5 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-xs text-[#1A1A1A] placeholder:text-[#999999] focus:outline-none focus:border-2 focus:border-[#E63946]"
           />
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
             aria-label="Filter by category"
-            className="h-10 px-3.5 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-xs text-[#1A1A1A] focus:outline-none focus:border-[#C9A84C]"
+            className="h-10 px-3.5 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-xs text-[#1A1A1A] focus:outline-none focus:border-2 focus:border-[#E63946]"
           >
             <option value="all">
               {isRoman ? "Tamam Categories" : "All Categories"}
@@ -94,11 +103,11 @@ export const AdminProducts: React.FC = () => {
           </select>
         </div>
 
-        <div className="rounded-xl bg-[#FAFAFA] border border-[#E8E0D0] overflow-hidden shadow-xs">
+        <div className="rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="bg-[#F5F4F0] border-b border-[#E8E0D0] text-[#4A4A4A]">
+                <tr className="bg-[#1A1A1A] text-[#FFFFFF]">
                   <th className="py-3.5 px-4">
                     {isRoman ? "Product" : "Garment"}
                   </th>
@@ -112,38 +121,41 @@ export const AdminProducts: React.FC = () => {
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E8E0D0] font-mono tabular-nums">
-                {filtered.map((prod) => {
+              <tbody className="divide-y divide-[#E0E0E0] font-mono tabular-nums">
+                {filtered.map((prod, idx) => {
                   const cat = categories.find((c) => c.id === prod.category_id);
                   return (
-                    <tr
+                    <motion.tr
                       key={prod.id}
-                      className="hover:bg-[#F5F4F0] transition-colors"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.05 }}
+                      className="bg-[#FFFFFF] text-[#1A1A1A]"
                     >
                       <td className="py-3 px-4 font-sans">
                         <div className="flex items-center gap-3">
                           <LuxuryImage
                             src={prod.images[0]}
                             alt={prod.name_en}
-                            className="w-11 h-11 rounded border border-[#E8E0D0] object-cover shrink-0 bg-[#FFFFFF]"
+                            className="w-11 h-11 rounded border border-[#E0E0E0] object-cover shrink-0 bg-[#F5F5F5]"
                           />
                           <div>
-                            <p className="font-semibold text-[#1A1A1A]">
+                            <p className="font-bold text-[#1A1A1A]">
                               {getProductName(prod, adminLanguage)}
                             </p>
                           </div>
                         </div>
                       </td>
-                      <td className="py-3 px-4 font-sans text-[#4A4A4A]">
+                      <td className="py-3 px-4 font-sans text-[#666666]">
                         {getCategoryName(cat, adminLanguage) || "—"}
                       </td>
-                      <td className="py-3 px-4 text-right text-[#C9A84C] font-semibold">
+                      <td className="py-3 px-4 text-right text-[#E63946] font-bold">
                         {formatPKR(prod.price)}
                       </td>
-                      <td className="py-3 px-4 text-right text-[#16A34A] font-semibold">
+                      <td className="py-3 px-4 text-right text-[#E63946] font-semibold">
                         {prod.discount_percent}%
                       </td>
-                      <td className="py-3 px-4 text-right text-[#1A1A1A]">
+                      <td className="py-3 px-4 text-right text-[#1A1A1A] font-semibold">
                         {prod.stock}
                       </td>
                       <td className="py-3 px-4 font-sans">
@@ -154,10 +166,10 @@ export const AdminProducts: React.FC = () => {
                               is_active: !prod.is_active,
                             })
                           }
-                          className={`text-xs font-semibold ${
+                          className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase ${
                             prod.is_active
-                              ? "text-[#16A34A]"
-                              : "text-[#9A9A9A]"
+                              ? "bg-[#D4EDDA] text-[#155724]"
+                              : "bg-[#F8D7DA] text-[#721C24]"
                           }`}
                         >
                           {prod.is_active ? "Active" : "Hidden"}
@@ -169,7 +181,7 @@ export const AdminProducts: React.FC = () => {
                             to={`/admin/products/${prod.id}/edit`}
                             title={t.editProduct}
                             aria-label={`${t.editProduct} ${prod.name_en}`}
-                            className="p-1.5 rounded bg-[#FFFFFF] border border-[#E8E0D0] text-[#9B7B2F] hover:border-[#C9A84C]"
+                            className="p-1.5 rounded-[4px] bg-[#F5F5F5] border border-[#E0E0E0] text-[#1A1A1A] hover:border-[#E63946] hover:text-[#E63946] transition-colors"
                           >
                             <Edit className="w-3.5 h-3.5" />
                           </Link>
@@ -178,13 +190,13 @@ export const AdminProducts: React.FC = () => {
                             onClick={() => deleteProduct(prod.id)}
                             title={t.deleteProduct}
                             aria-label={`${t.deleteProduct} ${prod.name_en}`}
-                            className="p-1.5 rounded bg-[#FFFFFF] border border-[#E8E0D0] text-red-600 hover:border-red-400"
+                            className="p-1.5 rounded-[4px] bg-[#C1121F] text-[#FFFFFF] hover:bg-[#E63946] transition-colors"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </td>
-                    </tr>
+                    </motion.tr>
                   );
                 })}
               </tbody>
@@ -192,6 +204,8 @@ export const AdminProducts: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
+
+export default AdminProducts;

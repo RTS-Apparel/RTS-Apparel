@@ -30,12 +30,22 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       return json({ error: "Missing 'category' field" }, 400);
     }
 
+    if (!context.env || !context.env.AI) {
+      console.error("Cloudflare Workers AI binding (context.env.AI) is not available.");
+      return json({
+        success: false,
+        product_id: body.product_id || "",
+        category: body.category,
+        recommendations: [],
+      });
+    }
+
     const result = (await context.env.AI.run("@cf/meta/llama-3.1-8b-instruct", {
       messages: [
         {
           role: "system",
           content:
-            "You are a product recommendation engine for RTS Apparel, a premium men's fashion store in Pakistan. " +
+            "You are a product recommendation engine for ARTS APPAREL, a premium men's fashion store in Pakistan. " +
             "The store sells: Shirts, Trousers, Kurta Shalwar, Hoodies, Jackets. " +
             "Given a product's details, suggest 4 related product attributes that would " +
             "appeal to the same customer. Focus on Pakistani men's fashion trends. " +

@@ -1,5 +1,6 @@
 import React from "react";
 import { Check, Clock, Package, Truck, CheckCircle2, XCircle } from "lucide-react";
+import { motion } from "framer-motion";
 import { OrderStatus } from "../../types";
 
 const STEPS: { key: OrderStatus; label: string; icon: React.ElementType }[] = [
@@ -15,7 +16,7 @@ export const OrderStatusTimeline: React.FC<{ status: OrderStatus }> = ({
 }) => {
   if (status === "cancelled") {
     return (
-      <div className="p-4 rounded-xl bg-red-50 border border-red-300 flex items-center gap-3 text-xs text-red-700 font-semibold">
+      <div className="p-4 rounded-xl bg-[#F8D7DA] border border-[#E63946]/30 flex items-center gap-3 text-xs text-[#721C24] font-semibold">
         <XCircle className="w-5 h-5 shrink-0" />
         <span>This order has been cancelled.</span>
       </div>
@@ -28,31 +29,36 @@ export const OrderStatusTimeline: React.FC<{ status: OrderStatus }> = ({
     <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
       {STEPS.map((step, idx) => {
         const Icon = step.icon;
-        const isCompleted = idx <= currentIdx;
+        const isCompleted = idx < currentIdx;
         const isCurrent = idx === currentIdx;
 
         return (
-          <div
+          <motion.div
             key={step.key}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.15, duration: 0.35 }}
             className={`p-3 rounded-xl border flex flex-col items-center text-center gap-1.5 transition-all ${
               isCurrent
-                ? "bg-[#C9A84C]/15 border-[#C9A84C] text-[#1A1A1A]"
+                ? "bg-[#FFFFFF] border-2 border-[#E63946] text-[#1A1A1A] shadow-sm"
                 : isCompleted
-                ? "bg-[#FFFFFF] border-[#C9A84C]/50 text-[#1A1A1A]"
-                : "bg-[#FFFFFF] border-[#E8E0D0] text-[#9A9A9A]"
+                ? "bg-[#FFFFFF] border border-[#22C55E] text-[#1A1A1A]"
+                : "bg-[#F5F5F5] border border-[#E0E0E0] text-[#666666]"
             }`}
           >
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                isCompleted
-                  ? "bg-[#C9A84C] text-[#1A1A1A]"
-                  : "bg-[#F5F4F0] text-[#9A9A9A]"
+                isCurrent
+                  ? "bg-[#E63946] text-[#FFFFFF] animate-pulse"
+                  : isCompleted
+                  ? "bg-[#22C55E] text-[#FFFFFF]"
+                  : "bg-[#E0E0E0] text-[#999999]"
               }`}
             >
               <Icon className="w-4 h-4" />
             </div>
             <span className="text-xs font-semibold">{step.label}</span>
-          </div>
+          </motion.div>
         );
       })}
     </div>

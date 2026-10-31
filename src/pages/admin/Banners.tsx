@@ -1,10 +1,13 @@
 import React, { useState } from "react";
-import { Plus, Trash2, ArrowUp, ArrowDown, Upload } from "lucide-react";
+import { Plus, Trash2, ArrowUp, ArrowDown, Upload, Image } from "lucide-react";
+import { motion } from "framer-motion";
 import { useDataStore } from "../../store/dataStore";
 import { PRODUCT_ARTWORKS } from "../../lib/artworks";
 import { supabase, isSupabaseConfigured } from "../../lib/supabase";
 import { AdminSidebar } from "../../components/layout/AdminSidebar";
+import { PageHeading } from "../../components/layout/PageHeading";
 import { LuxuryImage } from "../../components/common/LuxuryImage";
+import { pageVariants } from "../../lib/animations";
 
 export const AdminBanners: React.FC = () => {
   const banners = useDataStore((s) => s.banners);
@@ -67,7 +70,7 @@ export const AdminBanners: React.FC = () => {
     addBanner({
       title_en: titleEn.trim(),
       title_ur: titleUr.trim() || "شاہی ملبوسات",
-      subtitle_en: "Limited Atelier Release — Handcrafted in Lahore",
+      subtitle_en: "Limited Atelier Release — ARTS APPAREL",
       image_url: finalImageUrl,
       link_url: linkUrl.trim() || "/category/kurta-shalwar",
       display_order: banners.length + 1,
@@ -81,26 +84,34 @@ export const AdminBanners: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 flex flex-col lg:flex-row gap-8">
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="max-w-7xl mx-auto px-4 md:px-8 py-8 flex flex-col lg:flex-row gap-8 bg-[#F5F5F5] rounded-[8px]"
+    >
       <AdminSidebar />
 
       <div className="flex-1 space-y-6">
-        <div>
-          <h1 className="text-2xl font-serif-display font-bold text-[#1A1A1A]">
-            Homepage Hero Banners
-          </h1>
-          <p className="text-xs text-[#4A4A4A]">
-            Upload, reorder, activate/deactivate, or delete campaign banners on the storefront hero.
-          </p>
-        </div>
+        <PageHeading
+          title="Banners"
+          subtitle="Manage homepage banners"
+          icon={<Image className="w-5 h-5" />}
+          breadcrumbs={[
+            { label: "Home", to: "/" },
+            { label: "Admin", to: "/admin" },
+            { label: "Banners" },
+          ]}
+        />
 
         <form
           onSubmit={handleAdd}
-          className="rounded-xl bg-[#FAFAFA] border border-[#E8E0D0] p-5 space-y-4 shadow-sm"
+          className="rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] p-5 space-y-4 shadow-xs"
         >
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
             <div className="space-y-1">
-              <label htmlFor="bn-en" className="text-xs font-medium text-[#4A4A4A]">
+              <label htmlFor="bn-en" className="text-xs font-medium text-[#1A1A1A]">
                 Banner Headline (EN) *
               </label>
               <input
@@ -110,11 +121,11 @@ export const AdminBanners: React.FC = () => {
                 value={titleEn}
                 onChange={(e) => setTitleEn(e.target.value)}
                 placeholder="Winter Shawl & Karandi Edit"
-                className="w-full h-10 px-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-xs text-[#1A1A1A] focus:outline-none focus:border-[#C9A84C]"
+                className="w-full h-10 px-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-xs text-[#1A1A1A] placeholder-[#999999] focus:outline-none focus:border-2 focus:border-[#E63946]"
               />
             </div>
             <div className="space-y-1">
-              <label htmlFor="bn-ur" className="text-xs font-medium text-[#4A4A4A]">
+              <label htmlFor="bn-ur" className="text-xs font-medium text-[#1A1A1A]">
                 Urdu Subtitle (اردو)
               </label>
               <input
@@ -124,11 +135,11 @@ export const AdminBanners: React.FC = () => {
                 value={titleUr}
                 onChange={(e) => setTitleUr(e.target.value)}
                 placeholder="موسم سرما کا خاص کلیکشن"
-                className="w-full h-10 px-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-xs font-urdu text-[#1A1A1A] focus:outline-none focus:border-[#C9A84C]"
+                className="w-full h-10 px-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-xs font-urdu text-[#1A1A1A] placeholder-[#999999] focus:outline-none focus:border-2 focus:border-[#E63946]"
               />
             </div>
             <div className="space-y-1">
-              <label htmlFor="bn-link" className="text-xs font-medium text-[#4A4A4A]">
+              <label htmlFor="bn-link" className="text-xs font-medium text-[#1A1A1A]">
                 Destination Route
               </label>
               <input
@@ -136,18 +147,18 @@ export const AdminBanners: React.FC = () => {
                 type="text"
                 value={linkUrl}
                 onChange={(e) => setLinkUrl(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-xs font-mono text-[#1A1A1A] focus:outline-none focus:border-[#C9A84C]"
+                className="w-full h-10 px-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-xs font-mono text-[#1A1A1A] focus:outline-none focus:border-2 focus:border-[#E63946]"
               />
             </div>
             <div className="space-y-1">
-              <label htmlFor="bn-file" className="text-xs font-medium text-[#4A4A4A]">
+              <label htmlFor="bn-file" className="text-xs font-medium text-[#1A1A1A]">
                 Banner Artwork Image
               </label>
               <label
                 htmlFor="bn-file"
-                className="w-full h-10 px-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] hover:border-[#C9A84C] text-xs text-[#1A1A1A] flex items-center gap-2 cursor-pointer truncate"
+                className="w-full h-10 px-3 rounded-[6px] bg-[#F5F5F5] border border-[#E0E0E0] hover:border-[#E63946] text-xs text-[#1A1A1A] flex items-center gap-2 cursor-pointer truncate"
               >
-                <Upload className="w-3.5 h-3.5 text-[#C9A84C] shrink-0" />
+                <Upload className="w-3.5 h-3.5 text-[#E63946] shrink-0" />
                 <span className="truncate">
                   {selectedFile ? selectedFile.name : "Upload Image..."}
                 </span>
@@ -166,7 +177,7 @@ export const AdminBanners: React.FC = () => {
             <button
               type="submit"
               disabled={uploading}
-              className="h-10 px-5 rounded-lg bg-[#C9A84C] text-[#1A1A1A] font-semibold text-xs flex items-center justify-center gap-1.5 hover:bg-[#E2C07A] disabled:opacity-60"
+              className="h-10 px-5 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-xs flex items-center justify-center gap-1.5 hover:bg-[#C1121F] disabled:bg-[#E0E0E0] disabled:text-[#999999] transition-colors"
             >
               <Plus className="w-4 h-4" />
               <span>{uploading ? "Uploading Banner..." : "Add Banner"}</span>
@@ -178,9 +189,9 @@ export const AdminBanners: React.FC = () => {
           {sortedBanners.map((ban) => (
             <div
               key={ban.id}
-              className="rounded-xl bg-[#FAFAFA] border border-[#E8E0D0] overflow-hidden flex flex-col justify-between shadow-sm"
+              className="rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] hover:border-[#E63946] transition-colors overflow-hidden flex flex-col justify-between shadow-xs"
             >
-              <div className="aspect-[16/9] bg-[#F5F4F0] border-b border-[#E8E0D0]">
+              <div className="aspect-[16/9] bg-[#F5F5F5] border-b border-[#E0E0E0]">
                 <LuxuryImage
                   src={ban.image_url}
                   alt={ban.title_en}
@@ -190,14 +201,14 @@ export const AdminBanners: React.FC = () => {
               <div className="p-4 flex items-center justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-bold text-[#C9A84C]">
+                    <span className="text-xs font-mono font-bold text-[#E63946]">
                       #{ban.display_order}
                     </span>
-                    <p className="text-sm font-semibold text-[#1A1A1A]">
+                    <p className="text-sm font-bold text-[#1A1A1A]">
                       {ban.title_en}
                     </p>
                   </div>
-                  <p className="text-xs font-mono text-[#9B7B2F] mt-0.5">
+                  <p className="text-xs font-mono text-[#666666] mt-0.5">
                     Link: {ban.link_url}
                   </p>
                 </div>
@@ -206,7 +217,7 @@ export const AdminBanners: React.FC = () => {
                     type="button"
                     onClick={() => reorderBanner(ban.id, "up")}
                     aria-label={`Move ${ban.title_en} up`}
-                    className="p-1.5 rounded bg-[#FFFFFF] border border-[#E8E0D0] text-[#4A4A4A] hover:text-[#1A1A1A] hover:border-[#C9A84C]"
+                    className="p-1.5 rounded bg-[#F5F5F5] border border-[#E0E0E0] text-[#1A1A1A] hover:border-[#E63946] hover:text-[#E63946]"
                   >
                     <ArrowUp className="w-3.5 h-3.5" />
                   </button>
@@ -214,7 +225,7 @@ export const AdminBanners: React.FC = () => {
                     type="button"
                     onClick={() => reorderBanner(ban.id, "down")}
                     aria-label={`Move ${ban.title_en} down`}
-                    className="p-1.5 rounded bg-[#FFFFFF] border border-[#E8E0D0] text-[#4A4A4A] hover:text-[#1A1A1A] hover:border-[#C9A84C]"
+                    className="p-1.5 rounded bg-[#F5F5F5] border border-[#E0E0E0] text-[#1A1A1A] hover:border-[#E63946] hover:text-[#E63946]"
                   >
                     <ArrowDown className="w-3.5 h-3.5" />
                   </button>
@@ -223,10 +234,10 @@ export const AdminBanners: React.FC = () => {
                     onClick={() =>
                       updateBanner(ban.id, { is_active: !ban.is_active })
                     }
-                    className={`px-3 py-1 rounded text-xs font-semibold border ${
+                    className={`px-3 py-1 rounded-full text-xs font-bold ${
                       ban.is_active
-                        ? "bg-[#16A34A]/10 border-[#16A34A]/30 text-[#16A34A]"
-                        : "bg-[#F5F4F0] border-[#E8E0D0] text-[#9A9A9A]"
+                        ? "bg-[#D4EDDA] text-[#155724]"
+                        : "bg-[#F8D7DA] text-[#721C24]"
                     }`}
                   >
                     {ban.is_active ? "Active" : "Inactive"}
@@ -235,7 +246,7 @@ export const AdminBanners: React.FC = () => {
                     type="button"
                     onClick={() => deleteBanner(ban.id)}
                     aria-label="Delete banner"
-                    className="p-1.5 text-[#9A9A9A] hover:text-red-600"
+                    className="p-1.5 rounded bg-[#C1121F] text-[#FFFFFF] hover:bg-[#E63946]"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -245,6 +256,8 @@ export const AdminBanners: React.FC = () => {
           ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
+
+export default AdminBanners;

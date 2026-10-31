@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { Package } from "lucide-react";
+import { motion } from "framer-motion";
 import { useDataStore } from "../../store/dataStore";
 import { formatPKR } from "../../lib/utils";
 import { AccountSidebar } from "../../components/layout/AccountSidebar";
+import { PageHeading } from "../../components/layout/PageHeading";
+import { OrderStatusBadge } from "../../components/orders/OrderStatusBadge";
+import { pageVariants } from "../../lib/animations";
 
 export const AccountOrders: React.FC = () => {
   const orders = useDataStore((s) => s.orders);
@@ -13,40 +18,51 @@ export const AccountOrders: React.FC = () => {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-8 py-10 flex flex-col md:flex-row gap-8">
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="max-w-7xl mx-auto px-4 md:px-8 py-10 flex flex-col md:flex-row gap-8"
+    >
       <AccountSidebar />
 
       <div className="flex-1 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <h1 className="text-2xl font-serif-display font-bold text-[#1A1A1A]">
-            Order History
-          </h1>
+        <PageHeading
+          title="My Orders"
+          subtitle="Track all your purchases"
+          icon={<Package className="w-5 h-5" />}
+          breadcrumbs={[
+            { label: "Home", to: "/" },
+            { label: "Account", to: "/account" },
+            { label: "My Orders" },
+          ]}
+        />
 
-          <div className="flex flex-wrap gap-1.5">
-            {["all", "pending", "confirmed", "shipped", "delivered", "cancelled"].map(
-              (st) => (
-                <button
-                  key={st}
-                  type="button"
-                  onClick={() => setStatusFilter(st)}
-                  className={`px-3 py-1.5 rounded-lg text-xs capitalize transition-colors ${
-                    statusFilter === st
-                      ? "bg-[#C9A84C] text-[#1A1A1A] font-semibold"
-                      : "bg-[#FAFAFA] border border-[#E8E0D0] text-[#4A4A4A]"
-                  }`}
-                >
-                  {st}
-                </button>
-              )
-            )}
-          </div>
+        <div className="flex flex-wrap gap-1.5">
+          {["all", "pending", "confirmed", "shipped", "delivered", "cancelled"].map(
+            (st) => (
+              <button
+                key={st}
+                type="button"
+                onClick={() => setStatusFilter(st)}
+                className={`px-3.5 py-1.5 rounded-[6px] text-xs capitalize transition-colors font-semibold ${
+                  statusFilter === st
+                    ? "bg-[#E63946] text-[#FFFFFF]"
+                    : "bg-[#FFFFFF] border border-[#E0E0E0] text-[#1A1A1A] hover:border-[#E63946] hover:text-[#E63946]"
+                }`}
+              >
+                {st}
+              </button>
+            )
+          )}
         </div>
 
-        <div className="rounded-xl bg-[#FAFAFA] border border-[#E8E0D0] overflow-hidden shadow-xs">
+        <div className="rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="bg-[#F5F4F0] border-b border-[#E8E0D0] text-[#4A4A4A]">
+                <tr className="bg-[#1A1A1A] text-[#FFFFFF]">
                   <th className="py-3.5 px-4">Order Number</th>
                   <th className="py-3.5 px-4">Date</th>
                   <th className="py-3.5 px-4">City</th>
@@ -56,42 +72,50 @@ export const AccountOrders: React.FC = () => {
                   <th className="py-3.5 px-4 text-right">Detail</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E8E0D0] font-mono tabular-nums">
-                {filteredOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-[#F5F4F0]">
-                    <td className="py-3.5 px-4 font-semibold text-[#C9A84C]">
+              <tbody className="divide-y divide-[#E0E0E0] font-mono tabular-nums">
+                {filteredOrders.map((order, idx) => (
+                  <motion.tr
+                    key={order.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="bg-[#FFFFFF] text-[#1A1A1A]"
+                  >
+                    <td className="py-3.5 px-4 font-bold text-[#1A1A1A]">
                       {order.order_number}
                     </td>
-                    <td className="py-3.5 px-4 text-[#4A4A4A]">
+                    <td className="py-3.5 px-4 text-[#666666]">
                       {new Date(order.created_at).toLocaleDateString()}
                     </td>
                     <td className="py-3.5 px-4 font-sans text-[#1A1A1A]">
                       {order.delivery_city}
                     </td>
-                    <td className="py-3.5 px-4 uppercase text-[#4A4A4A]">
+                    <td className="py-3.5 px-4 uppercase text-[#666666]">
                       {order.payment_method}
                     </td>
-                    <td className="py-3.5 px-4 uppercase font-semibold text-[#1A1A1A]">
-                      {order.status}
+                    <td className="py-3.5 px-4 font-sans">
+                      <OrderStatusBadge status={order.status} />
                     </td>
-                    <td className="py-3.5 px-4 text-right font-semibold text-[#C9A84C]">
+                    <td className="py-3.5 px-4 text-right font-bold text-[#E63946]">
                       {formatPKR(order.total_amount)}
                     </td>
                     <td className="py-3.5 px-4 text-right font-sans">
                       <Link
                         to={`/account/orders/${order.id}`}
-                        className="text-[#C9A84C] font-semibold hover:underline"
+                        className="text-[#E63946] font-semibold hover:underline"
                       >
                         View Timeline →
                       </Link>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
               </tbody>
             </table>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
+
+export default AccountOrders;

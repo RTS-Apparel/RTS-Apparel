@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Search as SearchIcon, Sparkles } from "lucide-react";
+import { Search as SearchIcon } from "lucide-react";
+import { motion } from "framer-motion";
 import { useProducts } from "../hooks/useProducts";
 import { useDataStore } from "../store/dataStore";
 import { aiSearch } from "../lib/ai";
@@ -8,12 +9,15 @@ import { isUrduText } from "../lib/utils";
 import { ProductGrid } from "../components/products/ProductGrid";
 import { LoadingSkeleton } from "../components/common/LoadingSkeleton";
 import { CUSTOMER_TRANSLATIONS } from "../lib/i18n";
+import { pageVariants } from "../lib/animations";
+import { PageHeading } from "../components/layout/PageHeading";
 
 export const SearchPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
   const [query, setQuery] = useState(initialQuery);
   const [keywords, setKeywords] = useState<string[]>([]);
+  const [aiUsed, setAiUsed] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
 
   const { activeProducts, categories } = useProducts();
@@ -29,6 +33,7 @@ export const SearchPage: React.FC = () => {
     setIsSearching(true);
     const detectedLang = isUrduText(clean) ? "ur" : language;
     const result = await aiSearch(clean, detectedLang);
+    setAiUsed(result.success !== false);
     setKeywords(
       result.keywords && result.keywords.length > 0
         ? result.keywords
@@ -54,6 +59,16 @@ export const SearchPage: React.FC = () => {
 
   const matchedProducts = activeProducts.filter((prod) => {
     if (!query.trim() && keywords.length === 0) return true;
+
+    if (!aiUsed) {
+      const qLower = query.trim().toLowerCase();
+      return (
+        prod.name_en.toLowerCase().includes(qLower) ||
+        (prod.name_ur || "").toLowerCase().includes(qLower) ||
+        (prod.name_roman_ur || "").toLowerCase().includes(qLower)
+      );
+    }
+
     const cat = categories.find((c) => c.id === prod.category_id);
     const haystack = [
       prod.name_en,
@@ -78,47 +93,56 @@ export const SearchPage: React.FC = () => {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-8 py-10 space-y-8">
-      <div className="rounded-xl bg-[#FAFAFA] border border-[#E8E0D0] p-6 md:p-8 space-y-5 shadow-xs">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 text-xs text-[#C9A84C] font-semibold">
-            <Sparkles className="w-4 h-4" />
-            <span>{t.smartSearch}</span>
-          </div>
-          <h1 className="text-3xl font-serif-display font-bold text-[#1A1A1A]">
-            {t.searchPlaceholder}
-          </h1>
-        </div>
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="max-w-7xl mx-auto px-4 md:px-8 py-10 space-y-8"
+    >
+      <PageHeading
+        title={t.smartSearch}
+        subtitle={t.searchPlaceholder}
+        breadcrumbs={[
+          { label: t.home, href: "/" },
+          { label: t.smartSearch },
+        ]}
+      />
 
+      <div className="rounded-xl bg-[#FFFFFF] border border-[#E0E0E0] p-6 md:p-8 space-y-5 shadow-xs">
         <form onSubmit={handleSubmit} className="flex gap-3">
           <div className="relative flex-1">
-            <SearchIcon className="w-4 h-4 text-[#9A9A9A] absolute left-3.5 top-3.5" />
+            <SearchIcon className="w-4 h-4 text-[#666666] absolute left-3.5 top-3.5" />
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t.searchPlaceholder}
               aria-label="Search query"
-              className="w-full h-11 pl-10 pr-4 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-sm text-[#1A1A1A] focus:border-[#C9A84C] focus:outline-none"
+              className="w-full h-11 pl-10 pr-4 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-sm text-[#1A1A1A] placeholder:text-[#999999] focus:border-2 focus:border-[#E63946] focus:outline-none"
             />
           </div>
           <button
             type="submit"
-            className="h-11 px-6 rounded-lg bg-[#C9A84C] text-[#1A1A1A] font-semibold text-sm hover:bg-[#E2C07A] transition-colors whitespace-nowrap"
+            className="btn-primary-futuristic h-11 px-6 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-sm hover:bg-[#C1121F] transition-colors whitespace-nowrap"
           >
             {t.searchGo}
           </button>
         </form>
 
         {keywords.length > 0 && (
-          <div className="flex flex-wrap items-center gap-2 text-xs text-[#4A4A4A]">
-            <span className="font-medium">AI Semantic Keywords:</span>
+          <div className="flex flex-wrap items-center gap-2 text-xs text-[#666666]">
+            <span className="font-medium text-[#1A1A1A]">AI Semantic Keywords:</span>
             {keywords.map((kw, i) => (
               <React.Fragment key={kw}>
-                <span className="font-mono font-semibold text-[#C9A84C]">
+                <span className="font-mono font-semibold text-[#E63946]">
                   {kw}
                 </span>
-                {i < keywords.length - 1 && <span aria-hidden="true">·</span>}
+                {i < keywords.length - 1 && (
+                  <span aria-hidden="true" className="text-[#666666]">
+                    ·
+                  </span>
+                )}
               </React.Fragment>
             ))}
           </div>
@@ -134,6 +158,8 @@ export const SearchPage: React.FC = () => {
           emptyMessage={`No garments found matching "${query}". Try searching for Kurta, Shirt, Gurkha, or Jacket.`}
         />
       )}
-    </div>
+    </motion.div>
   );
 };
+
+export default SearchPage;

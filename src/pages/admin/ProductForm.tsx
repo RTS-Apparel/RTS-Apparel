@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Shirt } from "lucide-react";
+import { motion } from "framer-motion";
 import { useDataStore } from "../../store/dataStore";
 import { PRODUCT_ARTWORKS } from "../../lib/artworks";
 import { AdminSidebar } from "../../components/layout/AdminSidebar";
+import { PageHeading } from "../../components/layout/PageHeading";
 import {
   ImageUploader,
   PendingUploadItem,
 } from "../../components/admin/ImageUploader";
 import { supabase, isSupabaseConfigured } from "../../lib/supabase";
 import { ADMIN_TRANSLATIONS } from "../../lib/i18n";
+import { pageVariants } from "../../lib/animations";
 
 const ALL_SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
 
@@ -157,32 +160,45 @@ export const AdminProductForm: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 flex flex-col lg:flex-row gap-8">
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="max-w-7xl mx-auto px-4 md:px-8 py-8 flex flex-col lg:flex-row gap-8 bg-[#F5F5F5] rounded-[8px]"
+    >
       <AdminSidebar />
 
-      <div className="flex-1 max-w-3xl space-y-6">
-        <div>
-          <Link
-            to="/admin/products"
-            className="text-xs text-[#C9A84C] flex items-center gap-1 hover:underline font-medium"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to {t.products}</span>
-          </Link>
-          <h1 className="text-2xl font-serif-display font-bold text-[#1A1A1A] mt-2">
-            {existing ? `${t.editProduct}: ${existing.name_en}` : t.addProduct}
-          </h1>
-        </div>
+      <div className="flex-1 space-y-6">
+        <PageHeading
+          title={existing ? "Edit Product" : "Add Product"}
+          subtitle="Manage your product catalog"
+          icon={<Shirt className="w-5 h-5" />}
+          breadcrumbs={[
+            { label: "Home", to: "/" },
+            { label: "Products", to: "/admin/products" },
+            { label: existing ? "Edit Product" : "Add Product" },
+          ]}
+          actions={
+            <Link
+              to="/admin/products"
+              className="px-3.5 py-2 rounded-[6px] bg-[#E63946] text-xs text-[#FFFFFF] flex items-center gap-1.5 hover:bg-[#C1121F] font-semibold transition-colors"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back to {t.products}</span>
+            </Link>
+          }
+        />
 
         <form
           onSubmit={handleSubmit}
-          className="rounded-xl bg-[#FAFAFA] border border-[#E8E0D0] p-6 space-y-5 shadow-xs"
+          className="max-w-3xl rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] p-6 space-y-5 shadow-xs"
         >
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-1">
               <label
                 htmlFor="pf-name-en"
-                className="text-xs font-medium text-[#4A4A4A]"
+                className="text-xs font-medium text-[#1A1A1A]"
               >
                 Product Name (English) *
               </label>
@@ -193,14 +209,14 @@ export const AdminProductForm: React.FC = () => {
                 value={nameEn}
                 onChange={(e) => setNameEn(e.target.value)}
                 placeholder="e.g. Royal Zari Karandi Kurta"
-                className="w-full h-10 px-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-sm text-[#1A1A1A] focus:outline-none focus:border-[#C9A84C]"
+                className="w-full h-10 px-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-sm text-[#1A1A1A] placeholder-[#999999] focus:outline-none focus:border-2 focus:border-[#E63946]"
               />
             </div>
 
             <div className="space-y-1">
               <label
                 htmlFor="pf-name-roman"
-                className="text-xs font-medium text-[#4A4A4A]"
+                className="text-xs font-medium text-[#1A1A1A]"
               >
                 Product Name (Roman Urdu)
               </label>
@@ -210,14 +226,14 @@ export const AdminProductForm: React.FC = () => {
                 value={nameRomanUr}
                 onChange={(e) => setNameRomanUr(e.target.value)}
                 placeholder="e.g. Shahi Zari Karandi Kurta"
-                className="w-full h-10 px-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-sm text-[#1A1A1A] focus:outline-none focus:border-[#C9A84C]"
+                className="w-full h-10 px-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-sm text-[#1A1A1A] placeholder-[#999999] focus:outline-none focus:border-2 focus:border-[#E63946]"
               />
             </div>
 
             <div className="space-y-1">
               <label
                 htmlFor="pf-name-ur"
-                className="text-xs font-medium text-[#4A4A4A]"
+                className="text-xs font-medium text-[#1A1A1A]"
               >
                 Product Name (Customer Urdu)
               </label>
@@ -228,7 +244,7 @@ export const AdminProductForm: React.FC = () => {
                 value={nameUr}
                 onChange={(e) => setNameUr(e.target.value)}
                 placeholder="شاہی زری کرنڈی کرتہ"
-                className="w-full h-10 px-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-sm font-urdu text-[#1A1A1A] focus:outline-none focus:border-[#C9A84C]"
+                className="w-full h-10 px-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-sm font-urdu text-[#1A1A1A] placeholder-[#999999] focus:outline-none focus:border-2 focus:border-[#E63946]"
               />
             </div>
           </div>
@@ -237,7 +253,7 @@ export const AdminProductForm: React.FC = () => {
             <div className="space-y-1">
               <label
                 htmlFor="pf-cat"
-                className="text-xs font-medium text-[#4A4A4A]"
+                className="text-xs font-medium text-[#1A1A1A]"
               >
                 {t.categories} *
               </label>
@@ -245,7 +261,7 @@ export const AdminProductForm: React.FC = () => {
                 id="pf-cat"
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-xs text-[#1A1A1A] focus:outline-none focus:border-[#C9A84C]"
+                className="w-full h-10 px-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-xs text-[#1A1A1A] focus:outline-none focus:border-2 focus:border-[#E63946]"
               >
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -258,7 +274,7 @@ export const AdminProductForm: React.FC = () => {
             <div className="space-y-1">
               <label
                 htmlFor="pf-price"
-                className="text-xs font-medium text-[#4A4A4A]"
+                className="text-xs font-medium text-[#1A1A1A]"
               >
                 Price (PKR) *
               </label>
@@ -268,14 +284,14 @@ export const AdminProductForm: React.FC = () => {
                 required
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-sm font-mono text-[#1A1A1A] focus:outline-none focus:border-[#C9A84C]"
+                className="w-full h-10 px-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-sm font-mono text-[#1A1A1A] focus:outline-none focus:border-2 focus:border-[#E63946]"
               />
             </div>
 
             <div className="space-y-1">
               <label
                 htmlFor="pf-disc"
-                className="text-xs font-medium text-[#4A4A4A]"
+                className="text-xs font-medium text-[#1A1A1A]"
               >
                 Discount %
               </label>
@@ -286,14 +302,14 @@ export const AdminProductForm: React.FC = () => {
                 max={90}
                 value={discountPercent}
                 onChange={(e) => setDiscountPercent(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-sm font-mono text-[#1A1A1A] focus:outline-none focus:border-[#C9A84C]"
+                className="w-full h-10 px-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-sm font-mono text-[#1A1A1A] focus:outline-none focus:border-2 focus:border-[#E63946]"
               />
             </div>
 
             <div className="space-y-1">
               <label
                 htmlFor="pf-stock"
-                className="text-xs font-medium text-[#4A4A4A]"
+                className="text-xs font-medium text-[#1A1A1A]"
               >
                 Stock Quantity *
               </label>
@@ -304,13 +320,13 @@ export const AdminProductForm: React.FC = () => {
                 required
                 value={stock}
                 onChange={(e) => setStock(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-sm font-mono text-[#1A1A1A] focus:outline-none focus:border-[#C9A84C]"
+                className="w-full h-10 px-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-sm font-mono text-[#1A1A1A] focus:outline-none focus:border-2 focus:border-[#E63946]"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <span className="text-xs font-medium text-[#4A4A4A] block">
+            <span className="text-xs font-medium text-[#1A1A1A] block">
               Available Sizes
             </span>
             <div className="flex flex-wrap gap-2">
@@ -319,10 +335,10 @@ export const AdminProductForm: React.FC = () => {
                   key={sz}
                   type="button"
                   onClick={() => toggleSize(sz)}
-                  className={`px-3 py-1.5 rounded text-xs font-mono border transition-colors ${
+                  className={`px-3 py-1.5 rounded-[4px] text-xs font-mono border transition-colors ${
                     sizes.includes(sz)
-                      ? "bg-[#C9A84C] text-[#1A1A1A] border-[#C9A84C] font-bold"
-                      : "bg-[#FFFFFF] text-[#4A4A4A] border-[#E8E0D0] hover:border-[#C9A84C]"
+                      ? "bg-[#E63946] text-[#FFFFFF] border-[#E63946] font-bold"
+                      : "bg-[#FFFFFF] text-[#1A1A1A] border-[#E0E0E0] hover:border-[#E63946]"
                   }`}
                 >
                   {sz}
@@ -334,7 +350,7 @@ export const AdminProductForm: React.FC = () => {
           <div className="space-y-1">
             <label
               htmlFor="pf-colors"
-              className="text-xs font-medium text-[#4A4A4A]"
+              className="text-xs font-medium text-[#1A1A1A]"
             >
               Colors (Comma separated)
             </label>
@@ -343,7 +359,7 @@ export const AdminProductForm: React.FC = () => {
               type="text"
               value={colorsInput}
               onChange={(e) => setColorsInput(e.target.value)}
-              className="w-full h-10 px-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-xs text-[#1A1A1A] focus:outline-none focus:border-[#C9A84C]"
+              className="w-full h-10 px-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-xs text-[#1A1A1A] focus:outline-none focus:border-2 focus:border-[#E63946]"
             />
           </div>
 
@@ -357,9 +373,9 @@ export const AdminProductForm: React.FC = () => {
           />
 
           {uploadErrors.length > 0 && (
-            <div className="rounded-lg bg-[#EF4444]/10 border border-[#EF4444]/30 p-3 space-y-1">
+            <div className="rounded-[6px] bg-[#F8D7DA] border border-[#E63946] p-3 space-y-1">
               {uploadErrors.map((err, i) => (
-                <p key={i} className="text-xs text-[#EF4444]">
+                <p key={i} className="text-xs text-[#721C24]">
                   {err}
                 </p>
               ))}
@@ -370,7 +386,7 @@ export const AdminProductForm: React.FC = () => {
             <div className="space-y-1">
               <label
                 htmlFor="pf-desc-en"
-                className="text-xs font-medium text-[#4A4A4A]"
+                className="text-xs font-medium text-[#1A1A1A]"
               >
                 Description (English)
               </label>
@@ -379,14 +395,14 @@ export const AdminProductForm: React.FC = () => {
                 rows={3}
                 value={descEn}
                 onChange={(e) => setDescEn(e.target.value)}
-                className="w-full p-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-xs text-[#1A1A1A] focus:outline-none focus:border-[#C9A84C]"
+                className="w-full p-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-xs text-[#1A1A1A] focus:outline-none focus:border-2 focus:border-[#E63946]"
               />
             </div>
 
             <div className="space-y-1">
               <label
                 htmlFor="pf-desc-roman"
-                className="text-xs font-medium text-[#4A4A4A]"
+                className="text-xs font-medium text-[#1A1A1A]"
               >
                 Description (Roman Urdu)
               </label>
@@ -395,14 +411,14 @@ export const AdminProductForm: React.FC = () => {
                 rows={3}
                 value={descRomanUr}
                 onChange={(e) => setDescRomanUr(e.target.value)}
-                className="w-full p-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-xs text-[#1A1A1A] focus:outline-none focus:border-[#C9A84C]"
+                className="w-full p-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-xs text-[#1A1A1A] focus:outline-none focus:border-2 focus:border-[#E63946]"
               />
             </div>
 
             <div className="space-y-1">
               <label
                 htmlFor="pf-desc-ur"
-                className="text-xs font-medium text-[#4A4A4A]"
+                className="text-xs font-medium text-[#1A1A1A]"
               >
                 Description (Customer Urdu)
               </label>
@@ -412,7 +428,7 @@ export const AdminProductForm: React.FC = () => {
                 dir="rtl"
                 value={descUr}
                 onChange={(e) => setDescUr(e.target.value)}
-                className="w-full p-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-xs font-urdu text-[#1A1A1A] focus:outline-none focus:border-[#C9A84C]"
+                className="w-full p-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-xs font-urdu text-[#1A1A1A] focus:outline-none focus:border-2 focus:border-[#E63946]"
               />
             </div>
           </div>
@@ -423,7 +439,7 @@ export const AdminProductForm: React.FC = () => {
                 type="checkbox"
                 checked={isActive}
                 onChange={(e) => setIsActive(e.target.checked)}
-                className="accent-[#C9A84C]"
+                className="accent-[#E63946]"
               />
               <span>Active in Storefront</span>
             </label>
@@ -432,7 +448,7 @@ export const AdminProductForm: React.FC = () => {
                 type="checkbox"
                 checked={isFeatured}
                 onChange={(e) => setIsFeatured(e.target.checked)}
-                className="accent-[#C9A84C]"
+                className="accent-[#E63946]"
               />
               <span>Featured on Homepage</span>
             </label>
@@ -441,7 +457,7 @@ export const AdminProductForm: React.FC = () => {
           <button
             type="submit"
             disabled={isUploading}
-            className="h-11 px-6 rounded-lg bg-[#C9A84C] text-[#1A1A1A] font-semibold text-sm hover:bg-[#E2C07A] disabled:opacity-60 flex items-center gap-2 transition-colors"
+            className="h-11 px-6 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-sm hover:bg-[#C1121F] disabled:bg-[#E0E0E0] disabled:text-[#999999] flex items-center gap-2 transition-colors"
           >
             {isUploading ? (
               <>
@@ -456,6 +472,8 @@ export const AdminProductForm: React.FC = () => {
           </button>
         </form>
       </div>
-    </div>
+    </motion.div>
   );
 };
+
+export default AdminProductForm;

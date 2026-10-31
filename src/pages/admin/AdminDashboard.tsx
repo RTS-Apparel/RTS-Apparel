@@ -7,11 +7,20 @@ import {
   WalletCards,
   Shirt,
   Users,
+  LayoutDashboard,
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { useDataStore } from "../../store/dataStore";
 import { formatPKR } from "../../lib/utils";
 import { AdminSidebar } from "../../components/layout/AdminSidebar";
+import { PageHeading } from "../../components/layout/PageHeading";
+import { OrderStatusBadge } from "../../components/orders/OrderStatusBadge";
 import { ADMIN_TRANSLATIONS, getProductName } from "../../lib/i18n";
+import {
+  pageVariants,
+  statCardVariants,
+  CountUpNumber,
+} from "../../lib/animations";
 
 export const AdminDashboard: React.FC = () => {
   const orders = useDataStore((s) => s.orders);
@@ -41,165 +50,223 @@ export const AdminDashboard: React.FC = () => {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 flex flex-col lg:flex-row gap-8">
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="max-w-7xl mx-auto px-4 md:px-8 py-8 flex flex-col lg:flex-row gap-8 bg-[#F5F5F5] rounded-[8px]"
+    >
       <AdminSidebar />
 
       <div className="flex-1 space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <p className="text-xs font-mono text-[#C9A84C] font-bold uppercase tracking-wider">
-              {t.adminConsoleSubtitle}
-            </p>
-            <h1 className="text-2xl sm:text-3xl font-serif-display font-bold text-[#1A1A1A] mt-1">
-              {t.adminConsoleTitle}
-            </h1>
-          </div>
-          <Link
-            to="/admin/products/new"
-            className="h-10 px-4 rounded-lg bg-[#C9A84C] text-[#1A1A1A] font-semibold text-xs flex items-center justify-center hover:bg-[#E2C07A] self-start shadow-xs"
-          >
-            + {t.addProduct}
-          </Link>
-        </div>
+        <PageHeading
+          title="Dashboard"
+          subtitle="Welcome back, Admin 👋"
+          icon={<LayoutDashboard className="w-5 h-5" />}
+          breadcrumbs={[
+            { label: "Home", to: "/" },
+            { label: "Admin" },
+            { label: "Dashboard" },
+          ]}
+          actions={
+            <Link
+              to="/admin/products/new"
+              className="h-10 px-4 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-xs flex items-center justify-center hover:bg-[#C1121F] shadow-xs transition-colors"
+            >
+              + {t.addProduct}
+            </Link>
+          }
+        />
 
         {/* 6 Live Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 font-mono tabular-nums">
-          <div className="p-4 rounded-xl bg-[#FAFAFA] border border-[#E8E0D0] space-y-1 shadow-xs">
-            <TrendingUp className="w-4 h-4 text-[#C9A84C]" />
-            <p className="text-lg font-bold text-[#C9A84C] pt-1">
-              {formatPKR(totalRevenue)}
+          <motion.div
+            custom={0}
+            variants={statCardVariants}
+            initial="initial"
+            animate="animate"
+            whileHover="hover"
+            className="group p-4 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] border-t-[3px] border-t-[#E63946] hover:border-[#E63946] transition-all space-y-1 shadow-xs"
+          >
+            <TrendingUp className="w-4 h-4 text-[#E63946] group-hover:rotate-[5deg] transition-transform" />
+            <p className="text-[20px] font-bold text-[#1A1A1A] pt-1">
+              <CountUpNumber value={totalRevenue} prefix="Rs. " />
             </p>
-            <p className="text-[11px] font-sans text-[#4A4A4A]">
+            <p className="text-[11px] font-sans text-[#666666]">
               {t.totalRevenue}
             </p>
-          </div>
+          </motion.div>
 
-          <Link
-            to="/admin/orders"
-            className="p-4 rounded-xl bg-[#FAFAFA] border border-[#E8E0D0] hover:border-[#C9A84C] transition-colors space-y-1 shadow-xs"
+          <motion.div
+            custom={1}
+            variants={statCardVariants}
+            initial="initial"
+            animate="animate"
+            whileHover="hover"
           >
-            <ShoppingBag className="w-4 h-4 text-[#D97706]" />
-            <p className="text-lg font-bold text-[#1A1A1A] pt-1">
-              {pendingOrdersCount}
-            </p>
-            <p className="text-[11px] font-sans text-[#4A4A4A]">
-              {t.pendingOrders}
-            </p>
-          </Link>
+            <Link
+              to="/admin/orders"
+              className="group block p-4 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] border-t-[3px] border-t-[#E63946] hover:border-[#E63946] transition-all space-y-1 shadow-xs h-full"
+            >
+              <ShoppingBag className="w-4 h-4 text-[#E63946] group-hover:rotate-[5deg] transition-transform" />
+              <p className="text-[24px] font-bold text-[#1A1A1A] pt-1">
+                <CountUpNumber value={pendingOrdersCount} />
+              </p>
+              <p className="text-[11px] font-sans text-[#666666]">
+                {t.pendingOrders}
+              </p>
+            </Link>
+          </motion.div>
 
-          <Link
-            to="/admin/team"
-            className="p-4 rounded-xl bg-[#FAFAFA] border border-[#E8E0D0] hover:border-[#C9A84C] transition-colors space-y-1 shadow-xs"
+          <motion.div
+            custom={2}
+            variants={statCardVariants}
+            initial="initial"
+            animate="animate"
+            whileHover="hover"
           >
-            <UserPlus className="w-4 h-4 text-[#C9A84C]" />
-            <p className="text-lg font-bold text-[#C9A84C] pt-1">
-              {pendingAgentsCount}
-            </p>
-            <p className="text-[11px] font-sans text-[#4A4A4A]">
-              {t.agentApprovals}
-            </p>
-          </Link>
+            <Link
+              to="/admin/team"
+              className="group block p-4 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] border-t-[3px] border-t-[#E63946] hover:border-[#E63946] transition-all space-y-1 shadow-xs h-full"
+            >
+              <UserPlus className="w-4 h-4 text-[#E63946] group-hover:rotate-[5deg] transition-transform" />
+              <p className="text-[24px] font-bold text-[#1A1A1A] pt-1">
+                <CountUpNumber value={pendingAgentsCount} />
+              </p>
+              <p className="text-[11px] font-sans text-[#666666]">
+                {t.agentApprovals}
+              </p>
+            </Link>
+          </motion.div>
 
-          <Link
-            to="/admin/withdrawals"
-            className="p-4 rounded-xl bg-[#FAFAFA] border border-[#E8E0D0] hover:border-[#C9A84C] transition-colors space-y-1 shadow-xs"
+          <motion.div
+            custom={3}
+            variants={statCardVariants}
+            initial="initial"
+            animate="animate"
+            whileHover="hover"
           >
-            <WalletCards className="w-4 h-4 text-[#16A34A]" />
-            <p className="text-lg font-bold text-[#1A1A1A] pt-1">
-              {pendingWithdrawalsCount}
-            </p>
-            <p className="text-[11px] font-sans text-[#4A4A4A]">
-              {t.pendingPayouts}
-            </p>
-          </Link>
+            <Link
+              to="/admin/withdrawals"
+              className="group block p-4 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] border-t-[3px] border-t-[#E63946] hover:border-[#E63946] transition-all space-y-1 shadow-xs h-full"
+            >
+              <WalletCards className="w-4 h-4 text-[#E63946] group-hover:rotate-[5deg] transition-transform" />
+              <p className="text-[24px] font-bold text-[#1A1A1A] pt-1">
+                <CountUpNumber value={pendingWithdrawalsCount} />
+              </p>
+              <p className="text-[11px] font-sans text-[#666666]">
+                {t.pendingPayouts}
+              </p>
+            </Link>
+          </motion.div>
 
-          <Link
-            to="/admin/products"
-            className="p-4 rounded-xl bg-[#FAFAFA] border border-[#E8E0D0] hover:border-[#C9A84C] transition-colors space-y-1 shadow-xs"
+          <motion.div
+            custom={4}
+            variants={statCardVariants}
+            initial="initial"
+            animate="animate"
+            whileHover="hover"
           >
-            <Shirt className="w-4 h-4 text-[#C9A84C]" />
-            <p className="text-lg font-bold text-[#1A1A1A] pt-1">
-              {products.length}
-            </p>
-            <p className="text-[11px] font-sans text-[#4A4A4A]">
-              {t.catalogItems}
-            </p>
-          </Link>
+            <Link
+              to="/admin/products"
+              className="group block p-4 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] border-t-[3px] border-t-[#E63946] hover:border-[#E63946] transition-all space-y-1 shadow-xs h-full"
+            >
+              <Shirt className="w-4 h-4 text-[#E63946] group-hover:rotate-[5deg] transition-transform" />
+              <p className="text-[24px] font-bold text-[#1A1A1A] pt-1">
+                <CountUpNumber value={products.length} />
+              </p>
+              <p className="text-[11px] font-sans text-[#666666]">
+                {t.catalogItems}
+              </p>
+            </Link>
+          </motion.div>
 
-          <Link
-            to="/admin/team"
-            className="p-4 rounded-xl bg-[#FAFAFA] border border-[#E8E0D0] hover:border-[#C9A84C] transition-colors space-y-1 shadow-xs"
+          <motion.div
+            custom={5}
+            variants={statCardVariants}
+            initial="initial"
+            animate="animate"
+            whileHover="hover"
           >
-            <Users className="w-4 h-4 text-[#C9A84C]" />
-            <p className="text-lg font-bold text-[#1A1A1A] pt-1">
-              {activeAgents.length}
-            </p>
-            <p className="text-[11px] font-sans text-[#4A4A4A]">
-              {t.activeAgents}
-            </p>
-          </Link>
+            <Link
+              to="/admin/team"
+              className="group block p-4 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] border-t-[3px] border-t-[#E63946] hover:border-[#E63946] transition-all space-y-1 shadow-xs h-full"
+            >
+              <Users className="w-4 h-4 text-[#E63946] group-hover:rotate-[5deg] transition-transform" />
+              <p className="text-[24px] font-bold text-[#1A1A1A] pt-1">
+                <CountUpNumber value={activeAgents.length} />
+              </p>
+              <p className="text-[11px] font-sans text-[#666666]">
+                {t.activeAgents}
+              </p>
+            </Link>
+          </motion.div>
         </div>
 
         {/* Recent Orders Table */}
-        <div className="rounded-xl bg-[#FAFAFA] border border-[#E8E0D0] p-6 space-y-4 shadow-xs">
+        <div className="rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] p-6 space-y-4 shadow-xs">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-serif-display font-bold text-[#1A1A1A]">
               {t.recentOrders}
             </h2>
             <Link
               to="/admin/orders"
-              className="text-xs font-semibold text-[#C9A84C] hover:underline"
+              className="text-xs font-semibold text-[#E63946] hover:underline"
             >
               {t.manageAllOrders}
             </Link>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto border border-[#E0E0E0] rounded-[8px]">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-[#E8E0D0] text-[#4A4A4A]">
-                  <th className="py-3 pr-3">Order ID</th>
-                  <th className="py-3 px-3">Customer</th>
-                  <th className="py-3 px-3">City</th>
-                  <th className="py-3 px-3">Referral Code</th>
-                  <th className="py-3 px-3">Status</th>
-                  <th className="py-3 px-3 text-right">Total</th>
-                  <th className="py-3 pl-3 text-right">Action</th>
+                <tr className="bg-[#1A1A1A] text-[#FFFFFF]">
+                  <th className="py-3.5 px-4">Order ID</th>
+                  <th className="py-3.5 px-4">Customer</th>
+                  <th className="py-3.5 px-4">City</th>
+                  <th className="py-3.5 px-4">Referral Code</th>
+                  <th className="py-3.5 px-4">Status</th>
+                  <th className="py-3.5 px-4 text-right">Total</th>
+                  <th className="py-3.5 px-4 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E8E0D0] font-mono tabular-nums">
-                {orders.slice(0, 6).map((ord) => (
-                  <tr
+              <tbody className="divide-y divide-[#E0E0E0] font-mono tabular-nums">
+                {orders.slice(0, 6).map((ord, idx) => (
+                  <motion.tr
                     key={ord.id}
-                    className="hover:bg-[#F5F4F0] transition-colors"
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="bg-[#FFFFFF] text-[#1A1A1A]"
                   >
-                    <td className="py-3.5 pr-3 font-semibold text-[#C9A84C]">
+                    <td className="py-3.5 px-4 font-bold text-[#1A1A1A]">
                       {ord.order_number}
                     </td>
-                    <td className="py-3.5 px-3 font-sans font-medium text-[#1A1A1A]">
+                    <td className="py-3.5 px-4 font-sans font-medium text-[#1A1A1A]">
                       {ord.customer_name}
                     </td>
-                    <td className="py-3.5 px-3 font-sans text-[#4A4A4A]">
+                    <td className="py-3.5 px-4 font-sans text-[#666666]">
                       {ord.delivery_city}
                     </td>
-                    <td className="py-3.5 px-3 font-bold text-[#9B7B2F]">
+                    <td className="py-3.5 px-4 font-bold text-[#E63946]">
                       {ord.referral_code || "—"}
                     </td>
-                    <td className="py-3.5 px-3 uppercase font-semibold text-[#1A1A1A]">
-                      {ord.status}
+                    <td className="py-3.5 px-4 font-sans">
+                      <OrderStatusBadge status={ord.status} />
                     </td>
-                    <td className="py-3.5 px-3 text-right font-bold text-[#1A1A1A]">
+                    <td className="py-3.5 px-4 text-right font-bold text-[#E63946]">
                       {formatPKR(ord.total_amount)}
                     </td>
-                    <td className="py-3.5 pl-3 text-right font-sans">
+                    <td className="py-3.5 px-4 text-right font-sans">
                       <Link
                         to={`/admin/orders/${ord.id}`}
-                        className="font-semibold text-[#C9A84C] hover:underline"
+                        className="font-semibold text-[#E63946] hover:underline inline-block"
                       >
                         Manage →
                       </Link>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
               </tbody>
             </table>
@@ -208,7 +275,7 @@ export const AdminDashboard: React.FC = () => {
 
         {/* Top Agents & Top Products */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="rounded-xl bg-[#FAFAFA] border border-[#E8E0D0] p-6 space-y-4 shadow-xs">
+          <div className="rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] p-6 space-y-4 shadow-xs">
             <h2 className="text-base font-serif-display font-bold text-[#1A1A1A]">
               {t.topAgents}
             </h2>
@@ -222,17 +289,17 @@ export const AdminDashboard: React.FC = () => {
                 return (
                   <div
                     key={ag.id}
-                    className="flex items-center justify-between p-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-xs"
+                    className="flex items-center justify-between p-3 rounded-[6px] bg-[#F5F5F5] border border-[#E0E0E0] text-xs"
                   >
                     <div>
-                      <p className="font-semibold text-[#1A1A1A]">
+                      <p className="font-bold text-[#1A1A1A]">
                         {ag.full_name}
                       </p>
-                      <p className="font-mono text-[#9B7B2F]">
-                        Code: {ag.referral_code} · {agComms.length} orders
+                      <p className="font-mono text-[#666666]">
+                        Code: <span className="text-[#E63946] font-bold">{ag.referral_code}</span> · {agComms.length} orders
                       </p>
                     </div>
-                    <span className="font-mono font-bold text-[#16A34A] tabular-nums">
+                    <span className="font-mono font-bold text-[#E63946] tabular-nums">
                       {formatPKR(earned)}
                     </span>
                   </div>
@@ -241,7 +308,7 @@ export const AdminDashboard: React.FC = () => {
             </div>
           </div>
 
-          <div className="rounded-xl bg-[#FAFAFA] border border-[#E8E0D0] p-6 space-y-4 shadow-xs">
+          <div className="rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] p-6 space-y-4 shadow-xs">
             <h2 className="text-base font-serif-display font-bold text-[#1A1A1A]">
               {t.topProducts}
             </h2>
@@ -249,15 +316,15 @@ export const AdminDashboard: React.FC = () => {
               {products.slice(0, 4).map((prod) => (
                 <div
                   key={prod.id}
-                  className="flex items-center justify-between p-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-xs"
+                  className="flex items-center justify-between p-3 rounded-[6px] bg-[#F5F5F5] border border-[#E0E0E0] text-xs"
                 >
                   <div>
-                    <p className="font-semibold text-[#1A1A1A]">
+                    <p className="font-bold text-[#1A1A1A]">
                       {getProductName(prod, adminLanguage)}
                     </p>
-                    <p className="text-[#4A4A4A]">Stock: {prod.stock} units</p>
+                    <p className="text-[#666666]">Stock: {prod.stock} units</p>
                   </div>
-                  <span className="font-mono font-bold text-[#C9A84C] tabular-nums">
+                  <span className="font-mono font-bold text-[#E63946] tabular-nums">
                     {formatPKR(prod.price)}
                   </span>
                 </div>
@@ -266,6 +333,8 @@ export const AdminDashboard: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
+
+export default AdminDashboard;

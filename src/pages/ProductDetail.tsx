@@ -9,11 +9,12 @@ import {
   ShieldCheck,
   Zap,
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { useProducts } from "../hooks/useProducts";
 import { useCart } from "../hooks/useCart";
 import { useDataStore } from "../store/dataStore";
 import { calculateDiscountedPrice, formatPKR } from "../lib/utils";
-import { aiRecommendations } from "../lib/ai";
+import { aiRecommendations, RecommendationAttribute } from "../lib/ai";
 import { ProductImageGallery } from "../components/products/ProductImageGallery";
 import { ProductGrid } from "../components/products/ProductGrid";
 import {
@@ -22,6 +23,7 @@ import {
   getProductDescription,
   getProductName,
 } from "../lib/i18n";
+import { pageVariants, buttonHover, buttonTap } from "../lib/animations";
 
 export const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -48,7 +50,10 @@ export const ProductDetail: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"details" | "sizing" | "delivery">(
     "details"
   );
-  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
+  const [aiSuggestions, setAiSuggestions] = useState<
+    Array<string | RecommendationAttribute>
+  >([]);
+  const [aiRecSuccess, setAiRecSuccess] = useState(false);
 
   useEffect(() => {
     if (!product) return;
@@ -57,14 +62,21 @@ export const ProductDetail: React.FC = () => {
     setQuantity(1);
 
     let cancelled = false;
-    aiRecommendations(
-      product.name_en,
-      category?.name_en || "Menswear",
-      product.price,
-      language
-    ).then((res) => {
-      if (!cancelled && res.recommendations) {
-        setAiSuggestions(res.recommendations);
+    aiRecommendations({
+      product_id: product.id,
+      category: category?.name_en || "Menswear",
+      tags: [...product.colors, ...product.sizes],
+      name: product.name_en,
+      language,
+    }).then((res) => {
+      if (!cancelled) {
+        if (res.success && res.recommendations && res.recommendations.length > 0) {
+          setAiSuggestions(res.recommendations);
+          setAiRecSuccess(true);
+        } else {
+          setAiSuggestions([]);
+          setAiRecSuccess(false);
+        }
       }
     });
 
@@ -76,7 +88,7 @@ export const ProductDetail: React.FC = () => {
   if (!product) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-        <p className="text-[#4A4A4A]">Garment not found.</p>
+        <p className="text-[#666666]">Garment not found.</p>
       </div>
     );
   }
@@ -98,10 +110,16 @@ export const ProductDetail: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-8 py-10 space-y-16">
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="max-w-7xl mx-auto px-4 md:px-8 py-10 space-y-16 bg-[#FFFFFF]"
+    >
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs font-mono text-[#9A9A9A]">
-        <Link to="/" className="hover:text-[#C9A84C]">
+      <div className="flex items-center gap-2 text-xs font-mono text-[#666666]">
+        <Link to="/" className="hover:text-[#E63946] text-[#1A1A1A] font-medium">
           {t.home}
         </Link>
         <span>/</span>
@@ -109,30 +127,28 @@ export const ProductDetail: React.FC = () => {
           <>
             <Link
               to={`/category/${category.slug}`}
-              className="hover:text-[#C9A84C]"
+              className="hover:text-[#E63946] text-[#1A1A1A] font-medium"
             >
               {displayCat}
             </Link>
             <span>/</span>
           </>
         )}
-        <span className="text-[#C9A84C] font-semibold truncate">
+        <span className="text-[#E63946] font-semibold truncate">
           {displayTitle}
         </span>
       </div>
 
       {/* Main Product Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        {/* Left: Interactive Image Gallery */}
         <div className="lg:col-span-6">
           <ProductImageGallery images={product.images} alt={displayTitle} />
         </div>
 
-        {/* Right: Specifications & Purchase Controls (Single Language) */}
         <div className="lg:col-span-6 space-y-6">
-          <div className="space-y-2 border-b border-[#E8E0D0] pb-5">
+          <div className="space-y-2 border-b border-[#E0E0E0] pb-5">
             {category && (
-              <span className="text-xs font-mono uppercase tracking-widest text-[#C9A84C] font-semibold">
+              <span className="text-xs font-mono uppercase tracking-widest text-[#E63946] font-semibold">
                 {displayCat}
               </span>
             )}
@@ -141,15 +157,15 @@ export const ProductDetail: React.FC = () => {
             </h1>
 
             <div className="flex items-baseline gap-3 pt-2">
-              <span className="text-3xl font-mono font-bold text-[#C9A84C] tabular-nums">
+              <span className="text-3xl font-mono font-bold text-[#E63946] tabular-nums">
                 {formatPKR(finalPrice)}
               </span>
               {effectiveDiscount > 0 && (
                 <>
-                  <span className="text-base font-mono text-[#9A9A9A] line-through tabular-nums">
+                  <span className="text-base font-mono text-[#999999] line-through tabular-nums">
                     {formatPKR(product.price)}
                   </span>
-                  <span className="px-2.5 py-0.5 rounded bg-[#16A34A]/15 text-[#16A34A] font-mono text-xs font-bold">
+                  <span className="px-2.5 py-0.5 rounded bg-[#E63946] text-[#FFFFFF] font-mono text-xs font-bold">
                     SAVE {effectiveDiscount}%
                   </span>
                 </>
@@ -157,18 +173,18 @@ export const ProductDetail: React.FC = () => {
             </div>
           </div>
 
-          <p className="text-sm text-[#4A4A4A] leading-relaxed">
+          <p className="text-sm text-[#666666] leading-relaxed">
             {displayDesc}
           </p>
 
           {/* Size Selector */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-[#4A4A4A] uppercase tracking-wider font-mono font-semibold">
+              <span className="text-[#666666] uppercase tracking-wider font-mono font-semibold">
                 {t.selectSize}:{" "}
                 <strong className="text-[#1A1A1A]">{selectedSize}</strong>
               </span>
-              <span className="text-[#C9A84C] font-mono">
+              <span className="text-[#E63946] font-mono font-semibold">
                 {product.stock > 0
                   ? `${product.stock} ${t.piecesAvailable}`
                   : t.outOfStock}
@@ -180,10 +196,10 @@ export const ProductDetail: React.FC = () => {
                   key={sz}
                   type="button"
                   onClick={() => setSelectedSize(sz)}
-                  className={`w-12 h-11 rounded-lg font-mono text-xs font-semibold border transition-colors ${
+                  className={`w-12 h-11 rounded-[6px] font-mono text-xs font-semibold border transition-colors ${
                     selectedSize === sz
-                      ? "bg-[#C9A84C] text-[#1A1A1A] border-[#C9A84C]"
-                      : "bg-[#FAFAFA] text-[#1A1A1A] border-[#E8E0D0] hover:border-[#C9A84C]"
+                      ? "bg-[#E63946] text-[#FFFFFF] border-[#E63946]"
+                      : "bg-[#FFFFFF] text-[#1A1A1A] border-[#E0E0E0] hover:border-[#E63946]"
                   }`}
                 >
                   {sz}
@@ -194,7 +210,7 @@ export const ProductDetail: React.FC = () => {
 
           {/* Color Selector */}
           <div className="space-y-2.5">
-            <span className="text-xs text-[#4A4A4A] uppercase tracking-wider font-mono font-semibold block">
+            <span className="text-xs text-[#666666] uppercase tracking-wider font-mono font-semibold block">
               {t.selectColor}:{" "}
               <strong className="text-[#1A1A1A]">{selectedColor}</strong>
             </span>
@@ -204,14 +220,14 @@ export const ProductDetail: React.FC = () => {
                   key={clr}
                   type="button"
                   onClick={() => setSelectedColor(clr)}
-                  className={`px-4 h-10 rounded-lg text-xs font-medium border flex items-center gap-2 transition-colors ${
+                  className={`px-4 h-10 rounded-[6px] text-xs font-semibold border flex items-center gap-2 transition-colors ${
                     selectedColor === clr
-                      ? "bg-[#C9A84C]/15 text-[#1A1A1A] border-[#C9A84C] font-semibold"
-                      : "bg-[#FAFAFA] text-[#4A4A4A] border-[#E8E0D0] hover:border-[#C9A84C]"
+                      ? "bg-[#1A1A1A] text-[#FFFFFF] border-[#1A1A1A]"
+                      : "bg-[#FFFFFF] text-[#1A1A1A] border-[#E0E0E0] hover:border-[#E63946]"
                   }`}
                 >
                   {selectedColor === clr && (
-                    <Check className="w-3.5 h-3.5 text-[#C9A84C]" />
+                    <Check className="w-3.5 h-3.5 text-[#E63946]" />
                   )}
                   <span>{clr}</span>
                 </button>
@@ -222,11 +238,11 @@ export const ProductDetail: React.FC = () => {
           {/* Quantity + Add to Cart + Buy Now */}
           <div className="pt-2 space-y-3">
             <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center h-12 rounded-lg bg-[#FAFAFA] border border-[#E8E0D0] px-2">
+              <div className="flex items-center h-12 rounded-[6px] bg-[#F5F5F5] border border-[#E0E0E0] px-2">
                 <button
                   type="button"
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className="px-3 text-[#1A1A1A] hover:text-[#C9A84C] font-mono text-lg"
+                  className="px-3 text-[#1A1A1A] hover:text-[#E63946] font-mono text-lg font-bold"
                 >
                   -
                 </button>
@@ -238,38 +254,42 @@ export const ProductDetail: React.FC = () => {
                   onClick={() =>
                     setQuantity((q) => Math.min(product.stock || 10, q + 1))
                   }
-                  className="px-3 text-[#1A1A1A] hover:text-[#C9A84C] font-mono text-lg"
+                  className="px-3 text-[#1A1A1A] hover:text-[#E63946] font-mono text-lg font-bold"
                 >
                   +
                 </button>
               </div>
 
-              <button
+              <motion.button
                 type="button"
+                whileHover={buttonHover}
+                whileTap={buttonTap}
                 disabled={product.stock <= 0}
                 onClick={() =>
                   addItem(product.id, selectedSize, selectedColor, quantity)
                 }
-                className="flex-1 h-12 px-6 rounded-lg bg-[#C9A84C] text-[#1A1A1A] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[#E2C07A] disabled:opacity-40 transition-colors shadow-xs"
+                className="btn-primary-futuristic flex-1 h-12 px-6 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[#C1121F] disabled:bg-[#E0E0E0] disabled:text-[#999999] transition-colors"
               >
-                <ShoppingBag className="w-4 h-4" />
+                <ShoppingBag className="w-4 h-4 text-[#FFFFFF]" />
                 <span>
                   {t.addToCart} — {formatPKR(finalPrice * quantity)}
                 </span>
-              </button>
+              </motion.button>
 
               <button
                 type="button"
                 onClick={() => toggleWishlist(product.id)}
                 aria-label="Save to wishlist"
-                className={`h-12 px-4 rounded-lg border flex items-center gap-2 text-xs font-semibold transition-colors ${
+                className={`h-12 px-4 rounded-[6px] border flex items-center gap-2 text-xs font-semibold transition-colors ${
                   isWished
-                    ? "bg-[#C9A84C]/15 border-[#C9A84C] text-[#9B7B2F]"
-                    : "bg-[#FAFAFA] border-[#E8E0D0] text-[#1A1A1A] hover:border-[#C9A84C]"
+                    ? "bg-[#FFFFFF] border-[#E63946] text-[#E63946]"
+                    : "bg-[#FFFFFF] border-[#E0E0E0] text-[#1A1A1A] hover:border-[#E63946]"
                 }`}
               >
                 <Heart
-                  className={`w-4 h-4 ${isWished ? "fill-current text-[#C9A84C]" : ""}`}
+                  className={`w-4 h-4 ${
+                    isWished ? "fill-[#E63946] text-[#E63946]" : "text-[#CCCCCC]"
+                  }`}
                 />
                 <span className="hidden sm:inline">
                   {isWished ? t.saved : t.wishlist}
@@ -277,27 +297,29 @@ export const ProductDetail: React.FC = () => {
               </button>
             </div>
 
-            <button
+            <motion.button
               type="button"
+              whileHover={{ scale: 1.01 }}
+              whileTap={buttonTap}
               disabled={product.stock <= 0}
               onClick={handleBuyNow}
-              className="w-full h-11 rounded-lg border-2 border-[#C9A84C] text-[#1A1A1A] font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#C9A84C]/10 disabled:opacity-40 transition-colors"
+              className="w-full h-11 rounded-[6px] border-2 border-[#1A1A1A] text-[#1A1A1A] font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#1A1A1A] hover:text-[#FFFFFF] disabled:bg-[#E0E0E0] disabled:text-[#999999] transition-colors"
             >
-              <Zap className="w-4 h-4 text-[#C9A84C]" />
+              <Zap className="w-4 h-4" />
               <span>{t.buyNow}</span>
-            </button>
+            </motion.button>
           </div>
 
           {/* Detail Tabs */}
-          <div className="pt-4 border-t border-[#E8E0D0] space-y-3">
-            <div className="flex gap-4 border-b border-[#E8E0D0] text-xs">
+          <div className="pt-4 border-t border-[#E0E0E0] space-y-3">
+            <div className="flex gap-4 border-b border-[#E0E0E0] text-xs">
               <button
                 type="button"
                 onClick={() => setActiveTab("details")}
                 className={`pb-2.5 font-semibold border-b-2 transition-colors ${
                   activeTab === "details"
-                    ? "border-[#C9A84C] text-[#C9A84C]"
-                    : "border-transparent text-[#4A4A4A]"
+                    ? "border-[#E63946] text-[#E63946]"
+                    : "border-transparent text-[#666666] hover:text-[#1A1A1A]"
                 }`}
               >
                 {t.craftSpecs}
@@ -307,8 +329,8 @@ export const ProductDetail: React.FC = () => {
                 onClick={() => setActiveTab("sizing")}
                 className={`pb-2.5 font-semibold border-b-2 transition-colors ${
                   activeTab === "sizing"
-                    ? "border-[#C9A84C] text-[#C9A84C]"
-                    : "border-transparent text-[#4A4A4A]"
+                    ? "border-[#E63946] text-[#E63946]"
+                    : "border-transparent text-[#666666] hover:text-[#1A1A1A]"
                 }`}
               >
                 {t.sizeGuide}
@@ -318,19 +340,20 @@ export const ProductDetail: React.FC = () => {
                 onClick={() => setActiveTab("delivery")}
                 className={`pb-2.5 font-semibold border-b-2 transition-colors ${
                   activeTab === "delivery"
-                    ? "border-[#C9A84C] text-[#C9A84C]"
-                    : "border-transparent text-[#4A4A4A]"
+                    ? "border-[#E63946] text-[#E63946]"
+                    : "border-transparent text-[#666666] hover:text-[#1A1A1A]"
                 }`}
               >
                 {t.deliveryExchange}
               </button>
             </div>
 
-            <div className="text-xs text-[#4A4A4A] leading-relaxed bg-[#FAFAFA] p-4 rounded-xl border border-[#E8E0D0]">
+            <div className="text-xs text-[#1A1A1A] leading-relaxed bg-[#F5F5F5] p-4 rounded-xl border border-[#E0E0E0]">
               {activeTab === "details" && (
                 <ul className="space-y-1.5 list-disc list-inside">
                   <li>
-                    Tailored at the RTS Flagship Atelier in Gulberg III, Lahore
+                    Crafted by ARTS APPAREL — Flagship store at Club Road Near
+                    New Cafe Sajawal Sadiqabad
                   </li>
                   <li>
                     Reinforced stitching and custom antique brass buttons
@@ -348,14 +371,14 @@ export const ProductDetail: React.FC = () => {
               {activeTab === "delivery" && (
                 <div className="space-y-1.5">
                   <p className="flex items-center gap-2">
-                    <Truck className="w-3.5 h-3.5 text-[#C9A84C]" />
+                    <Truck className="w-3.5 h-3.5 text-[#E63946]" />
                     <span>
-                      Lahore Rs. 200 · Karachi/Islamabad Rs. 250 · Rest of
-                      Pakistan Rs. 300–350
+                      Sadiqabad Rs. 150 · Lahore Rs. 200 · Karachi/Islamabad Rs.
+                      250 · Rest of Pakistan Rs. 280–350
                     </span>
                   </p>
                   <p className="flex items-center gap-2">
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#C9A84C]" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#E63946]" />
                     <span>
                       7-day complimentary size exchange on unworn garments with
                       tags attached.
@@ -366,33 +389,43 @@ export const ProductDetail: React.FC = () => {
             </div>
           </div>
 
-          {/* AI Sartorial Pairing Recommendations */}
-          {aiSuggestions.length > 0 && (
-            <div className="p-4 rounded-xl bg-[#FAFAFA] border border-[#C9A84C]/40 space-y-2">
-              <div className="flex items-center gap-2 text-xs font-semibold text-[#9B7B2F]">
-                <Sparkles className="w-4 h-4 text-[#C9A84C]" />
+          {aiRecSuccess && aiSuggestions.length > 0 && (
+            <div className="p-4 rounded-xl bg-[#F5F5F5] border border-[#E0E0E0] border-l-4 border-l-[#E63946] space-y-2">
+              <div className="flex items-center gap-2 text-xs font-semibold text-[#1A1A1A]">
+                <Sparkles className="w-4 h-4 text-[#E63946]" />
                 <span>{t.aiSuggestionsTitle}</span>
               </div>
-              <ul className="space-y-1 text-xs text-[#4A4A4A]">
-                {aiSuggestions.map((item, idx) => (
-                  <li key={idx} className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#C9A84C]" />
-                    <span>{item}</span>
-                  </li>
-                ))}
+              <ul className="space-y-1.5 text-xs text-[#666666]">
+                {aiSuggestions.map((item, idx) => {
+                  const text =
+                    typeof item === "string"
+                      ? item
+                      : `${item.attribute}${item.reason ? ` — ${item.reason}` : ""}`;
+                  return (
+                    <li key={idx} className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#E63946]" />
+                      <span className="text-[#1A1A1A]">{text}</span>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}
         </div>
       </div>
 
-      {/* Related Products */}
-      <section className="space-y-6 pt-8 border-t border-[#E8E0D0]">
-        <h2 className="text-2xl font-serif-display font-bold text-[#1A1A1A]">
-          {t.youMayAlsoLike}
-        </h2>
-        <ProductGrid products={relatedProducts} categories={categories} />
-      </section>
-    </div>
+      {aiRecSuccess && (
+        <section className="space-y-6 pt-8 border-t border-[#E0E0E0]">
+          <div className="border-l-[3px] border-[#E63946] pl-[10px]">
+            <h2 className="text-2xl font-serif-display font-bold text-[#1A1A1A]">
+              {t.youMayAlsoLike}
+            </h2>
+          </div>
+          <ProductGrid products={relatedProducts} categories={categories} />
+        </section>
+      )}
+    </motion.div>
   );
 };
+
+export default ProductDetail;

@@ -26,8 +26,17 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const query = body.query.trim();
     const language = body.language || "en";
 
+    if (!context.env || !context.env.AI) {
+      console.error("Cloudflare Workers AI binding (context.env.AI) is not available.");
+      return json({
+        success: true,
+        query,
+        language,
+        keywords: query.split(/\s+/).filter(Boolean),
+      });
+    }
+
     // Step 1: Generate multilingual embedding for the search query
-    // @cf/baai/bge-m3 supports 100+ languages including Urdu
     await context.env.AI.run("@cf/baai/bge-m3", { text: [query] });
 
     // Step 2: Extract search keywords via LLM
@@ -36,7 +45,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         {
           role: "system",
           content:
-            "You are a product search assistant for RTS Apparel, a men's fashion store in Pakistan. " +
+            "You are a product search assistant for ARTS APPAREL, a men's fashion store in Pakistan. " +
             "Extract 3-5 relevant product search keywords from the user's query. " +
             "The store sells: Shirts, Trousers, Kurta Shalwar, Hoodies, Jackets. " +
             "Respond ONLY with a valid JSON array of strings. No explanation, no markdown. " +

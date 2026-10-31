@@ -1,38 +1,37 @@
 @import "tailwindcss";
 
-@theme {
-  --color-background: #FFFFFF;
-  --color-surface: #FAFAFA;
-  --color-surface-elevated: #F5F4F0;
-  --color-border: #E8E0D0;
-  --color-gold: #C9A84C;
-  --color-gold-light: #E2C07A;
-  --color-gold-dark: #9B7B2F;
-  --color-gold-muted: rgba(201, 168, 76, 0.08);
-  --color-text-primary: #1A1A1A;
-  --color-text-secondary: #4A4A4A;
-  --color-text-muted: #9A9A9A;
-  --color-text-gold: #C9A84C;
-
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-display: "Playfair Display", Georgia, serif;
-  --font-urdu: "Noto Nastaliq Urdu", serif;
-  --font-mono: "JetBrains Mono", monospace;
-}
-
 @layer base {
-  html,
-  body {
+  :root {
+    --font-serif-display: "Playfair Display", Georgia, serif;
+    --font-sans-ui: "Inter", system-ui, -apple-system, sans-serif;
+    --font-mono-code: "JetBrains Mono", monospace;
+    --font-urdu: "Noto Nastaliq Urdu", serif;
+  }
+
+  html {
+    scroll-behavior: smooth;
     background-color: #FFFFFF;
     color: #1A1A1A;
-    font-family: var(--font-sans);
+  }
+
+  body {
+    font-family: var(--font-sans-ui);
+    background-color: #FFFFFF;
+    color: #1A1A1A;
+    overflow-x: hidden;
   }
 
   h1,
   h2,
+  h3,
+  h4,
   .font-serif-display {
-    font-family: var(--font-display);
-    text-wrap: balance;
+    font-family: var(--font-serif-display);
+  }
+
+  .font-mono-code {
+    font-family: var(--font-mono-code);
+    font-variant-numeric: tabular-nums;
   }
 
   .font-urdu {
@@ -40,27 +39,147 @@
     line-height: 2.1;
   }
 
-  .tabular-nums {
-    font-variant-numeric: tabular-nums;
+  /* Global input & select red focus border */
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: #E63946 !important;
+    box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.18);
   }
 }
 
-@keyframes goldShimmer {
-  0% {
-    background-position: -200% 0;
+/* 1. Logo "RTS" Subtle Glow */
+@keyframes glow {
+  from {
+    box-shadow: 0 0 4px rgba(230, 57, 70, 0.4);
   }
-  100% {
+  to {
+    box-shadow: 0 0 14px rgba(230, 57, 70, 0.75);
+  }
+}
+
+.rts-glow-text {
+  text-shadow: 0 0 8px rgba(230, 57, 70, 0.45);
+}
+
+/* 2. Hero Dark Background (#1A1A1A) */
+.hero-gradient-mesh {
+  background-color: #1A1A1A;
+  background-image: radial-gradient(
+    circle at 80% 20%,
+    rgba(230, 57, 70, 0.14) 0%,
+    transparent 55%
+  );
+}
+
+/* 3. Navbar Links */
+.nav-link-animated {
+  position: relative;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+/* 4. Primary Button Styling */
+.btn-primary-futuristic {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.btn-primary-futuristic:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(230, 57, 70, 0.32);
+}
+
+.btn-primary-futuristic:active {
+  transform: scale(0.98);
+}
+
+/* 5. Chatbot Trigger Red Button + Pulse */
+@keyframes chatPulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.6), 0 8px 24px rgba(230, 57, 70, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(230, 57, 70, 0), 0 12px 30px rgba(230, 57, 70, 0.55);
+  }
+}
+
+@keyframes chatBounce4s {
+  0%, 82%, 100% {
+    transform: translateY(0);
+  }
+  88% {
+    transform: translateY(-7px);
+  }
+  94% {
+    transform: translateY(-2px);
+  }
+}
+
+.chat-trigger-btn {
+  background: #E63946;
+  animation: chatPulseGlow 2s infinite, chatBounce4s 4s ease-in-out infinite;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.2s ease;
+}
+
+.chat-trigger-btn:hover {
+  background: #C1121F;
+  transform: scale(1.1) !important;
+}
+
+.chat-window-border {
+  border: 1px solid #E0E0E0;
+  box-shadow: 0 20px 50px rgba(26, 26, 26, 0.22);
+}
+
+/* 6. Skeleton Screen Shimmer (Light theme) */
+@keyframes skeletonShimmer {
+  0% {
     background-position: 200% 0;
   }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
+.skeleton-shimmer,
 .skeleton-gold {
-  background: linear-gradient(
-    90deg,
-    #F5F4F0 25%,
-    rgba(201, 168, 76, 0.18) 50%,
-    #F5F4F0 75%
-  );
+  background: linear-gradient(90deg, #F5F5F5 25%, #E8E8E8 50%, #F5F5F5 75%);
   background-size: 200% 100%;
-  animation: goldShimmer 1.8s infinite linear;
+  animation: skeletonShimmer 1.5s infinite;
+}
+
+/* 7. Table Alternating Rows & Hover (#FFF5F5) */
+tbody tr {
+  background-color: #FFFFFF;
+  color: #1A1A1A;
+  transition: background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #F9F9F9;
+}
+
+tbody tr:hover {
+  background-color: #FFF5F5 !important;
+  box-shadow: inset 3px 0 0 0 #E63946;
+}
+
+/* 8. Form Error Shake */
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(10px); }
+  60% { transform: translateX(-10px); }
+  80% { transform: translateX(10px); }
+}
+
+.animate-error-shake {
+  animation: errorShake 0.45s ease-in-out;
 }

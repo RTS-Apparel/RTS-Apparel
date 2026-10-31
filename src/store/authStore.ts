@@ -55,7 +55,7 @@ export const useAuthStore = create<AuthState>()(
             return {
               success: false,
               error:
-                "Account suspended by administrator. Please contact RTS support.",
+                "Account suspended by administrator. Please contact ARTS APPAREL support.",
             };
           }
 
@@ -106,7 +106,7 @@ export const useAuthStore = create<AuthState>()(
           supabase.auth.signOut().catch(() => {});
         }
         set({ currentUserId: null });
-        useDataStore.getState().addToast("Signed out of RTS Apparel", "info");
+        useDataStore.getState().addToast("Signed out of ARTS APPAREL", "info");
       },
 
       switchDemoRole: (role) => {

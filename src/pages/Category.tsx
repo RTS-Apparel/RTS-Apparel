@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
 import { useDataStore } from "../store/dataStore";
 import { useProducts } from "../hooks/useProducts";
 import { ProductGrid } from "../components/products/ProductGrid";
 import { ProductFilters } from "../components/products/ProductFilters";
 import { CUSTOMER_TRANSLATIONS, getCategoryName } from "../lib/i18n";
+import { pageVariants } from "../lib/animations";
+import { PageHeading } from "../components/layout/PageHeading";
 
 export const CategoryPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -48,27 +51,21 @@ export const CategoryPage: React.FC = () => {
     : t.allCollections;
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-xs text-[#4A4A4A]">
-        <Link to="/" className="hover:text-[#C9A84C]">
-          {t.home}
-        </Link>
-        <ChevronRight className="w-3.5 h-3.5" />
-        <span className="text-[#C9A84C] font-semibold">{displayCat}</span>
-      </nav>
-
-      {/* Category Header */}
-      <div className="rounded-xl bg-[#FAFAFA] border border-[#E8E0D0] p-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h1 className="font-serif-display text-3xl sm:text-4xl font-bold text-[#1A1A1A]">
-            {displayCat}
-          </h1>
-        </div>
-        <div className="text-xs font-mono uppercase tracking-[0.2em] text-[#9B7B2F] font-semibold">
-          {filteredProducts.length} {t.itemsCount}
-        </div>
-      </div>
+    <motion.main
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8"
+    >
+      <PageHeading
+        title={displayCat}
+        subtitle={`${filteredProducts.length} ${t.itemsCount} · Premium Men's Fashion`}
+        breadcrumbs={[
+          { label: t.home, href: "/" },
+          { label: displayCat },
+        ]}
+      />
 
       {/* Layout with Sidebar Filters + ProductGrid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -89,7 +86,7 @@ export const CategoryPage: React.FC = () => {
           <ProductGrid products={filteredProducts} categories={categories} />
         </div>
       </div>
-    </main>
+    </motion.main>
   );
 };
 

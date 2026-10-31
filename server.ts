@@ -15,7 +15,7 @@ const BILINGUAL_SYNONYMS: Record<string, string[]> = {
   پینٹ: ["pant", "trouser", "gurkha", "chino", "pleated"],
   ٹراؤزر: ["trouser", "pant", "gurkha", "chino"],
   جیکٹ: ["jacket", "suede", "bomber", "leather", "winter", "outerwear"],
-  شال: ["shawl", "pashmina", "wool", "accessory"],
+  ہوڈی: ["hoodie", "hoodies", "monolith", "cotton", "winter"],
   سیاہ: ["black", "obsidian", "dark"],
   کالا: ["black", "obsidian", "dark"],
   kala: ["black", "obsidian", "dark", "kurta"],
@@ -24,17 +24,17 @@ const BILINGUAL_SYNONYMS: Record<string, string[]> = {
   سفید: ["white", "ivory", "cream"],
   سبز: ["emerald", "green", "olive"],
   نیلا: ["navy", "blue", "cobalt"],
-  شادی: ["wedding", "festive", "zari", "embroidered", "kurta", "shawl"],
-  shadi: ["wedding", "festive", "zari", "embroidered", "kurta", "shawl"],
+  شادی: ["wedding", "festive", "zari", "embroidered", "kurta"],
+  shadi: ["wedding", "festive", "zari", "embroidered", "kurta"],
   دفتر: ["office", "formal", "shirt", "trouser", "gurkha"],
   daftar: ["office", "formal", "shirt", "trouser", "gurkha"],
-  سردی: ["winter", "jacket", "shawl", "karandi", "suede"],
-  sardi: ["winter", "jacket", "shawl", "karandi", "suede"],
+  سردی: ["winter", "jacket", "karandi", "suede", "hoodie"],
+  sardi: ["winter", "jacket", "karandi", "suede", "hoodie"],
   kurta: ["kurta", "shalwar", "karandi", "zari", "embroidered"],
   kameez: ["kurta", "shalwar", "shirt"],
   formal: ["shirt", "oxford", "gurkha", "trouser"],
-  wedding: ["kurta", "zari", "emerald", "obsidian", "shawl"],
-  winter: ["jacket", "suede", "shawl", "karandi"],
+  wedding: ["kurta", "zari", "emerald", "obsidian"],
+  winter: ["jacket", "suede", "karandi", "hoodie"],
 };
 
 function expandSearchQuery(query: string): string[] {
@@ -58,69 +58,113 @@ function expandSearchQuery(query: string): string[] {
   return Array.from(expanded).slice(0, 6);
 }
 
-function buildStylistReply(message: string, language?: string): string {
-  const lower = message.toLowerCase();
-  const hasUrdu = /[\u0600-\u06FF]/.test(message) || language === "ur";
-  const isRoman =
-    language === "roman_ur" ||
-    /\b(dikhao|batao|qeemat|kitna|kahan|kaise|chahiye|hai|hain)\b/i.test(
-      message
-    );
+function buildStylistReply(message: string, _language?: string): string {
+  const q = message.toLowerCase();
 
-  if (hasUrdu) {
-    if (lower.includes("ڈیلیوری") || lower.includes("چارجز") || lower.includes("delivery")) {
-      return "آر ٹی ایس اپیرل پورے پاکستان میں ڈیلیوری فراہم کرتا ہے۔ لاہور کے لیے ڈیلیوری چارجز 200 روپے، کراچی اور اسلام آباد کے لیے 250 روپے، اور دیگر شہروں کے لیے 300 روپے ہیں۔ کیش آن ڈیلیوری، جاز کیش اور ایزی پیسہ دستیاب ہیں۔";
-    }
-    if (lower.includes("کرتہ") || lower.includes("شادی")) {
-      return "ہماری شاہی کرنڈی اور زری کڑھائی والی کُرتہ شلوار کلیکشن شادی اور تقریبات کے لیے بہترین ہے۔ رائل اوبسیڈین زری کرتہ (Rs. 11,500) اور سلطان ایمرالڈ کرتہ (Rs. 12,800) ہمارے سب سے مقبول ڈیزائن ہیں۔";
-    }
-    if (lower.includes("ایجنٹ") || lower.includes("کمیشن") || lower.includes("کوڈ")) {
-      return "آپ ہمارے 'ایجنٹ بنیں' پیج سے رجسٹریشن کر کے اپنا منفرد ریفرل کوڈ حاصل کر سکتے ہیں اور ہر آرڈر پر کمیشن کما سکتے ہیں۔ مثال کے طور پر کوڈ RTS-ALI123 استعمال کریں۔";
-    }
-    return "آر ٹی ایس اپیرل میں خوش آمدید! ہمارے پاس پریمیئم کُرتہ شلوار، فارمل شرٹس، گُرکھا پینٹس اور سوئیڈ جیکٹس موجود ہیں۔ آپ کس قسم کا لباس تلاش کر رہے ہیں؟";
+  if (
+    q.includes("politics") ||
+    q.includes("religion") ||
+    q.includes("cricket") ||
+    q.includes("weather") ||
+    q.includes("movie")
+  ) {
+    return "Yaar yeh meri expertise se bahar hai 😅 ARTS APPAREL fashion ke baare mein poochho, ya WhatsApp karo: 03058165623 💬✨";
   }
 
-  if (isRoman) {
-    if (lower.includes("delivery") || lower.includes("charge") || lower.includes("shipping")) {
-      return "RTS Apparel poore Pakistan mein 3–5 din mein delivery deta hai: Lahore Rs. 200, Karachi / Islamabad / Rawalpindi Rs. 250, Faisalabad / Multan Rs. 280, aur baqi shehron mein Rs. 300–350. COD, JazzCash, EasyPaisa aur Bank Transfer dastiyab hain.";
-    }
-    if (lower.includes("agent") || lower.includes("referral") || lower.includes("commission")) {
-      return "Aap RTS Partner Agent ban kar apne personal referral code (maslan RTS-ALI123) ke zariye har order par commission kama sakte hain aur JazzCash, EasyPaisa ya Bank se payout le sakte hain.";
-    }
-    if (lower.includes("kurta") || lower.includes("wedding") || lower.includes("shadi")) {
-      return "Shadi aur khaas taqreebat ke liye hamara 'Royal Obsidian Zari Karandi Kurta' (Rs. 11,500) aur 'Sultanate Emerald Hand-Loomed Kurta' (Rs. 12,800) behtareen intikhab hain.";
-    }
-    return "RTS Apparel mein khush aamdeed! Hamare paas Karandi Kurta Shalwar, Egyptian Cotton Shirts, Gurkha Trousers aur Lambskin Suede Jackets dastiyab hain. Main aap ki kya madad kar sakta hoon?";
+  if (q.includes("track") || q.includes("order status") || q.includes("kahan") || q.includes("order")) {
+    return "Bhai, 'Track Order' page pe jao aur apna order number daalo — sab kuch dikh jayega! 📦🔍 Koi masla ho to WhatsApp karo: 03058165623 😊";
   }
 
-  if (lower.includes("delivery") || lower.includes("shipping") || lower.includes("charge")) {
-    return "RTS Apparel delivers across Pakistan within 3–5 business days: Lahore Rs. 200, Karachi / Islamabad / Rawalpindi Rs. 250, Faisalabad / Multan Rs. 280, Peshawar / Quetta Rs. 320–350, and Other Cities Rs. 300. We accept Cash on Delivery (COD), JazzCash, EasyPaisa, and Bank Transfer.";
+  if (
+    q.includes("delivery") ||
+    q.includes("shipping") ||
+    q.includes("charge") ||
+    q.includes("din") ||
+    q.includes("kab")
+  ) {
+    return "Dost, 3 se 5 working days mein ghar pohonch jayega inshallah! 🚚✨ Baqi areas mein 5 se 7 days lagte hain 📦";
   }
 
-  if (lower.includes("agent") || lower.includes("referral") || lower.includes("commission")) {
-    return "You can join the RTS Partner Agent Program via Sign Up ('Become an Agent'). Once approved by Admin, you receive a personal referral code (such as RTS-ALI123). Whenever a customer enters your code at checkout, your commission is tracked in your Agent Portal and can be withdrawn via JazzCash, EasyPaisa, or Bank Transfer.";
+  if (
+    q.includes("return") ||
+    q.includes("exchange") ||
+    q.includes("wapsi") ||
+    q.includes("wapas") ||
+    q.includes("refund")
+  ) {
+    return "Koi masla nahi Bhai! 7 din ke andar unworn kapra wapas kar sakte ho, aur size change bilkul free hai. WhatsApp karo: 03058165623 😊👍";
   }
 
-  if (lower.includes("kurta") || lower.includes("wedding") || lower.includes("festive")) {
-    return "For weddings and evening receptions, we recommend our flagship 'Royal Obsidian Zari Karandi Kurta' (Rs. 11,500) or the 'Sultanate Emerald Hand-Loomed Kurta' (Rs. 12,800), paired with our 'Kashmir Pashmina Zari Shawl'.";
+  if (q.includes("discount") || q.includes("sale") || q.includes("offer") || q.includes("promo")) {
+    return "Yaar abhi site pe zabardast discounts chal rahe hain! Homepage dekho ya apna referral code use karo 🔥🎉";
   }
 
-  if (lower.includes("size") || lower.includes("fit")) {
-    return "Our garments are tailored in XS, S, M, L, XL, and XXL. OurKurtas feature a structured Pakistani regular-tailored silhouette, while our Oxford Shirts and Gurkha Trousers offer a sharp contemporary fit.";
+  if (q.includes("size") || q.includes("chart") || q.includes("fit")) {
+    return "Bhai har product page pe size chart mojood hai — S, M, L, XL, XXL sab milte hain. Confusion ho to poochho! 👕📏";
   }
 
-  return "Welcome to RTS Apparel — Where Pakistani Men Dress Sharp. Explore our hand-loomed Karandi Kurtas, Egyptian Cotton Formal Shirts, Gurkha Pleated Trousers, and Lambskin Suede Jackets. How may I style you today?";
+  if (q.includes("agent") || q.includes("referral") || q.includes("commission") || q.includes("partner")) {
+    return "Dost agar agent banna chahte ho aur commission kamana chahte ho to WhatsApp karo: 03058165623 💰🤝";
+  }
+
+  if (q.includes("payment") || q.includes("cod") || q.includes("jazzcash") || q.includes("easypaisa") || q.includes("bank")) {
+    return "Bhai Cash on Delivery (COD), JazzCash, EasyPaisa aur Bank Transfer — charon options mojood hain! 💳✨ Jo aapko easy lage wo select karo 😄";
+  }
+
+  if (
+    q.includes("address") ||
+    q.includes("location") ||
+    q.includes("where") ||
+    q.includes("whatsapp") ||
+    q.includes("contact") ||
+    q.includes("phone") ||
+    q.includes("sadiqabad") ||
+    q.includes("dukkan")
+  ) {
+    return "Bhai hamara store Club Road Near New Cafe Sajawal Sadiqabad, Sadiqabad, Pakistan mein hai! 📍✨ Seedha WhatsApp karo: 03058165623 😄📞";
+  }
+
+  if (
+    q.includes("kurta") ||
+    q.includes("shalwar") ||
+    q.includes("shirt") ||
+    q.includes("trouser") ||
+    q.includes("jacket") ||
+    q.includes("waistcoat") ||
+    q.includes("hoodie") ||
+    q.includes("jeans") ||
+    q.includes("wedding") ||
+    q.includes("shadi")
+  ) {
+    return "Dost ARTS APPAREL pe Shirts, Trousers, Kurta Shalwar, Waistcoats, Hoodies aur Jackets sab premium quality mein milte hain! 👔🔥 Category page kholo aur apna style chuno 😄";
+  }
+
+  if (
+    q.includes("salam") ||
+    q.includes("assalam") ||
+    q.includes("aoa") ||
+    q.includes("hello") ||
+    q.includes("hi") ||
+    q.includes("hey")
+  ) {
+    return "Walaikum Assalam Bhai! 👋 Main ARTS APPAREL ka assistant hun. Orders, delivery, ya sizes ke baare mein kuch bhi poochho! 😄✨";
+  }
+
+  return "Yaar is baare mein pakka nahi pata 😅 Seedha WhatsApp karo: 03058165623 — wahan poori madad milegi! 💬✨";
 }
 
 async function startServer() {
   const app = express();
   app.use(express.json({ limit: "5mb" }));
 
-  // Endpoint 1: POST /api/ai/search (Multilingual English, Urdu & Roman Urdu Smart Search)
+  // Endpoint 1: POST /api/ai/search
   app.post("/api/ai/search", (req, res) => {
-    const { query = "" } = req.body || {};
+    const { query = "", language = "en" } = req.body || {};
     const keywords = expandSearchQuery(String(query));
     res.json({
+      success: true,
+      query,
+      language,
       keywords: keywords.length > 0 ? keywords : [String(query).trim()],
       original: query,
     });
@@ -128,50 +172,49 @@ async function startServer() {
 
   // Endpoint 2: POST /api/ai/recommendations
   app.post("/api/ai/recommendations", (req, res) => {
-    const { category = "", language = "en" } = req.body || {};
+    const { product_id = "", category = "", language = "en" } = req.body || {};
     const catLower = String(category).toLowerCase();
 
-    let recommendations: string[];
+    let recommendations: Array<{ attribute: string; reason: string }>;
     if (language === "ur") {
       recommendations = [
-        "کشمیر پشمینہ زری شال",
-        "لاہور سوئیڈ بومبر جیکٹ",
-        "سیول گُرکھا پلیٹڈ ٹراؤزرز",
-      ];
-    } else if (language === "roman_ur") {
-      recommendations = [
-        "Kashmir Pashmina Zari Shawl",
-        "Lahore Lambskin Suede Bomber Jacket",
-        "Savile Gurkha Pleated Trousers",
+        { attribute: "ایمپیریل زمرد بوسکی سلک کرتہ سیٹ", reason: "شاہی تقریبات کے لیے بہترین انتخاب" },
+        { attribute: "مے فیئر لیمب اسکن سويڈ بمبر جیکٹ", reason: "سردیوں کی شام کے لیے پریمیم لیدر" },
+        { attribute: "اطالوی وول ڈبل پلیٹ گورکھا ٹراؤزر", reason: "شاندار ٹیلرڈ فٹنگ" },
       ];
     } else if (catLower.includes("kurta")) {
       recommendations = [
-        "Kashmir Pashmina Zari Shawl",
-        "Lahore Lambskin Suede Bomber Jacket",
-        "Sultanate Emerald Hand-Loomed Kurta",
+        { attribute: "Mayfair Lambskin Suede Bomber Jacket", reason: "Layers Effortlessly Over Festive Kurtas" },
+        { attribute: "Imperial Emerald Boski Silk Kurta Set", reason: "Complementary Hand-Loomed Evening Silhouette" },
+        { attribute: "Sovereign Ivory Tilla Kurta Shalwar", reason: "Crisp Giza Cotton Daytime Essential" },
       ];
     } else if (catLower.includes("shirt")) {
       recommendations = [
-        "Savile Gurkha Pleated Trousers",
-        "Lahore Lambskin Suede Bomber Jacket",
-        "Clifton Tailored Stretch Chinos",
+        { attribute: "Sartorial Double-Pleat Gurkha Trousers", reason: "Sharp Executive Sartorial Pairing" },
+        { attribute: "Mayfair Lambskin Suede Bomber Jacket", reason: "Refined Outerwear Over Dress Shirts" },
+        { attribute: "Obsidian Pima Stretch Tailored Chinos", reason: "Smart-Casual Tailored Comfort" },
       ];
     } else {
       recommendations = [
-        "Royal Obsidian Zari Karandi Kurta",
-        "Imperial Two-Ply Egyptian Cotton Shirt",
-        "Savile Gurkha Pleated Trousers",
+        { attribute: "Obsidian Zari Karandi Kurta Shalwar", reason: "ARTS APPAREL Signature Bestseller" },
+        { attribute: "Noir Giza 120s Executive Dress Shirt", reason: "Two-Ply Egyptian Cotton Craftsmanship" },
+        { attribute: "Sartorial Double-Pleat Gurkha Trousers", reason: "Tailored Italian Wool-Blend Silhouette" },
       ];
     }
 
-    res.json({ recommendations });
+    res.json({
+      success: true,
+      product_id,
+      category,
+      recommendations,
+    });
   });
 
   // Endpoint 3: POST /api/ai/chat
   app.post("/api/ai/chat", (req, res) => {
     const { message = "", language = "en" } = req.body || {};
     const reply = buildStylistReply(String(message), String(language));
-    res.json({ reply });
+    res.json({ success: true, reply });
   });
 
   if (process.env.NODE_ENV !== "production") {
@@ -189,7 +232,7 @@ async function startServer() {
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`RTS Apparel server running on http://localhost:${PORT}`);
+    console.log(`ARTS APPAREL server running on http://localhost:${PORT}`);
   });
 }
 

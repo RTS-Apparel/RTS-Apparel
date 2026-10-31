@@ -1,5 +1,5 @@
-// Bespoke classic-luxury SVG data URI artworks for RTS Apparel products and hero banners.
-// Designed for the White + Black + Gold luxury theme.
+// Bespoke futuristic dark-luxury SVG data URI artworks for ARTS APPAREL products and hero banners.
+// Designed for the Black (#0D0D0D) + Red (#E63946) + Gold (#FFD700) luxury theme.
 
 function createGarmentSvg(config: {
   title: string;
@@ -31,8 +31,8 @@ function createGarmentSvg(config: {
     pathMarkup = `
       <g stroke="${accentColor}" stroke-width="2.2" fill="${garmentFill}">
         <path d="M230 130 L270 105 L330 105 L370 130 L430 240 L392 260 L358 190 L358 430 L242 430 L242 190 L208 260 L170 240 Z" />
-        <polygon points="270,105 300,145 282,162 258,122" fill="rgba(201,168,76,0.22)" />
-        <polygon points="330,105 300,145 318,162 342,122" fill="rgba(201,168,76,0.22)" />
+        <polygon points="270,105 300,145 282,162 258,122" fill="rgba(255,215,0,0.18)" />
+        <polygon points="330,105 300,145 318,162 342,122" fill="rgba(255,215,0,0.18)" />
         <line x1="300" y1="145" x2="300" y2="430" stroke="${accentColor}" stroke-opacity="0.8" />
         <circle cx="300" cy="185" r="2.8" fill="${accentColor}" />
         <circle cx="300" cy="230" r="2.8" fill="${accentColor}" />
@@ -45,7 +45,7 @@ function createGarmentSvg(config: {
     pathMarkup = `
       <g stroke="${accentColor}" stroke-width="2.2" fill="${garmentFill}">
         <path d="M235 115 L365 115 L380 455 L322 455 L300 235 L278 455 L220 455 Z" />
-        <rect x="235" y="115" width="130" height="24" fill="rgba(201,168,76,0.2)" />
+        <rect x="235" y="115" width="130" height="24" fill="rgba(255,215,0,0.16)" />
         <line x1="300" y1="115" x2="300" y2="215" stroke="${accentColor}" />
         <line x1="262" y1="139" x2="255" y2="455" stroke="${accentColor}" stroke-opacity="0.45" stroke-dasharray="6 4" />
         <line x1="338" y1="139" x2="345" y2="455" stroke="${accentColor}" stroke-opacity="0.45" stroke-dasharray="6 4" />
@@ -55,9 +55,9 @@ function createGarmentSvg(config: {
   } else if (silhouette === "hoodie") {
     pathMarkup = `
       <g stroke="${accentColor}" stroke-width="2.2" fill="${garmentFill}">
-        <path d="M255 125 Q300 72 345 125" fill="rgba(201,168,76,0.16)" />
+        <path d="M255 125 Q300 72 345 125" fill="rgba(230,57,70,0.16)" />
         <path d="M225 130 L260 120 L340 120 L375 130 L435 265 L395 282 L362 200 L362 430 L238 430 L238 200 L205 282 L165 265 Z" />
-        <polygon points="258,325 342,325 356,395 244,395" fill="rgba(201,168,76,0.12)" stroke="${accentColor}" stroke-opacity="0.7" />
+        <polygon points="258,325 342,325 356,395 244,395" fill="rgba(255,215,0,0.12)" stroke="${accentColor}" stroke-opacity="0.7" />
         <line x1="286" y1="132" x2="286" y2="205" stroke="${accentColor}" stroke-width="2" />
         <line x1="314" y1="132" x2="314" y2="205" stroke="${accentColor}" stroke-width="2" />
       </g>
@@ -66,8 +66,8 @@ function createGarmentSvg(config: {
     pathMarkup = `
       <g stroke="${accentColor}" stroke-width="2.4" fill="${garmentFill}">
         <path d="M220 128 L268 104 L332 104 L380 128 L438 265 L396 285 L364 195 L364 435 L236 435 L236 195 L204 285 L162 265 Z" />
-        <polygon points="268,104 300,210 252,185" fill="rgba(201,168,76,0.22)" />
-        <polygon points="332,104 300,210 348,185" fill="rgba(201,168,76,0.22)" />
+        <polygon points="268,104 300,210 252,185" fill="rgba(230,57,70,0.2)" />
+        <polygon points="332,104 300,210 348,185" fill="rgba(230,57,70,0.2)" />
         <line x1="300" y1="210" x2="300" y2="435" stroke="${accentColor}" stroke-width="2.8" />
         <line x1="252" y1="320" x2="285" y2="335" stroke="${accentColor}" />
         <line x1="348" y1="320" x2="315" y2="335" stroke="${accentColor}" />
@@ -75,29 +75,33 @@ function createGarmentSvg(config: {
     `;
   }
 
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  const safeTitle = title.replace(/&/g, "&amp;");
+  const safeSubtitle = subtitle.toUpperCase().replace(/&/g, "&amp;");
+  const safeUrdu = urduTitle.replace(/&/g, "&amp;");
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 720" width="600" height="720">
     <defs>
       <radialGradient id="glow" cx="50%" cy="42%" r="60%">
-        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1" />
-        <stop offset="65%" stop-color="#F5F4F0" stop-opacity="1" />
-        <stop offset="100%" stop-color="#EAE4D7" stop-opacity="1" />
+        <stop offset="0%" stop-color="#222222" stop-opacity="1" />
+        <stop offset="65%" stop-color="#1A1A1A" stop-opacity="1" />
+        <stop offset="100%" stop-color="#111111" stop-opacity="1" />
       </radialGradient>
       <linearGradient id="frame" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="${accentColor}" stop-opacity="0.7" />
-        <stop offset="50%" stop-color="#E8E0D0" stop-opacity="0.9" />
-        <stop offset="100%" stop-color="${accentColor}" stop-opacity="0.7" />
+        <stop offset="0%" stop-color="#E63946" stop-opacity="0.75" />
+        <stop offset="50%" stop-color="#333333" stop-opacity="0.9" />
+        <stop offset="100%" stop-color="${accentColor}" stop-opacity="0.75" />
       </linearGradient>
     </defs>
-    <rect width="800" height="600" fill="url(#glow)" />
-    <rect x="28" y="24" width="744" height="552" rx="8" fill="none" stroke="url(#frame)" stroke-width="1.5" />
-    <text x="56" y="64" fill="#9B7B2F" font-family="Georgia, serif" font-size="13" font-weight="bold" letter-spacing="4">RTS APPAREL ATELIER</text>
-    <text x="744" y="64" fill="#4A4A4A" font-family="serif" font-size="16" text-anchor="end">${urduTitle}</text>
-    <g transform="translate(100, -10)">
+    <rect width="600" height="720" fill="url(#glow)" />
+    <rect x="24" y="24" width="552" height="672" rx="10" fill="none" stroke="url(#frame)" stroke-width="1.5" />
+    <text x="48" y="64" fill="#E63946" font-family="Georgia, serif" font-size="12" font-weight="bold" letter-spacing="3.5">ARTS APPAREL ATELIER</text>
+    <text x="552" y="64" fill="#CCCCCC" font-family="serif" font-size="15" text-anchor="end">${safeUrdu}</text>
+    <g transform="translate(0, 45)">
       ${pathMarkup}
     </g>
-    <line x1="56" y1="496" x2="744" y2="496" stroke="#E8E0D0" stroke-width="1.5" />
-    <text x="56" y="528" fill="#1A1A1A" font-family="Georgia, serif" font-size="21" font-weight="bold">${title}</text>
-    <text x="56" y="554" fill="#4A4A4A" font-family="sans-serif" font-size="12" letter-spacing="2">${subtitle.toUpperCase()}</text>
+    <line x1="48" y1="590" x2="552" y2="590" stroke="#333333" stroke-width="1.5" />
+    <text x="48" y="626" fill="#FFFFFF" font-family="Georgia, serif" font-size="19" font-weight="bold">${safeTitle}</text>
+    <text x="48" y="652" fill="#CCCCCC" font-family="sans-serif" font-size="10.5" letter-spacing="1.5">${safeSubtitle}</text>
   </svg>`;
 
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
@@ -110,9 +114,9 @@ function createBannerSvg(config: {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 720" width="1600" height="720">
     <defs>
       <radialGradient id="bgGlow" cx="65%" cy="45%" r="65%">
-        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1" />
-        <stop offset="60%" stop-color="#F5F4F0" stop-opacity="1" />
-        <stop offset="100%" stop-color="#E8E0D0" stop-opacity="1" />
+        <stop offset="0%" stop-color="#222222" stop-opacity="1" />
+        <stop offset="60%" stop-color="#1A1A1A" stop-opacity="1" />
+        <stop offset="100%" stop-color="#111111" stop-opacity="1" />
       </radialGradient>
     </defs>
     <rect width="1600" height="720" fill="url(#bgGlow)" />
@@ -128,7 +132,7 @@ function createBannerSvg(config: {
       <circle cx="300" cy="185" r="3.5" fill="${config.accent}" />
       <circle cx="300" cy="220" r="3.5" fill="${config.accent}" />
     </g>
-    <rect x="40" y="40" width="1520" height="640" fill="none" stroke="${config.accent}" stroke-opacity="0.45" stroke-width="1.5" />
+    <rect x="40" y="40" width="1520" height="640" fill="none" stroke="#E63946" stroke-opacity="0.45" stroke-width="1.5" />
   </svg>`;
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
@@ -138,89 +142,89 @@ export const PRODUCT_ARTWORKS = {
     title: "Obsidian Zari Karandi Kurta",
     subtitle: "Bespoke Festive Collection · Hand-Embroidered Placket",
     urduTitle: "شاہی سیاہ کرنڈی کرتہ شلوار",
-    accentColor: "#C9A84C",
-    garmentFill: "#1A1A1A",
+    accentColor: "#E63946",
+    garmentFill: "#111111",
     silhouette: "kurta",
   }),
   kurtaEmerald: createGarmentSvg({
     title: "Imperial Emerald Boski Kurta Set",
-    subtitle: "Spun Silk Blend · Tailored Cuff & Collar",
+    subtitle: "Spun Silk Blend · Tailored Cuff and Collar",
     urduTitle: "زمرد بوسکی کرتہ شلوار",
-    accentColor: "#C9A84C",
-    garmentFill: "#143328",
+    accentColor: "#FFFFFF",
+    garmentFill: "#142620",
     silhouette: "kurta",
   }),
   kurtaIvory: createGarmentSvg({
     title: "Sovereign Ivory Tilla Kurta Shalwar",
-    subtitle: "Egyptian Giza Cotton · Tone-on-Gold Threadwork",
+    subtitle: "Egyptian Giza Cotton · Tone-on-Crimson Threadwork",
     urduTitle: "سفید طلا کڑھائی کرتہ",
-    accentColor: "#9B7B2F",
-    garmentFill: "#FAF8F2",
+    accentColor: "#E63946",
+    garmentFill: "#24221E",
     silhouette: "kurta",
   }),
   shirtOnyx: createGarmentSvg({
     title: "Noir Giza Cotton Dress Shirt",
-    subtitle: "Two-Ply 120s Egyptian Cotton · Gold Mother-of-Pearl Buttons",
+    subtitle: "Two-Ply 120s Egyptian Cotton · Signature Placket",
     urduTitle: "سیاہ مصری کاٹن ڈریس شرٹ",
-    accentColor: "#C9A84C",
-    garmentFill: "#1A1A1A",
+    accentColor: "#FFFFFF",
+    garmentFill: "#141414",
     silhouette: "shirt",
   }),
   shirtOxford: createGarmentSvg({
     title: "Savile Charcoal Tailored Oxford",
-    subtitle: "Structured Spread Collar · Wrinkle-Resistant Weave",
+    subtitle: "Structured Spread Collar · Wrinkle-Resistant",
     urduTitle: "چارکول ٹیلرڈ آکسفورڈ شرٹ",
-    accentColor: "#C9A84C",
-    garmentFill: "#2C3036",
+    accentColor: "#E63946",
+    garmentFill: "#1F2226",
     silhouette: "shirt",
   }),
   trouserGurkha: createGarmentSvg({
     title: "Sartorial Double-Pleat Gurkha Trousers",
-    subtitle: "Italian Wool Blend · Brass Buckle Side Adjusters",
+    subtitle: "Italian Wool Blend · Side Adjusters",
     urduTitle: "اطالوی وول گورکھا ٹراؤزر",
-    accentColor: "#C9A84C",
-    garmentFill: "#23211E",
+    accentColor: "#FFFFFF",
+    garmentFill: "#181614",
     silhouette: "trouser",
   }),
   trouserChino: createGarmentSvg({
     title: "Obsidian Stretch Tailored Chinos",
     subtitle: "Peached Pima Cotton Twill · Tapered Cut",
     urduTitle: "پریمیم ٹیلرڈ چینو ٹراؤزر",
-    accentColor: "#C9A84C",
-    garmentFill: "#1F2328",
+    accentColor: "#E63946",
+    garmentFill: "#16191D",
     silhouette: "trouser",
   }),
   hoodieMonolith: createGarmentSvg({
     title: "Monolith 480GSM Heavyweight Hoodie",
-    subtitle: "Combed Loopback French Terry · Antique Brass Tips",
+    subtitle: "Combed Loopback French Terry · Crimson Accents",
     urduTitle: "ہیوی ویٹ لگژری ہوڈی",
-    accentColor: "#C9A84C",
-    garmentFill: "#1A1A1A",
+    accentColor: "#E63946",
+    garmentFill: "#111111",
     silhouette: "hoodie",
   }),
   jacketSuede: createGarmentSvg({
     title: "Mayfair Lambskin Suede Bomber Jacket",
     subtitle: "Full-Grain Goat Suede · Satin Quilted Lining",
     urduTitle: "لیدر سويڈ بمبر جیکٹ",
-    accentColor: "#C9A84C",
-    garmentFill: "#2A1F18",
+    accentColor: "#FFFFFF",
+    garmentFill: "#221813",
     silhouette: "jacket",
   }),
   jacketRacer: createGarmentSvg({
     title: "Vanguard Matte Onyx Leather Jacket",
-    subtitle: "Hand-Waxed Nappa Leather · Brushed Gold Zippers",
+    subtitle: "Hand-Waxed Nappa Leather · Crimson Details",
     urduTitle: "ناپا لیدر رائیڈر جیکٹ",
-    accentColor: "#C9A84C",
-    garmentFill: "#1A1A1A",
+    accentColor: "#E63946",
+    garmentFill: "#0F0F0F",
     silhouette: "jacket",
   }),
   bannerFestive: createBannerSvg({
-    accent: "#C9A84C",
-    garmentFill: "#1A1A1A",
+    accent: "#E63946",
+    garmentFill: "#111111",
   }),
   bannerSartorial: createBannerSvg({
-    accent: "#9B7B2F",
-    garmentFill: "#26221E",
+    accent: "#FFFFFF",
+    garmentFill: "#181818",
   }),
   get shirtWhite() {
     return this.shirtOnyx;
@@ -232,4 +236,3 @@ export const PRODUCT_ARTWORKS = {
     return this.hoodieMonolith;
   },
 };
-

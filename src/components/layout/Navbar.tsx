@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   ShoppingBag,
@@ -12,11 +12,13 @@ import {
   Globe,
   Heart,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useDataStore } from "../../store/dataStore";
 import { useAuth } from "../../hooks/useAuth";
 import { useCart } from "../../hooks/useCart";
 import { CUSTOMER_TRANSLATIONS, getCategoryName } from "../../lib/i18n";
 import { CustomerLanguage } from "../../types";
+import { BrandLogo } from "../common/BrandLogo";
 
 export const Navbar: React.FC = () => {
   const categories = useDataStore((s) => s.categories);
@@ -29,8 +31,30 @@ export const Navbar: React.FC = () => {
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [scrolled, setScrolled] = useState(false);
+  const [cartWiggle, setCartWiggle] = useState(false);
+  const prevCountRef = useRef(totalCount);
+
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 16);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (totalCount > prevCountRef.current) {
+      setCartWiggle(true);
+      const timer = window.setTimeout(() => setCartWiggle(false), 550);
+      prevCountRef.current = totalCount;
+      return () => window.clearTimeout(timer);
+    }
+    prevCountRef.current = totalCount;
+  }, [totalCount]);
 
   const t = CUSTOMER_TRANSLATIONS[language];
   const activeCategories = [...categories]
@@ -60,32 +84,38 @@ export const Navbar: React.FC = () => {
       : "Nationwide Delivery Across Pakistan · Cash on Delivery, JazzCash & EasyPaisa";
 
   return (
-    <header className="sticky top-0 z-40 bg-[#FFFFFF]/95 backdrop-blur-md border-b border-[#E8E0D0]">
-      {/* Top Announcement & Customer Language Switcher Bar (NO Admin Links) */}
-      <div className="bg-[#F5F4F0] text-[#1A1A1A] text-xs py-2 px-4 border-b border-[#E8E0D0]">
+    <motion.header
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className={`sticky top-0 z-40 bg-[#FFFFFF] border-b-2 border-[#E63946] transition-shadow duration-300 ${
+        scrolled ? "shadow-md" : ""
+      }`}
+    >
+      {/* Top Announcement & Customer Language Switcher Bar */}
+      <div className="bg-[#1A1A1A] text-[#FFFFFF] text-xs py-2 px-4 border-b border-[#333333]">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-          <p className="font-medium tracking-wide truncate">
+          <p className="font-medium tracking-wide truncate text-[#CCCCCC]">
             {announcementMessage}
           </p>
 
           <div className="flex items-center gap-3 ml-auto">
-            {/* Language Switcher: 🌐 English | اردو | Roman Urdu */}
             <div
-              className="inline-flex items-center bg-white border border-[#E8E0D0] rounded px-1.5 py-0.5"
+              className="inline-flex items-center bg-[#2A2A2A] border border-[#333333] rounded px-1.5 py-0.5"
               role="group"
               aria-label="Customer website language"
             >
-              <Globe className="w-3.5 h-3.5 text-[#C9A84C] mx-1" />
+              <Globe className="w-3.5 h-3.5 text-[#E63946] mx-1" />
               {languageOptions.map((opt, idx) => (
                 <React.Fragment key={opt.code}>
-                  {idx > 0 && <span className="text-[#E8E0D0] px-0.5">|</span>}
+                  {idx > 0 && <span className="text-[#666666] px-0.5">|</span>}
                   <button
                     type="button"
                     onClick={() => setLanguage(opt.code)}
                     className={`px-2 py-0.5 rounded text-[11px] transition-colors ${
                       language === opt.code
-                        ? "bg-[#C9A84C] text-[#1A1A1A] font-semibold"
-                        : "text-[#4A4A4A] hover:text-[#C9A84C]"
+                        ? "bg-[#E63946] text-[#FFFFFF] font-semibold"
+                        : "text-[#CCCCCC] hover:text-[#FFFFFF]"
                     }`}
                   >
                     {opt.label}
@@ -98,12 +128,12 @@ export const Navbar: React.FC = () => {
       </div>
 
       {/* Main Navigation Row */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4 bg-[#FFFFFF]">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden p-2 text-[#4A4A4A] hover:text-[#C9A84C]"
+            className="lg:hidden p-2 text-[#1A1A1A] hover:text-[#E63946]"
             aria-label="Toggle Menu"
           >
             {mobileOpen ? (
@@ -113,28 +143,24 @@ export const Navbar: React.FC = () => {
             )}
           </button>
 
-          <Link to="/" className="flex flex-col">
-            <span className="font-serif-display text-2xl sm:text-3xl font-bold tracking-[0.22em] text-[#1A1A1A]">
-              RTS APPAREL
-            </span>
-            <span className="text-[10px] tracking-[0.25em] text-[#4A4A4A] uppercase -mt-1">
-              Lahore · Luxury Menswear
-            </span>
+          <Link to="/" aria-label="ARTS APPAREL Home">
+            <BrandLogo size="md" showTagline variant="light" />
           </Link>
         </div>
 
-        {/* Desktop Category Links (Only Selected Language Shown) */}
-        <nav className="hidden lg:flex items-center gap-6">
+        {/* Desktop Category Links */}
+        <nav className="hidden lg:flex items-center gap-2">
           <Link
             to="/"
-            className={`text-xs uppercase tracking-[0.15em] transition-colors ${
+            className={`text-xs uppercase tracking-[0.12em] px-3 py-2 rounded-[6px] font-semibold transition-colors ${
               location.pathname === "/"
-                ? "text-[#C9A84C] font-semibold"
-                : "text-[#4A4A4A] hover:text-[#C9A84C]"
+                ? "bg-[#E63946] text-[#FFFFFF]"
+                : "text-[#1A1A1A] hover:text-[#E63946]"
             }`}
           >
-            {t.home}
+            <span>{t.home}</span>
           </Link>
+
           {activeCategories.map((cat) => {
             const active = location.pathname === `/category/${cat.slug}`;
             const catName = getCategoryName(cat, language);
@@ -142,25 +168,32 @@ export const Navbar: React.FC = () => {
               <Link
                 key={cat.id}
                 to={`/category/${cat.slug}`}
-                className={`text-xs uppercase tracking-[0.15em] transition-colors py-1 border-b-2 ${
+                className={`text-xs uppercase tracking-[0.12em] px-3 py-2 rounded-[6px] font-semibold transition-colors ${
                   active
-                    ? "border-[#C9A84C] text-[#C9A84C] font-semibold"
-                    : "border-transparent text-[#4A4A4A] hover:text-[#C9A84C]"
+                    ? "bg-[#E63946] text-[#FFFFFF]"
+                    : "text-[#1A1A1A] hover:text-[#E63946]"
                 }`}
               >
-                {catName}
+                <span>{catName}</span>
               </Link>
             );
           })}
+
           <Link
             to="/track"
-            className={`text-xs uppercase tracking-[0.15em] flex items-center gap-1 transition-colors ${
+            className={`text-xs uppercase tracking-[0.12em] px-3 py-2 rounded-[6px] flex items-center gap-1.5 font-semibold transition-colors ${
               location.pathname === "/track"
-                ? "text-[#C9A84C] font-semibold"
-                : "text-[#4A4A4A] hover:text-[#C9A84C]"
+                ? "bg-[#E63946] text-[#FFFFFF]"
+                : "text-[#1A1A1A] hover:text-[#E63946]"
             }`}
           >
-            <Truck className="w-3.5 h-3.5" />
+            <Truck
+              className={`w-3.5 h-3.5 ${
+                location.pathname === "/track"
+                  ? "text-[#FFFFFF]"
+                  : "text-[#E63946]"
+              }`}
+            />
             <span>{t.orderTracking}</span>
           </Link>
         </nav>
@@ -176,56 +209,73 @@ export const Navbar: React.FC = () => {
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               placeholder={t.searchPlaceholder}
-              className="bg-[#FAFAFA] border border-[#E8E0D0] rounded-lg focus:border-[#C9A84C] text-xs text-[#1A1A1A] px-3 py-2 pr-8 w-44 lg:w-52 focus:outline-none transition-colors placeholder:text-[#9A9A9A]"
+              className="bg-[#FFFFFF] border border-[#E0E0E0] rounded-[6px] focus:border-2 focus:border-[#E63946] text-xs text-[#1A1A1A] px-3 py-2 pr-8 w-44 lg:w-52 focus:outline-none transition-colors placeholder:text-[#999999]"
             />
-            <button
+            <motion.button
               type="submit"
+              whileHover={{ scale: 1.15 }}
+              whileTap={{ scale: 0.9 }}
               aria-label={t.searchGo}
-              className="absolute right-2.5 text-[#4A4A4A] hover:text-[#C9A84C]"
+              className="absolute right-2.5 text-[#1A1A1A] hover:text-[#E63946]"
             >
               <Search className="w-4 h-4" />
-            </button>
+            </motion.button>
           </form>
 
           {user?.role === "agent" && (
             <Link
               to="/team"
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs bg-[#C9A84C]/10 border border-[#C9A84C] text-[#9B7B2F] hover:bg-[#C9A84C] hover:text-[#1A1A1A] transition-colors font-semibold"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] text-xs bg-[#1A1A1A] text-[#FFFFFF] hover:bg-[#E63946] transition-colors font-semibold"
             >
-              <Award className="w-3.5 h-3.5" />
+              <Award className="w-3.5 h-3.5 text-[#FFFFFF]" />
               <span>{t.agentHub}</span>
             </Link>
           )}
 
-          <Link
-            to="/account/wishlist"
-            aria-label={t.wishlist}
-            className="relative p-2 text-[#4A4A4A] hover:text-[#C9A84C] transition-colors hidden sm:inline-flex"
+          <motion.div
+            whileHover={{ scale: 1.15 }}
+            whileTap={{ scale: 0.9 }}
+            className="hidden sm:inline-flex"
           >
-            <Heart className="w-5 h-5" />
-            {wishlist.length > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 bg-[#C9A84C] text-[#1A1A1A] text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                {wishlist.length}
-              </span>
-            )}
-          </Link>
+            <Link
+              to="/account/wishlist"
+              aria-label={t.wishlist}
+              className="relative p-2 text-[#1A1A1A] hover:text-[#E63946] transition-colors"
+            >
+              <Heart className="w-5 h-5" />
+              <AnimatePresence mode="popLayout">
+                {wishlist.length > 0 && (
+                  <motion.span
+                    key={wishlist.length}
+                    initial={{ scale: 0 }}
+                    animate={{ scale: [0, 1.3, 1] }}
+                    exit={{ scale: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="absolute -top-0.5 -right-0.5 bg-[#E63946] text-[#FFFFFF] text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center"
+                  >
+                    {wishlist.length}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </Link>
+          </motion.div>
 
           {user && user.role !== "admin" ? (
             <div className="flex items-center gap-1.5">
               <Link
                 to="/account"
-                className="p-2 text-[#4A4A4A] hover:text-[#C9A84C] transition-colors flex items-center gap-1.5 text-xs"
+                className="p-2 text-[#1A1A1A] hover:text-[#E63946] transition-colors flex items-center gap-1.5 text-xs"
                 title={user.full_name}
               >
-                <User className="w-5 h-5 text-[#C9A84C]" />
-                <span className="hidden xl:inline max-w-[100px] truncate text-[#1A1A1A] font-medium">
+                <User className="w-5 h-5 text-[#1A1A1A]" />
+                <span className="hidden xl:inline max-w-[100px] truncate text-[#1A1A1A] font-semibold">
                   {user.full_name}
                 </span>
               </Link>
               <button
                 type="button"
                 onClick={() => logout()}
-                className="p-2 text-[#9A9A9A] hover:text-red-600 transition-colors"
+                className="p-2 text-[#666666] hover:text-[#E63946] transition-colors"
                 title={t.signOut}
               >
                 <LogOut className="w-4 h-4" />
@@ -234,78 +284,122 @@ export const Navbar: React.FC = () => {
           ) : (
             <Link
               to="/login"
-              className="p-2 text-[#4A4A4A] hover:text-[#C9A84C] transition-colors flex items-center gap-1 text-xs uppercase tracking-wider font-medium"
+              className="p-2 text-[#1A1A1A] hover:text-[#E63946] transition-colors flex items-center gap-1 text-xs uppercase tracking-wider font-semibold"
             >
               <User className="w-5 h-5" />
               <span className="hidden sm:inline">{t.signIn}</span>
             </Link>
           )}
 
-          <button
+          <motion.button
             type="button"
             onClick={() => setDrawerOpen(true)}
+            whileHover={{ scale: 1.15, rotate: 5 }}
+            whileTap={{ scale: 0.9 }}
+            animate={
+              cartWiggle
+                ? { rotate: [-10, 10, -10, 10, 0] }
+                : { rotate: 0 }
+            }
+            transition={{ duration: 0.4 }}
             aria-label={t.shoppingBag}
-            className="relative p-2 text-[#1A1A1A] hover:text-[#C9A84C] transition-colors"
+            className="relative p-2 text-[#1A1A1A] hover:text-[#E63946] transition-colors"
           >
             <ShoppingBag className="w-5 h-5" />
-            {totalCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 bg-[#C9A84C] text-[#1A1A1A] text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                {totalCount}
-              </span>
-            )}
-          </button>
+            <AnimatePresence mode="popLayout">
+              {totalCount > 0 && (
+                <motion.span
+                  key={totalCount}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: [0, 1.3, 1] }}
+                  exit={{ scale: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="absolute -top-0.5 -right-0.5 bg-[#E63946] text-[#FFFFFF] text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center"
+                >
+                  {totalCount}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.button>
         </div>
       </div>
 
-      {/* Mobile Drawer */}
-      {mobileOpen && (
-        <div className="lg:hidden bg-[#FAFAFA] border-b border-[#E8E0D0] px-4 pt-3 pb-6 space-y-4">
-          <form onSubmit={handleSearch} className="flex items-center relative">
-            <input
-              type="text"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              placeholder={t.searchPlaceholder}
-              className="bg-[#FFFFFF] border border-[#E8E0D0] rounded-lg text-sm text-[#1A1A1A] px-3 py-2.5 pr-10 w-full focus:border-[#C9A84C] focus:outline-none"
-            />
-            <button type="submit" className="absolute right-3 text-[#C9A84C]">
-              <Search className="w-4 h-4" />
-            </button>
-          </form>
+      {/* Mobile Menu Slide-In From Left */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, x: -300 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -300 }}
+            transition={{ type: "spring", stiffness: 300, damping: 28 }}
+            className="lg:hidden bg-[#FFFFFF] border-t border-[#E0E0E0] border-b-2 border-b-[#E63946] px-4 pt-3 pb-6 space-y-4 overflow-hidden shadow-lg"
+          >
+            <form onSubmit={handleSearch} className="flex items-center relative">
+              <input
+                type="text"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                placeholder={t.searchPlaceholder}
+                className="bg-[#FFFFFF] border border-[#E0E0E0] rounded-[6px] text-sm text-[#1A1A1A] px-3 py-2.5 pr-10 w-full focus:border-2 focus:border-[#E63946] focus:outline-none placeholder:text-[#999999]"
+              />
+              <button type="submit" className="absolute right-3 text-[#1A1A1A] hover:text-[#E63946]">
+                <Search className="w-4 h-4" />
+              </button>
+            </form>
 
-          <div className="grid grid-cols-1 gap-2">
-            <Link
-              to="/"
-              onClick={() => setMobileOpen(false)}
-              className="py-2 px-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-sm text-[#1A1A1A]"
-            >
-              {t.home}
-            </Link>
-            {activeCategories.map((cat) => {
-              const catName = getCategoryName(cat, language);
-              return (
-                <Link
-                  key={cat.id}
-                  to={`/category/${cat.slug}`}
-                  onClick={() => setMobileOpen(false)}
-                  className="py-2 px-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] flex items-center justify-between text-sm text-[#1A1A1A] hover:border-[#C9A84C]"
-                >
-                  <span>{catName}</span>
-                </Link>
-              );
-            })}
-            <Link
-              to="/track"
-              onClick={() => setMobileOpen(false)}
-              className="py-2 px-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] flex items-center justify-between text-sm text-[#C9A84C]"
-            >
-              <span>{t.orderTracking}</span>
-              <Truck className="w-4 h-4" />
-            </Link>
-          </div>
-        </div>
-      )}
-    </header>
+            <div className="grid grid-cols-1 gap-2">
+              <Link
+                to="/"
+                onClick={() => setMobileOpen(false)}
+                className={`py-2.5 px-3 rounded-[6px] text-sm font-semibold border ${
+                  location.pathname === "/"
+                    ? "bg-[#E63946] text-[#FFFFFF] border-[#E63946]"
+                    : "bg-[#F5F5F5] border-[#E0E0E0] text-[#1A1A1A] hover:border-[#E63946]"
+                }`}
+              >
+                {t.home}
+              </Link>
+              {activeCategories.map((cat) => {
+                const catName = getCategoryName(cat, language);
+                const active = location.pathname === `/category/${cat.slug}`;
+                return (
+                  <Link
+                    key={cat.id}
+                    to={`/category/${cat.slug}`}
+                    onClick={() => setMobileOpen(false)}
+                    className={`py-2.5 px-3 rounded-[6px] flex items-center justify-between text-sm font-semibold border ${
+                      active
+                        ? "bg-[#E63946] text-[#FFFFFF] border-[#E63946]"
+                        : "bg-[#F5F5F5] border-[#E0E0E0] text-[#1A1A1A] hover:border-[#E63946]"
+                    }`}
+                  >
+                    <span>{catName}</span>
+                  </Link>
+                );
+              })}
+              <Link
+                to="/track"
+                onClick={() => setMobileOpen(false)}
+                className={`py-2.5 px-3 rounded-[6px] flex items-center justify-between text-sm font-semibold border ${
+                  location.pathname === "/track"
+                    ? "bg-[#E63946] text-[#FFFFFF] border-[#E63946]"
+                    : "bg-[#F5F5F5] border-[#E0E0E0] text-[#1A1A1A] hover:border-[#E63946]"
+                }`}
+              >
+                <span>{t.orderTracking}</span>
+                <Truck
+                  className={`w-4 h-4 ${
+                    location.pathname === "/track"
+                      ? "text-[#FFFFFF]"
+                      : "text-[#E63946]"
+                  }`}
+                />
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.header>
   );
 };
 

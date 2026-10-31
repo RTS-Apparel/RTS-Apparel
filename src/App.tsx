@@ -1,335 +1,543 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { Navbar } from "./components/layout/Navbar";
-import { Footer } from "./components/layout/Footer";
+import { AnimatePresence, motion } from "framer-motion";
+import Navbar from "./components/layout/Navbar";
+import Footer from "./components/layout/Footer";
 import { CartDrawer } from "./components/cart/CartDrawer";
 import { ChatWidget } from "./components/ai/ChatWidget";
 import { ToastContainer } from "./components/common/Toast";
-import { ProtectedRoute } from "./components/common/ProtectedRoute";
-import { useDataStore } from "./store/dataStore";
+import { ScrollProgressBar } from "./components/common/ScrollProgressBar";
+import { CustomCursor } from "./components/common/CustomCursor";
+import { PageLoader } from "./components/common/PageLoader";
+import { FloatingParticles, pageVariants } from "./lib/animations";
 
-import { HomePage } from "./pages/Home";
-import { CategoryPage } from "./pages/Category";
-import { ProductDetail } from "./pages/ProductDetail";
-import { CartPage } from "./pages/Cart";
-import { CheckoutPage } from "./pages/Checkout";
-import { OrderConfirmationPage } from "./pages/OrderConfirmation";
-import { TrackOrderPage } from "./pages/TrackOrder";
-import { SearchPage } from "./pages/Search";
-import { AboutPage } from "./pages/About";
-import { ContactPage } from "./pages/Contact";
+import Home from "./pages/Home";
+import Category from "./pages/Category";
+import ProductDetail from "./pages/ProductDetail";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import OrderConfirmation from "./pages/OrderConfirmation";
+import TrackOrder from "./pages/TrackOrder";
+import Search from "./pages/Search";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 
-import { LoginPage } from "./pages/auth/Login";
-import { SignupPage } from "./pages/auth/Signup";
+import Login from "./pages/auth/Login";
+import Signup from "./pages/auth/Signup";
 
-import { AccountDashboard } from "./pages/account/Dashboard";
-import { AccountOrders } from "./pages/account/Orders";
-import { AccountOrderDetail } from "./pages/account/OrderDetail";
-import { AccountProfile } from "./pages/account/Profile";
-import { AccountAddresses } from "./pages/account/Addresses";
-import { AccountWishlist } from "./pages/account/Wishlist";
+import AccountDashboard from "./pages/account/Dashboard";
+import AccountOrders from "./pages/account/Orders";
+import AccountOrderDetail from "./pages/account/OrderDetail";
+import AccountProfile from "./pages/account/Profile";
+import AccountAddresses from "./pages/account/Addresses";
+import AccountWishlist from "./pages/account/Wishlist";
 
-import { TeamDashboard } from "./pages/team/TeamDashboard";
-import { MyReferralsPage } from "./pages/team/MyReferrals";
-import { TeamCommissionPage } from "./pages/team/Commission";
-import { TeamWithdrawalPage } from "./pages/team/Withdrawal";
-import { TeamProfilePage } from "./pages/team/TeamProfile";
+import TeamDashboard from "./pages/team/TeamDashboard";
+import MyReferrals from "./pages/team/MyReferrals";
+import Commission from "./pages/team/Commission";
+import Withdrawal from "./pages/team/Withdrawal";
+import TeamProfile from "./pages/team/TeamProfile";
 
-import { AdminLoginPage } from "./pages/admin/AdminLogin";
-import { AdminDashboard } from "./pages/admin/AdminDashboard";
-import { AdminProducts } from "./pages/admin/Products";
-import { AdminProductForm } from "./pages/admin/ProductForm";
-import { AdminCategories } from "./pages/admin/Categories";
-import { AdminOrders } from "./pages/admin/Orders";
-import { AdminOrderDetail } from "./pages/admin/OrderDetail";
-import { AdminCustomers } from "./pages/admin/Customers";
-import { AdminDiscounts } from "./pages/admin/Discounts";
-import { AdminTeamMembers } from "./pages/admin/TeamMembers";
-import { AdminCommissions } from "./pages/admin/Commissions";
-import { AdminWithdrawals } from "./pages/admin/Withdrawals";
-import { AdminDeliveryRates } from "./pages/admin/DeliveryRates";
-import { AdminBanners } from "./pages/admin/Banners";
-import { AdminReports } from "./pages/admin/Reports";
-import { AdminSiteSettings } from "./pages/admin/SiteSettings";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminProducts from "./pages/admin/Products";
+import AdminProductForm from "./pages/admin/ProductForm";
+import AdminCategories from "./pages/admin/Categories";
+import AdminOrders from "./pages/admin/Orders";
+import AdminOrderDetail from "./pages/admin/OrderDetail";
+import AdminCustomers from "./pages/admin/Customers";
+import AdminDiscounts from "./pages/admin/Discounts";
+import AdminTeamMembers from "./pages/admin/TeamMembers";
+import AdminCommissions from "./pages/admin/Commissions";
+import AdminWithdrawals from "./pages/admin/Withdrawals";
+import AdminDeliveryRates from "./pages/admin/DeliveryRates";
+import AdminBanners from "./pages/admin/Banners";
+import AdminReports from "./pages/admin/Reports";
+import AdminSiteSettings from "./pages/admin/SiteSettings";
 
-function AppShell() {
-  const location = useLocation();
-  const language = useDataStore((s) => s.language);
-  const isAdminRoute =
-    location.pathname === "/admin" || location.pathname.startsWith("/admin/");
-  const rtl = !isAdminRoute && language === "ur";
+const PageMotion: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <motion.div
+    variants={pageVariants}
+    initial="initial"
+    animate="animate"
+    exit="exit"
+  >
+    {children}
+  </motion.div>
+);
 
+const StorefrontLayout: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   return (
-    <div
-      dir={rtl ? "rtl" : "ltr"}
-      className="min-h-screen bg-[#FFFFFF] text-[#1A1A1A] flex flex-col selection:bg-[#C9A84C] selection:text-[#1A1A1A]"
-    >
-      {!isAdminRoute && <Navbar />}
-      {!isAdminRoute && <CartDrawer />}
-      <div className="flex-1">
-        <Routes>
-          {/* Public Customer Storefront Routes */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/category/:slug" element={<CategoryPage />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
-          <Route
-            path="/order-confirmation/:orderNumber"
-            element={<OrderConfirmationPage />}
-          />
-          <Route path="/track" element={<TrackOrderPage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/register" element={<SignupPage />} />
-
-          {/* Customer Account Routes */}
-          <Route
-            path="/account"
-            element={
-              <ProtectedRoute allowedRoles={["customer", "agent", "admin"]}>
-                <AccountDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/account/orders"
-            element={
-              <ProtectedRoute allowedRoles={["customer", "agent", "admin"]}>
-                <AccountOrders />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/account/orders/:id"
-            element={
-              <ProtectedRoute allowedRoles={["customer", "agent", "admin"]}>
-                <AccountOrderDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/account/profile"
-            element={
-              <ProtectedRoute allowedRoles={["customer", "agent", "admin"]}>
-                <AccountProfile />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/account/addresses"
-            element={
-              <ProtectedRoute allowedRoles={["customer", "agent", "admin"]}>
-                <AccountAddresses />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/account/wishlist"
-            element={
-              <ProtectedRoute allowedRoles={["customer", "agent", "admin"]}>
-                <AccountWishlist />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Partner Agent Hub Routes */}
-          <Route
-            path="/team"
-            element={
-              <ProtectedRoute allowedRoles={["agent", "admin"]}>
-                <TeamDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/team/referrals"
-            element={
-              <ProtectedRoute allowedRoles={["agent", "admin"]}>
-                <MyReferralsPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/team/commissions"
-            element={
-              <ProtectedRoute allowedRoles={["agent", "admin"]}>
-                <TeamCommissionPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/team/withdrawals"
-            element={
-              <ProtectedRoute allowedRoles={["agent", "admin"]}>
-                <TeamWithdrawalPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/team/profile"
-            element={
-              <ProtectedRoute allowedRoles={["agent", "admin"]}>
-                <TeamProfilePage />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Separate Standalone Admin Panel Routes */}
-          <Route path="/admin" element={<AdminLoginPage />} />
-          <Route
-            path="/admin/dashboard"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/products"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminProducts />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/products/new"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminProductForm />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/products/:id"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminProductForm />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/products/:id/edit"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminProductForm />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/categories"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminCategories />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/orders"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminOrders />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/orders/:id"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminOrderDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/customers"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminCustomers />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/discounts"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminDiscounts />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/team"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminTeamMembers />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/commissions"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminCommissions />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/withdrawals"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminWithdrawals />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/delivery"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminDeliveryRates />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/banners"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminBanners />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/reports"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminReports />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/settings"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminSiteSettings />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </div>
-      {!isAdminRoute && <Footer />}
-      {!isAdminRoute && <ChatWidget />}
+    <div className="min-h-screen flex flex-col bg-[#FFFFFF] text-[#1A1A1A] relative">
+      <Navbar />
+      <main className="flex-1 relative z-10">{children}</main>
+      <Footer />
+      <CartDrawer />
+      <ChatWidget />
       <ToastContainer />
     </div>
   );
-}
+};
 
-export default function App() {
+const AnimatedRoutes: React.FC = () => {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        {/* Customer Storefront Routes */}
+        <Route
+          path="/"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <Home />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+        <Route
+          path="/category/:slug"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <Category />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+        <Route
+          path="/product/:id"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <ProductDetail />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+        <Route
+          path="/cart"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <Cart />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <Checkout />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+        <Route
+          path="/order-confirmation/:id"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <OrderConfirmation />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+        <Route
+          path="/track"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <TrackOrder />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <Search />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <About />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+        <Route
+          path="/contact"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <Contact />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+
+        {/* Auth Routes */}
+        <Route
+          path="/login"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <Login />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <Signup />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+
+        {/* Customer Account Hub */}
+        <Route
+          path="/account"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <AccountDashboard />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+        <Route
+          path="/account/orders"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <AccountOrders />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+        <Route
+          path="/account/orders/:id"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <AccountOrderDetail />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+        <Route
+          path="/account/profile"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <AccountProfile />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+        <Route
+          path="/account/addresses"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <AccountAddresses />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+        <Route
+          path="/account/wishlist"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <AccountWishlist />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+
+        {/* Partner Agent Referral Hub */}
+        <Route
+          path="/team"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <TeamDashboard />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+        <Route
+          path="/team/referrals"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <MyReferrals />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+        <Route
+          path="/team/commission"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <Commission />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+        <Route
+          path="/team/withdrawal"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <Withdrawal />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+        <Route
+          path="/team/profile"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <TeamProfile />
+              </PageMotion>
+            </StorefrontLayout>
+          }
+        />
+
+        {/* Admin Panel (Separate Layout — No Storefront Navbar/Footer) */}
+        <Route
+          path="/admin/login"
+          element={
+            <>
+              <PageMotion>
+                <AdminLogin />
+              </PageMotion>
+              <ToastContainer />
+            </>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <>
+              <PageMotion>
+                <AdminDashboard />
+              </PageMotion>
+              <ToastContainer />
+            </>
+          }
+        />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <>
+              <PageMotion>
+                <AdminDashboard />
+              </PageMotion>
+              <ToastContainer />
+            </>
+          }
+        />
+        <Route
+          path="/admin/products"
+          element={
+            <>
+              <PageMotion>
+                <AdminProducts />
+              </PageMotion>
+              <ToastContainer />
+            </>
+          }
+        />
+        <Route
+          path="/admin/products/new"
+          element={
+            <>
+              <PageMotion>
+                <AdminProductForm />
+              </PageMotion>
+              <ToastContainer />
+            </>
+          }
+        />
+        <Route
+          path="/admin/products/:id/edit"
+          element={
+            <>
+              <PageMotion>
+                <AdminProductForm />
+              </PageMotion>
+              <ToastContainer />
+            </>
+          }
+        />
+        <Route
+          path="/admin/categories"
+          element={
+            <>
+              <PageMotion>
+                <AdminCategories />
+              </PageMotion>
+              <ToastContainer />
+            </>
+          }
+        />
+        <Route
+          path="/admin/orders"
+          element={
+            <>
+              <PageMotion>
+                <AdminOrders />
+              </PageMotion>
+              <ToastContainer />
+            </>
+          }
+        />
+        <Route
+          path="/admin/orders/:id"
+          element={
+            <>
+              <PageMotion>
+                <AdminOrderDetail />
+              </PageMotion>
+              <ToastContainer />
+            </>
+          }
+        />
+        <Route
+          path="/admin/customers"
+          element={
+            <>
+              <PageMotion>
+                <AdminCustomers />
+              </PageMotion>
+              <ToastContainer />
+            </>
+          }
+        />
+        <Route
+          path="/admin/discounts"
+          element={
+            <>
+              <PageMotion>
+                <AdminDiscounts />
+              </PageMotion>
+              <ToastContainer />
+            </>
+          }
+        />
+        <Route
+          path="/admin/team"
+          element={
+            <>
+              <PageMotion>
+                <AdminTeamMembers />
+              </PageMotion>
+              <ToastContainer />
+            </>
+          }
+        />
+        <Route
+          path="/admin/commissions"
+          element={
+            <>
+              <PageMotion>
+                <AdminCommissions />
+              </PageMotion>
+              <ToastContainer />
+            </>
+          }
+        />
+        <Route
+          path="/admin/withdrawals"
+          element={
+            <>
+              <PageMotion>
+                <AdminWithdrawals />
+              </PageMotion>
+              <ToastContainer />
+            </>
+          }
+        />
+        <Route
+          path="/admin/delivery"
+          element={
+            <>
+              <PageMotion>
+                <AdminDeliveryRates />
+              </PageMotion>
+              <ToastContainer />
+            </>
+          }
+        />
+        <Route
+          path="/admin/banners"
+          element={
+            <>
+              <PageMotion>
+                <AdminBanners />
+              </PageMotion>
+              <ToastContainer />
+            </>
+          }
+        />
+        <Route
+          path="/admin/reports"
+          element={
+            <>
+              <PageMotion>
+                <AdminReports />
+              </PageMotion>
+              <ToastContainer />
+            </>
+          }
+        />
+        <Route
+          path="/admin/settings"
+          element={
+            <>
+              <PageMotion>
+                <AdminSiteSettings />
+              </PageMotion>
+              <ToastContainer />
+            </>
+          }
+        />
+      </Routes>
+    </AnimatePresence>
+  );
+};
+
+export function App() {
   return (
     <BrowserRouter>
-      <AppShell />
+      <PageLoader />
+      <ScrollProgressBar />
+      <CustomCursor />
+      <AnimatedRoutes />
     </BrowserRouter>
   );
 }
+
+export default App;

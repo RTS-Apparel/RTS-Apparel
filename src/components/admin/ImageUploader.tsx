@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import {
   Plus,
-  Trash2,
+  X,
   Image as ImageIcon,
   Upload,
   CheckCircle2,
@@ -11,11 +11,18 @@ import {
   Star,
 } from "lucide-react";
 import { PRODUCT_ARTWORKS } from "../../lib/artworks";
+import { supabase, isSupabaseConfigured } from "../../lib/supabase";
 
 export interface PendingUploadItem {
   id: string;
   file: File;
   previewUrl: string;
+}
+
+interface PerFileUploadStatus {
+  name: string;
+  progress: number;
+  error?: string;
 }
 
 interface ImageUploaderProps {
@@ -25,6 +32,7 @@ interface ImageUploaderProps {
   pendingFiles?: PendingUploadItem[];
   onPendingFilesChange?: (files: PendingUploadItem[]) => void;
   maxImages?: number;
+  productId?: string;
 }
 
 const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -37,6 +45,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
   pendingFiles = [],
   onPendingFilesChange,
   maxImages = 6,
+  productId = "draft",
 }) => {
   const updateImages = (next: string[]) => {
     onImagesChange?.(next);
@@ -45,7 +54,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   const [customUrl, setCustomUrl] = useState("");
   const [isDragging, setIsDragging] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [fileStatuses, setFileStatuses] = useState<PerFileUploadStatus[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -83,101 +92,142 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
     updateImages(updated);
   };
 
-  const processFiles = (files: FileList | File[]) => {
+  const readFileAsDataUrl = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error(`Failed to read ${file.name}`));
+      reader.readAsDataURL(file);
+    });
+
+  const processFiles = async (files: FileList | File[]) => {
     setErrorMessage(null);
     setSuccessMessage(null);
 
     const fileArray = Array.from(files);
     if (fileArray.length === 0) return;
 
-    if (images.length + pendingFiles.length + fileArray.length > maxImages) {
+    const availableSlots = maxImages - (images.length + pendingFiles.length);
+    if (availableSlots <= 0) {
       setErrorMessage(`You can upload up to ${maxImages} images per product.`);
       return;
     }
 
-    const validFiles: File[] = [];
-    for (const file of fileArray) {
+    const filesToProcess = fileArray.slice(0, availableSlots);
+    const initialStatuses: PerFileUploadStatus[] = filesToProcess.map((f) => ({
+      name: f.name,
+      progress: 10,
+    }));
+    setFileStatuses(initialStatuses);
+
+    const uploadedUrls: string[] = [];
+    const newPendingItems: PendingUploadItem[] = [];
+
+    for (let i = 0; i < filesToProcess.length; i++) {
+      const file = filesToProcess[i];
+
       if (!ALLOWED_TYPES.includes(file.type)) {
-        setErrorMessage(
-          `Invalid file format "${file.name}". Only JPG, PNG, and WebP images are allowed.`
+        setFileStatuses((prev) =>
+          prev.map((s, idx) =>
+            idx === i
+              ? { ...s, progress: 0, error: "Invalid format (JPG, PNG, WebP only)" }
+              : s
+          )
         );
-        return;
+        continue;
       }
+
       if (file.size > MAX_FILE_SIZE_BYTES) {
-        setErrorMessage(
-          `File "${file.name}" exceeds the 5MB maximum size limit.`
+        setFileStatuses((prev) =>
+          prev.map((s, idx) =>
+            idx === i
+              ? { ...s, progress: 0, error: "Exceeds 5MB limit — skipped" }
+              : s
+          )
         );
-        return;
+        continue;
       }
-      validFiles.push(file);
-    }
 
-    setUploadProgress(20);
-    const interval = window.setInterval(() => {
-      setUploadProgress((prev) =>
-        prev !== null && prev < 90 ? prev + 25 : prev
+      setFileStatuses((prev) =>
+        prev.map((s, idx) => (idx === i ? { ...s, progress: 55 } : s))
       );
-    }, 80);
 
-    Promise.all(
-      validFiles.map(
-        (file) =>
-          new Promise<{ file: File; dataUrl: string }>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () =>
-              resolve({ file, dataUrl: reader.result as string });
-            reader.onerror = () =>
-              reject(new Error(`Failed to read ${file.name}`));
-            reader.readAsDataURL(file);
-          })
-      )
-    )
-      .then((results) => {
-        window.clearInterval(interval);
-        setUploadProgress(100);
+      try {
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const path = `product-images/${productId}/${Date.now()}_${safeName}`;
 
-        if (onPendingFilesChange) {
-          const newPending: PendingUploadItem[] = results.map((r, i) => ({
-            id: `pending-${Date.now()}-${i}`,
-            file: r.file,
-            previewUrl: r.dataUrl,
-          }));
-          onPendingFilesChange([...pendingFiles, ...newPending]);
-        } else {
-          const merged = [...images];
-          for (const r of results) {
-            if (!merged.includes(r.dataUrl)) {
-              merged.push(r.dataUrl);
+        if (isSupabaseConfigured && supabase) {
+          const { data, error } = await supabase.storage
+            .from("product-images")
+            .upload(path, file, { cacheControl: "3600", upsert: false });
+
+          if (!error && data) {
+            const { data: urlData } = supabase.storage
+              .from("product-images")
+              .getPublicUrl(path);
+            if (urlData?.publicUrl) {
+              uploadedUrls.push(urlData.publicUrl);
+              setFileStatuses((prev) =>
+                prev.map((s, idx) => (idx === i ? { ...s, progress: 100 } : s))
+              );
+              continue;
             }
           }
-          updateImages(merged);
         }
 
-        setSuccessMessage(
-          `${validFiles.length} image${
-            validFiles.length > 1 ? "s" : ""
-          } validated & staged.`
+        // Local preview dataURL fallback when Supabase Storage is not configured or bucket is offline
+        const dataUrl = await readFileAsDataUrl(file);
+        if (onPendingFilesChange) {
+          newPendingItems.push({
+            id: `pending-${Date.now()}-${i}`,
+            file,
+            previewUrl: dataUrl,
+          });
+        } else {
+          uploadedUrls.push(dataUrl);
+        }
+
+        setFileStatuses((prev) =>
+          prev.map((s, idx) => (idx === i ? { ...s, progress: 100 } : s))
         );
-        window.setTimeout(() => {
-          setUploadProgress(null);
-        }, 500);
-      })
-      .catch(() => {
-        window.clearInterval(interval);
-        setUploadProgress(null);
-        setErrorMessage(
-          "Could not process the selected image file. Please try again."
+      } catch (err) {
+        setFileStatuses((prev) =>
+          prev.map((s, idx) =>
+            idx === i
+              ? { ...s, progress: 0, error: `Upload failed: ${String(err)}` }
+              : s
+          )
         );
-      });
+      }
+    }
+
+    if (newPendingItems.length > 0 && onPendingFilesChange) {
+      onPendingFilesChange([...pendingFiles, ...newPendingItems]);
+    }
+
+    if (uploadedUrls.length > 0) {
+      const merged = [...images];
+      for (const u of uploadedUrls) {
+        if (!merged.includes(u)) merged.push(u);
+      }
+      updateImages(merged);
+    }
+
+    const totalAdded = uploadedUrls.length + newPendingItems.length;
+    if (totalAdded > 0) {
+      setSuccessMessage(
+        `${totalAdded} image${totalAdded > 1 ? "s" : ""} ready in gallery.`
+      );
+    }
   };
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-[#4A4A4A]">
+        <span className="text-xs font-medium text-[#1A1A1A]">
           Product Gallery Images (Primary + Angles · Max {maxImages})
         </span>
-        <span className="text-[11px] font-mono text-[#9A9A9A]">
+        <span className="text-[11px] font-mono font-bold text-[#E63946]">
           {images.length + pendingFiles.length} / {maxImages} images
         </span>
       </div>
@@ -200,16 +250,16 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
           }
         }}
         onClick={() => fileInputRef.current?.click()}
-        className={`cursor-pointer rounded-xl border-2 border-dashed p-6 text-center transition-all ${
+        className={`cursor-pointer rounded-[8px] border-2 border-dashed p-6 text-center transition-all ${
           isDragging
-            ? "border-[#C9A84C] bg-[#C9A84C]/10"
-            : "border-[#E8E0D0] bg-[#FFFFFF] hover:border-[#C9A84C]"
+            ? "border-[#E63946] bg-[#FFF5F5]"
+            : "border-[#E0E0E0] bg-[#F5F5F5] hover:border-[#E63946]"
         }`}
       >
         <input
           ref={fileInputRef}
           type="file"
-          accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+          accept="image/*,.jpg,.jpeg,.png,.webp"
           multiple
           onChange={(e) => {
             if (e.target.files?.length) {
@@ -219,147 +269,164 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
           }}
           className="hidden"
         />
-        <div className="w-11 h-11 mx-auto mb-2.5 rounded-full bg-[#C9A84C]/15 border border-[#C9A84C]/40 flex items-center justify-center text-[#C9A84C]">
+        <div className="w-11 h-11 mx-auto mb-2.5 rounded-full bg-[#E63946] flex items-center justify-center text-[#FFFFFF]">
           <Upload className="w-5 h-5" />
         </div>
-        <p className="text-xs font-semibold text-[#1A1A1A]">
+        <p className="text-xs font-bold text-[#1A1A1A]">
           Drag & drop product photos here or click to browse
         </p>
-        <p className="text-[11px] text-[#4A4A4A] mt-1">
-          Supports JPG, PNG, WebP (Max 5MB per image · Reorder or set Primary
-          below)
+        <p className="text-[11px] text-[#666666] mt-1">
+          Supports JPG, PNG, WebP (Max {maxImages} images · 5MB per image)
         </p>
-
-        {uploadProgress !== null && (
-          <div className="mt-3 max-w-xs mx-auto">
-            <div className="h-1.5 w-full rounded bg-[#E8E0D0] overflow-hidden">
-              <div
-                className="h-full bg-[#C9A84C] transition-all duration-150"
-                style={{ width: `${uploadProgress}%` }}
-              />
-            </div>
-            <p className="text-[11px] text-[#9B7B2F] mt-1 font-mono">
-              Uploading... {uploadProgress}%
-            </p>
-          </div>
-        )}
       </div>
 
+      {/* Per-image upload progress & errors */}
+      {fileStatuses.length > 0 && (
+        <div className="space-y-2 bg-[#F5F5F5] border border-[#E0E0E0] rounded-[6px] p-3">
+          {fileStatuses.map((st, idx) => (
+            <div key={idx} className="space-y-1">
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="text-[#1A1A1A] truncate max-w-[200px]">
+                  {st.name}
+                </span>
+                {st.error ? (
+                  <span className="text-[#E63946] font-medium">{st.error}</span>
+                ) : (
+                  <span className="text-[#E63946] font-mono font-bold">
+                    {st.progress}%
+                  </span>
+                )}
+              </div>
+              {!st.error && (
+                <div className="h-1.5 w-full rounded bg-[#E0E0E0] overflow-hidden">
+                  <div
+                    className="h-full bg-[#E63946] transition-all duration-200"
+                    style={{ width: `${st.progress}%` }}
+                  />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
       {errorMessage && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 border border-red-300 text-red-700 text-xs">
+        <div className="flex items-center gap-2 p-3 rounded-[6px] bg-[#F8D7DA] border border-[#E63946] text-[#721C24] text-xs">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{errorMessage}</span>
         </div>
       )}
       {successMessage && !errorMessage && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs">
-          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+        <div className="flex items-center gap-2 p-3 rounded-[6px] bg-[#D4EDDA] border border-[#22C55E] text-[#155724] text-xs">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-[#155724]" />
           <span>{successMessage}</span>
         </div>
       )}
 
-      {/* Existing & Staged Preview Grid with Reordering & Primary Selection */}
+      {/* 80x80 Preview Thumbnails + Primary/Order Controls */}
       {(images.length > 0 || pendingFiles.length > 0) && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {images.map((img, idx) => (
-            <div
-              key={`${img.slice(0, 24)}-${idx}`}
-              className={`relative group rounded-lg border bg-[#FFFFFF] overflow-hidden ${
-                idx === 0
-                  ? "border-[#C9A84C] ring-1 ring-[#C9A84C]"
-                  : "border-[#E8E0D0]"
-              }`}
-            >
-              <div className="aspect-[3/4] overflow-hidden">
-                <img
-                  src={img}
-                  alt={`Product ${idx + 1}`}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
-              <div className="absolute top-2 left-2 right-2 flex items-center justify-between gap-1">
-                {idx === 0 ? (
-                  <span className="bg-[#C9A84C] text-[#1A1A1A] text-[9px] font-bold uppercase px-2 py-0.5 rounded tracking-wider inline-flex items-center gap-1">
-                    <Star className="w-2.5 h-2.5 fill-current" />
-                    Primary
-                  </span>
-                ) : (
+        <div className="space-y-3">
+          <p className="text-[11px] font-mono uppercase tracking-wider text-[#666666]">
+            Preview Thumbnails (80×80 · Click X to remove)
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {images.map((img, idx) => (
+              <div
+                key={`${img.slice(0, 24)}-${idx}`}
+                className={`relative group rounded-[6px] border bg-[#FFFFFF] p-1.5 flex flex-col items-center gap-1.5 ${
+                  idx === 0
+                    ? "border-[#E63946] ring-1 ring-[#E63946]"
+                    : "border-[#E0E0E0]"
+                }`}
+              >
+                <div className="relative w-20 h-20 rounded overflow-hidden bg-[#F5F5F5]">
+                  <img
+                    src={img}
+                    alt={`Product thumbnail ${idx + 1}`}
+                    className="w-20 h-20 object-cover"
+                  />
                   <button
                     type="button"
-                    onClick={() => setPrimaryImage(idx)}
-                    className="bg-[#1A1A1A]/85 text-white hover:bg-[#C9A84C] hover:text-[#1A1A1A] text-[9px] font-semibold uppercase px-2 py-0.5 rounded tracking-wider transition-colors"
+                    onClick={() => removeImage(idx)}
+                    aria-label={`Remove image ${idx + 1}`}
+                    className="absolute top-1 right-1 w-5 h-5 rounded-full bg-[#E63946] text-[#FFFFFF] flex items-center justify-center hover:bg-[#C1121F] transition-colors shadow"
                   >
-                    Set Primary
-                  </button>
-                )}
-
-                <button
-                  type="button"
-                  onClick={() => removeImage(idx)}
-                  aria-label="Remove image"
-                  className="p-1.5 rounded bg-[#1A1A1A]/85 text-white hover:bg-red-600 transition-colors"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              {images.length > 1 && (
-                <div className="flex items-center justify-between bg-[#F5F4F0] border-t border-[#E8E0D0] px-2 py-1 text-[10px] font-mono text-[#4A4A4A]">
-                  <button
-                    type="button"
-                    disabled={idx === 0}
-                    onClick={() => moveImage(idx, -1)}
-                    className="p-1 hover:text-[#C9A84C] disabled:opacity-30"
-                    title="Move Left"
-                  >
-                    <ArrowLeft className="w-3.5 h-3.5" />
-                  </button>
-                  <span>#{idx + 1}</span>
-                  <button
-                    type="button"
-                    disabled={idx === images.length - 1}
-                    onClick={() => moveImage(idx, 1)}
-                    className="p-1 hover:text-[#C9A84C] disabled:opacity-30"
-                    title="Move Right"
-                  >
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <X className="w-3 h-3" />
                   </button>
                 </div>
-              )}
-            </div>
-          ))}
 
-          {pendingFiles.map((item, idx) => (
-            <div
-              key={item.id}
-              className="relative rounded-lg border border-dashed border-[#C9A84C] bg-[#FFFFFF] overflow-hidden"
-            >
-              <div className="aspect-[3/4] overflow-hidden">
-                <img
-                  src={item.previewUrl}
-                  alt={`Pending upload ${idx + 1}`}
-                  className="w-full h-full object-cover"
-                />
+                <div className="flex items-center justify-between w-20 text-[9px] font-mono text-[#666666]">
+                  {idx === 0 ? (
+                    <span className="text-[#E63946] font-bold inline-flex items-center gap-0.5">
+                      <Star className="w-2.5 h-2.5 fill-current" />
+                      Main
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setPrimaryImage(idx)}
+                      className="text-[#1A1A1A] hover:text-[#E63946] underline"
+                    >
+                      Set Main
+                    </button>
+                  )}
+
+                  {images.length > 1 && (
+                    <div className="flex items-center gap-0.5">
+                      <button
+                        type="button"
+                        disabled={idx === 0}
+                        onClick={() => moveImage(idx, -1)}
+                        className="text-[#1A1A1A] hover:text-[#E63946] disabled:opacity-30"
+                        title="Move Left"
+                      >
+                        <ArrowLeft className="w-3 h-3" />
+                      </button>
+                      <button
+                        type="button"
+                        disabled={idx === images.length - 1}
+                        onClick={() => moveImage(idx, 1)}
+                        className="text-[#1A1A1A] hover:text-[#E63946] disabled:opacity-30"
+                        title="Move Right"
+                      >
+                        <ArrowRight className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="absolute top-2 left-2 right-2 flex items-center justify-between">
-                <span className="bg-[#C9A84C] text-[#1A1A1A] text-[9px] font-bold uppercase px-2 py-0.5 rounded">
+            ))}
+
+            {pendingFiles.map((item, idx) => (
+              <div
+                key={item.id}
+                className="relative rounded-[6px] border border-dashed border-[#E63946] bg-[#FFFFFF] p-1.5 flex flex-col items-center gap-1.5"
+              >
+                <div className="relative w-20 h-20 rounded overflow-hidden bg-[#F5F5F5]">
+                  <img
+                    src={item.previewUrl}
+                    alt={`Pending upload ${idx + 1}`}
+                    className="w-20 h-20 object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onPendingFilesChange?.(
+                        pendingFiles.filter((f) => f.id !== item.id)
+                      )
+                    }
+                    aria-label="Remove staged image"
+                    className="absolute top-1 right-1 w-5 h-5 rounded-full bg-[#E63946] text-[#FFFFFF] flex items-center justify-center hover:bg-[#C1121F]"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+                <span className="text-[9px] font-mono text-[#E63946] font-bold uppercase">
                   Staged
                 </span>
-                <button
-                  type="button"
-                  onClick={() =>
-                    onPendingFilesChange?.(
-                      pendingFiles.filter((f) => f.id !== item.id)
-                    )
-                  }
-                  className="p-1.5 rounded bg-[#1A1A1A]/85 text-white hover:bg-red-600"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
@@ -370,12 +437,12 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
           value={customUrl}
           onChange={(e) => setCustomUrl(e.target.value)}
           placeholder="Or paste direct image URL (https://...)"
-          className="flex-1 h-9 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] px-3 text-xs text-[#1A1A1A] focus:border-[#C9A84C] focus:outline-none placeholder:text-[#9A9A9A]"
+          className="flex-1 h-9 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] px-3 text-xs text-[#1A1A1A] focus:border-2 focus:border-[#E63946] focus:outline-none placeholder:text-[#999999]"
         />
         <button
           type="button"
           onClick={() => addImage(customUrl)}
-          className="px-4 h-9 rounded-lg bg-[#C9A84C] text-[#1A1A1A] text-xs font-semibold flex items-center gap-1.5 hover:bg-[#E2C07A] transition-colors"
+          className="px-4 h-9 rounded-[6px] bg-[#E63946] text-[#FFFFFF] text-xs font-semibold flex items-center gap-1.5 hover:bg-[#C1121F] transition-colors"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Add URL</span>
@@ -384,9 +451,9 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
 
       {/* Studio Preset Library */}
       <div>
-        <p className="text-[11px] uppercase tracking-wider text-[#4A4A4A] mb-2 flex items-center gap-1.5 font-medium">
-          <ImageIcon className="w-3.5 h-3.5 text-[#C9A84C]" />
-          <span>Quick-Select RTS Studio Lookbook Presets:</span>
+        <p className="text-[11px] uppercase tracking-wider text-[#1A1A1A] mb-2 flex items-center gap-1.5 font-semibold">
+          <ImageIcon className="w-3.5 h-3.5 text-[#E63946]" />
+          <span>Quick-Select ARTS APPAREL Studio Lookbook Presets:</span>
         </p>
         <div className="flex flex-wrap gap-1.5">
           {Object.entries(PRODUCT_ARTWORKS)
@@ -396,7 +463,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
                 key={key}
                 type="button"
                 onClick={() => addImage(url)}
-                className="px-2.5 py-1 rounded text-[11px] bg-[#FFFFFF] border border-[#E8E0D0] text-[#4A4A4A] hover:border-[#C9A84C] hover:text-[#1A1A1A] transition-colors capitalize"
+                className="px-2.5 py-1 rounded-[4px] text-[11px] bg-[#F5F5F5] border border-[#E0E0E0] text-[#1A1A1A] hover:border-[#E63946] hover:text-[#E63946] transition-colors capitalize font-medium"
               >
                 + {key.replace(/([A-Z])/g, " $1")}
               </button>

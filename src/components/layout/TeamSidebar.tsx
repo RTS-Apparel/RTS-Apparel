@@ -23,13 +23,13 @@ export const TeamSidebar: React.FC = () => {
   ];
 
   return (
-    <aside className="w-full md:w-64 shrink-0 rounded-xl bg-[#FAFAFA] border border-[#E8E0D0] p-4 space-y-6 h-fit shadow-xs">
-      <div className="pb-4 border-b border-[#E8E0D0]">
-        <p className="text-xs text-[#9A9A9A]">Approved RTS Partner</p>
-        <p className="text-base font-semibold text-[#1A1A1A] truncate mt-0.5">
+    <aside className="w-full md:w-64 shrink-0 rounded-xl bg-[#1A1A1A] border border-[#333333] p-4 space-y-6 h-fit shadow-lg">
+      <div className="pb-4 border-b border-[#333333]">
+        <p className="text-xs text-[#CCCCCC]">Approved ARTS APPAREL Partner</p>
+        <p className="text-base font-semibold text-[#FFFFFF] truncate mt-0.5">
           {user?.full_name}
         </p>
-        <p className="text-xs font-mono font-semibold text-[#C9A84C] mt-1">
+        <p className="text-xs font-mono font-semibold text-[#E63946] mt-1">
           Code: {user?.referral_code || "RTS-ALI123"}
         </p>
       </div>
@@ -43,14 +43,14 @@ export const TeamSidebar: React.FC = () => {
               to={item.to}
               end={item.end}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                `flex items-center gap-3 px-3.5 py-2.5 rounded-r-lg text-sm font-medium transition-colors border-l-4 ${
                   isActive
-                    ? "bg-[#C9A84C] text-[#1A1A1A] font-semibold"
-                    : "text-[#4A4A4A] hover:bg-[#F5F4F0] hover:text-[#1A1A1A]"
+                    ? "bg-[#2A2A2A] border-[#E63946] text-[#FFFFFF] font-semibold"
+                    : "border-transparent text-[#CCCCCC] hover:bg-[#2A2A2A] hover:text-[#FFFFFF]"
                 }`
               }
             >
-              <Icon className="w-4 h-4" />
+              <Icon className="w-4 h-4 text-[#E63946]" />
               <span>{item.label}</span>
             </NavLink>
           );
@@ -58,18 +58,18 @@ export const TeamSidebar: React.FC = () => {
 
         <Link
           to="/account"
-          className="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-[#4A4A4A] hover:bg-[#F5F4F0] hover:text-[#1A1A1A] transition-colors mt-2"
+          className="flex items-center gap-3 px-3.5 py-2.5 rounded-r-lg text-sm font-medium border-l-4 border-transparent text-[#CCCCCC] hover:bg-[#2A2A2A] hover:text-[#FFFFFF] transition-colors mt-2"
         >
-          <ShoppingBag className="w-4 h-4" />
+          <ShoppingBag className="w-4 h-4 text-[#E63946]" />
           <span>My Customer Account</span>
         </Link>
       </nav>
 
-      <div className="pt-4 border-t border-[#E8E0D0]">
+      <div className="pt-4 border-t border-[#333333]">
         <button
           type="button"
           onClick={logout}
-          className="w-full flex items-center gap-3 px-3.5 py-2 rounded-lg text-sm text-[#EF4444] hover:bg-[#F5F4F0] transition-colors font-medium"
+          className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-[6px] text-sm bg-[#2A2A2A] text-[#CCCCCC] hover:bg-[#C1121F] hover:text-[#FFFFFF] transition-colors font-semibold"
         >
           <LogOut className="w-4 h-4" />
           <span>Sign Out</span>

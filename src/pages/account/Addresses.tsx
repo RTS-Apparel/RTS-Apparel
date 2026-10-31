@@ -1,8 +1,11 @@
 import React, { useState } from "react";
-import { Plus, Trash2, CheckCircle2 } from "lucide-react";
+import { Plus, Trash2, CheckCircle2, MapPin } from "lucide-react";
+import { motion } from "framer-motion";
 import { useAuth } from "../../hooks/useAuth";
 import { useDataStore } from "../../store/dataStore";
 import { AccountSidebar } from "../../components/layout/AccountSidebar";
+import { PageHeading } from "../../components/layout/PageHeading";
+import { pageVariants, buttonHover, buttonTap } from "../../lib/animations";
 
 export const AccountAddresses: React.FC = () => {
   const { user } = useAuth();
@@ -38,40 +41,53 @@ export const AccountAddresses: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-8 py-10 flex flex-col md:flex-row gap-8">
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="max-w-7xl mx-auto px-4 md:px-8 py-10 flex flex-col md:flex-row gap-8"
+    >
       <AccountSidebar />
 
       <div className="flex-1 space-y-8">
-        <h1 className="text-2xl font-serif-display font-bold text-[#1A1A1A]">
-          Saved Delivery Addresses
-        </h1>
+        <PageHeading
+          title="Saved Addresses"
+          subtitle="Manage delivery addresses"
+          icon={<MapPin className="w-5 h-5" />}
+          breadcrumbs={[
+            { label: "Home", to: "/" },
+            { label: "Account", to: "/account" },
+            { label: "Saved Addresses" },
+          ]}
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {addresses.map((addr) => (
             <div
               key={addr.id}
-              className="p-5 rounded-xl bg-[#FAFAFA] border border-[#E8E0D0] flex flex-col justify-between space-y-4 shadow-xs"
+              className="p-6 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] hover:border-[#E63946] transition-colors flex flex-col justify-between space-y-4 shadow-xs"
             >
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-[#1A1A1A]">
+                  <span className="text-sm font-bold text-[#1A1A1A]">
                     {addr.label}
                   </span>
                   {addr.is_default && (
-                    <span className="text-xs font-mono font-bold text-[#C9A84C]">
-                      [Default]
+                    <span className="px-2 py-0.5 rounded bg-[#E63946] text-[#FFFFFF] text-[10px] font-mono font-bold uppercase">
+                      Default
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-[#4A4A4A]">
+                <p className="text-xs text-[#666666]">
                   {addr.recipient_name} · {addr.phone}
                 </p>
-                <p className="text-xs text-[#1A1A1A] pt-1">
+                <p className="text-xs text-[#1A1A1A] font-medium pt-1">
                   {addr.address_line}, {addr.city}
                 </p>
               </div>
 
-              <div className="flex items-center justify-between pt-3 border-t border-[#E8E0D0] text-xs">
+              <div className="flex items-center justify-between pt-3 border-t border-[#E0E0E0] text-xs">
                 {!addr.is_default ? (
                   <button
                     type="button"
@@ -81,20 +97,20 @@ export const AccountAddresses: React.FC = () => {
                         addr.id
                       )
                     }
-                    className="text-[#C9A84C] font-semibold hover:underline flex items-center gap-1"
+                    className="text-[#E63946] font-semibold hover:underline flex items-center gap-1"
                   >
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     <span>Set as Default</span>
                   </button>
                 ) : (
-                  <span className="text-[#9A9A9A]">Primary Address</span>
+                  <span className="text-[#666666] font-medium">Primary Address</span>
                 )}
 
                 <button
                   type="button"
                   onClick={() => deleteAddress(addr.id)}
                   aria-label={`Delete address ${addr.label}`}
-                  className="text-[#9A9A9A] hover:text-[#EF4444] p-1"
+                  className="text-[#666666] hover:text-[#C1121F] p-1"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -106,16 +122,16 @@ export const AccountAddresses: React.FC = () => {
         {/* Add New Address Form */}
         <form
           onSubmit={handleAdd}
-          className="rounded-xl bg-[#FAFAFA] border border-[#E8E0D0] p-6 space-y-4 max-w-2xl shadow-xs"
+          className="rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] p-6 space-y-4 max-w-2xl shadow-xs"
         >
-          <h2 className="text-base font-semibold text-[#1A1A1A] flex items-center gap-2">
-            <Plus className="w-4 h-4 text-[#C9A84C]" />
+          <h2 className="text-base font-bold text-[#1A1A1A] flex items-center gap-2">
+            <Plus className="w-4 h-4 text-[#E63946]" />
             <span>Add New Address</span>
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-1">
-              <label htmlFor="addr-label" className="text-xs font-medium text-[#4A4A4A]">
+              <label htmlFor="addr-label" className="text-xs font-medium text-[#1A1A1A]">
                 Label (e.g. Home / Office) *
               </label>
               <input
@@ -125,11 +141,11 @@ export const AccountAddresses: React.FC = () => {
                 value={label}
                 onChange={(e) => setLabel(e.target.value)}
                 placeholder="DHA Residence"
-                className="w-full h-10 px-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-xs text-[#1A1A1A]"
+                className="w-full h-10 px-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] focus:border-2 focus:border-[#E63946] text-xs text-[#1A1A1A] placeholder-[#999999] outline-none"
               />
             </div>
             <div className="space-y-1">
-              <label htmlFor="addr-rec" className="text-xs font-medium text-[#4A4A4A]">
+              <label htmlFor="addr-rec" className="text-xs font-medium text-[#1A1A1A]">
                 Recipient Name *
               </label>
               <input
@@ -138,18 +154,18 @@ export const AccountAddresses: React.FC = () => {
                 required
                 value={recipientName}
                 onChange={(e) => setRecipientName(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-xs text-[#1A1A1A]"
+                className="w-full h-10 px-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] focus:border-2 focus:border-[#E63946] text-xs text-[#1A1A1A] outline-none"
               />
             </div>
             <div className="space-y-1">
-              <label htmlFor="addr-city" className="text-xs font-medium text-[#4A4A4A]">
+              <label htmlFor="addr-city" className="text-xs font-medium text-[#1A1A1A]">
                 City *
               </label>
               <select
                 id="addr-city"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-xs text-[#1A1A1A]"
+                className="w-full h-10 px-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] focus:border-2 focus:border-[#E63946] text-xs text-[#1A1A1A] outline-none"
               >
                 {deliveryRates.map((r) => (
                   <option key={r.id} value={r.city_name}>
@@ -161,7 +177,7 @@ export const AccountAddresses: React.FC = () => {
           </div>
 
           <div className="space-y-1">
-            <label htmlFor="addr-line" className="text-xs font-medium text-[#4A4A4A]">
+            <label htmlFor="addr-line" className="text-xs font-medium text-[#1A1A1A]">
               Street Address *
             </label>
             <input
@@ -171,18 +187,22 @@ export const AccountAddresses: React.FC = () => {
               value={addressLine}
               onChange={(e) => setAddressLine(e.target.value)}
               placeholder="House #, Street #, Phase / Block..."
-              className="w-full h-10 px-3 rounded-lg bg-[#FFFFFF] border border-[#E8E0D0] text-xs text-[#1A1A1A]"
+              className="w-full h-10 px-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] focus:border-2 focus:border-[#E63946] text-xs text-[#1A1A1A] placeholder-[#999999] outline-none"
             />
           </div>
 
-          <button
+          <motion.button
             type="submit"
-            className="h-10 px-5 rounded-lg bg-[#C9A84C] text-[#1A1A1A] font-semibold text-xs hover:bg-[#E2C07A]"
+            whileHover={buttonHover}
+            whileTap={buttonTap}
+            className="h-10 px-5 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-xs hover:bg-[#C1121F] transition-colors"
           >
             Save Address
-          </button>
+          </motion.button>
         </form>
       </div>
-    </div>
+    </motion.div>
   );
 };
+
+export default AccountAddresses;
