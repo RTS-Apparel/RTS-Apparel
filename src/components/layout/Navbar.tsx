@@ -270,15 +270,7 @@ export const Navbar: React.FC = () => {
                 <LogOut className="w-4 h-4" />
               </button>
             </div>
-          ) : (
-            <Link
-              to="/login"
-              className="p-2 text-[#1A1A1A] hover:text-[#E63946] transition-colors flex items-center gap-1 text-xs uppercase tracking-wider font-semibold"
-            >
-              <User size={20} />
-              <span className="hidden sm:inline">{t.signIn}</span>
-            </Link>
-          )}
+          ) : null}
 
           <motion.button
             type="button"
