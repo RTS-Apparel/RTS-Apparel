@@ -127,7 +127,7 @@ export const Navbar: React.FC = () => {
       </div>
 
       {/* Main Navigation Row */}
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 h-24 sm:h-28 lg:h-36 flex items-center justify-between gap-2 sm:gap-3 bg-[#FFFFFF]">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 h-24 sm:h-28 lg:h-40 flex items-center justify-between gap-2 sm:gap-3 bg-[#FFFFFF]">
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <button
             type="button"
