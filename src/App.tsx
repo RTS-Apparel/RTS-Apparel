@@ -36,6 +36,7 @@ import AccountProfile from "./pages/account/Profile";
 import AccountAddresses from "./pages/account/Addresses";
 import AccountWishlist from "./pages/account/Wishlist";
 
+import TeamLogin from "./pages/team/TeamLogin";
 import TeamDashboard from "./pages/team/TeamDashboard";
 import MyReferrals from "./pages/team/MyReferrals";
 import Commission from "./pages/team/Commission";
@@ -301,6 +302,9 @@ const AnimatedRoutes: React.FC = () => {
             </ProtectedRoute>
           }
         />
+
+        {/* Private team login: deliberately not linked from public navigation */}
+        <Route path="/team/login" element={<TeamLogin />} />
 
         {/* Partner Agent Referral Hub (Protected — Approved Agents Only) */}
         <Route
