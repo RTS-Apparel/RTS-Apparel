@@ -242,21 +242,26 @@ export async function onRequest(context: {
     ];
 
     if (env?.AI) {
-      const response = (await env.AI.run("@cf/meta/llama-3.1-8b-instruct", {
-        messages,
-        max_tokens: 220,
-        temperature: 0.6,
-      })) as { response?: string };
+      try {
+        const response = (await env.AI.run("@cf/meta/llama-3.1-8b-instruct", {
+          messages,
+          max_tokens: 220,
+          temperature: 0.6,
+        })) as { response?: string };
 
-      const replyText = (response?.response || "").trim();
-      if (replyText) {
-        return new Response(
-          JSON.stringify({
-            success: true,
-            reply: replyText,
-          }),
-          { status: 200, headers: corsHeaders }
-        );
+        const replyText = (response?.response || "").trim();
+        if (replyText) {
+          return new Response(
+            JSON.stringify({
+              success: true,
+              reply: replyText,
+            }),
+            { status: 200, headers: corsHeaders }
+          );
+        }
+      } catch {
+        // If Workers AI is temporarily unavailable, continue with the local FAQ
+        // replies below instead of sending every customer straight to WhatsApp.
       }
     }
 
@@ -270,9 +275,9 @@ export async function onRequest(context: {
   } catch {
     return new Response(
       JSON.stringify({
-        success: true,
+        success: false,
         reply:
-          "Yaar seedha WhatsApp karo: 03058165623, main wahan bhi mojood hun! 😄💬",
+          "Bhai, chat mein filhal technical masla aa gaya hai. Delivery, size, return, payment ya order tracking ke baare mein dobara poochho — main madad karne ki koshish karta hun. 😅🤝",
       }),
       { status: 200, headers: corsHeaders }
     );
