@@ -64,14 +64,12 @@ export const ContactPage: React.FC = () => {
                 {shopPhone}
               </a>
             </div>
-            {siteSettings.contact_email && (
-              <div className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-[#E63946] shrink-0" />
-                <span className="font-mono font-semibold text-[#1A1A1A]">
-                  {siteSettings.contact_email}
-                </span>
-              </div>
-            )}
+            <div className="flex items-center gap-3">
+              <Mail className="w-5 h-5 text-[#E63946] shrink-0" />
+              <a href="mailto:artsapparel@gmail.com" className="font-mono font-semibold text-[#1A1A1A] hover:text-[#E63946] transition-colors">
+                artsapparel@gmail.com
+              </a>
+            </div>
           </div>
 
           <div className="pt-2">
