@@ -33,7 +33,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
     size === "sm"
       ? "h-12 w-12 sm:h-14 sm:w-14"
       : size === "lg"
-      ? "h-[76px] w-[76px] sm:h-[104px] sm:w-[104px] lg:h-[132px] lg:w-[132px]"
+      ? "h-[88px] w-[88px] sm:h-[116px] sm:w-[116px] lg:h-[148px] lg:w-[148px]"
       : "h-[76px] w-[76px] sm:h-[84px] sm:w-[84px]";
 
   const apparelTextColor = variant === "dark" ? "#FFFFFF" : "#1A1A1A";
@@ -43,13 +43,17 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
     <div
       className={`inline-flex items-center gap-2 sm:gap-3 lg:gap-4 select-none shrink-0 whitespace-nowrap ${className}`}
     >
-      <img
-        src="https://cdn.phototourl.com/member/2026-10-31-622505d6-04bd-44dc-8ab9-397e44cb219e.png"
-        alt="ARTS APPAREL Logo"
-        onLoad={() => setImgVisible(true)}
-        onError={() => setImgVisible(false)}
-        className={`${logoSizeClass} object-contain shrink-0 ${imgVisible ? "block" : "hidden"}`}
-      />
+      <span
+        className={`${logoSizeClass} shrink-0 overflow-hidden rounded-full border-2 border-[#E63946] bg-white shadow-md ring-2 ring-[#E63946]/15`}
+      >
+        <img
+          src="https://cdn.phototourl.com/member/2026-10-31-622505d6-04bd-44dc-8ab9-397e44cb219e.png"
+          alt="ARTS APPAREL Logo"
+          onLoad={() => setImgVisible(true)}
+          onError={() => setImgVisible(false)}
+          className={`h-full w-full rounded-full object-cover ${imgVisible ? "block" : "hidden"}`}
+        />
+      </span>
       <div className="flex flex-col leading-tight whitespace-nowrap">
         <span
           className={`font-serif-display font-bold uppercase whitespace-nowrap inline-flex items-center ${textSizeClass}`}
