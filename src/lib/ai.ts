@@ -108,7 +108,10 @@ export async function aiChat(
   language: CustomerLanguage = "en"
 ): Promise<AIChatResponse> {
   try {
-    const trimmedHistory = history\n      .filter((item) => item && (item.role === "user" || item.role === "assistant") && typeof item.content === "string")\n      .slice(-8)\n      .map((item) => ({ role: item.role, content: item.content.slice(0, 1000) }));
+    const trimmedHistory = history
+      .filter((item) => item && (item.role === "user" || item.role === "assistant") && typeof item.content === "string")
+      .slice(-8)
+      .map((item) => ({ role: item.role, content: item.content.slice(0, 1000) }));
     const res = await fetch(`${AI_API_BASE}/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
