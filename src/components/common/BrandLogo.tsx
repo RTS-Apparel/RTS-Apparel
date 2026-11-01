@@ -43,9 +43,8 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
     <div
       className={`inline-flex items-center gap-2 sm:gap-3 lg:gap-4 select-none shrink-0 whitespace-nowrap ${className}`}
     >
-      <span
-        className={`${logoSizeClass} shrink-0 overflow-hidden rounded-full border-2 border-[#E63946] bg-white shadow-md ring-2 ring-[#E63946]/15`}
-      >
+      <span className={`${logoSizeClass} rts-logo-orbit shrink-0 relative isolate rounded-full p-[2px]`}>
+        <span className="rts-logo-core relative block h-full w-full overflow-hidden rounded-full bg-white">
         <img
           src="https://cdn.phototourl.com/member/2026-10-31-622505d6-04bd-44dc-8ab9-397e44cb219e.png"
           alt="ARTS APPAREL Logo"
@@ -53,10 +52,11 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
           onError={() => setImgVisible(false)}
           className={`h-full w-full rounded-full object-cover ${imgVisible ? "block" : "hidden"}`}
         />
+        </span>
       </span>
       <div className="flex flex-col leading-tight whitespace-nowrap">
         <span
-          className={`font-serif-display font-bold uppercase whitespace-nowrap inline-flex items-center ${textSizeClass}`}
+          className={`rts-logo-wordmark font-serif-display font-bold uppercase whitespace-nowrap inline-flex items-center ${textSizeClass}`}
           style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}
         >
           <span
