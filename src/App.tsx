@@ -293,13 +293,11 @@ const AnimatedRoutes: React.FC = () => {
         <Route
           path="/account/wishlist"
           element={
-            <ProtectedRoute>
-              <StorefrontLayout>
-                <PageMotion>
-                  <AccountWishlist />
-                </PageMotion>
-              </StorefrontLayout>
-            </ProtectedRoute>
+            <StorefrontLayout>
+              <PageMotion>
+                <AccountWishlist />
+              </PageMotion>
+            </StorefrontLayout>
           }
         />
 
