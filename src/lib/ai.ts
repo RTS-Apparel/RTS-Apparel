@@ -108,11 +108,11 @@ export async function aiChat(
   language: CustomerLanguage = "en"
 ): Promise<AIChatResponse> {
   try {
-    const trimmedHistory = history.slice(-8);
+    const trimmedHistory = history\n      .filter((item) => item && (item.role === "user" || item.role === "assistant") && typeof item.content === "string")\n      .slice(-8)\n      .map((item) => ({ role: item.role, content: item.content.slice(0, 1000) }));
     const res = await fetch(`${AI_API_BASE}/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, history: trimmedHistory, language }),
+      body: JSON.stringify({ message: message.trim(), history: trimmedHistory, language }),
     });
     if (!res.ok) throw new Error("AI chat failed");
     const data = await res.json();
