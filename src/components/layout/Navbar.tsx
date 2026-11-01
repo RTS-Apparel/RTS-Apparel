@@ -224,7 +224,7 @@ export const Navbar: React.FC = () => {
           <motion.div
             whileHover={{ scale: 1.15 }}
             whileTap={{ scale: 0.9 }}
-            className="hidden sm:inline-flex"
+            className="inline-flex"
           >
             <Link
               to="/account/wishlist"
