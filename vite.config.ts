@@ -15,7 +15,7 @@ export default defineConfig({
     // Let Vite/Rolldown create its dependency graph automatically.
     // Custom broad manual chunks can split React-dependent packages into
     // incompatible chunks and cause blank-page startup failures in production.
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 1000, // Keep the production bundle warning visible without forcing fragile manual chunks.
   },
   optimizeDeps: {
     include: ['react', 'react-dom'],
