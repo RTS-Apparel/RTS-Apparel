@@ -188,3 +188,14 @@ tbody tr:hover {
 .animate-error-shake {
   animation: errorShake 0.45s ease-in-out;
 }
+
+
+/* Mobile storefront polish: prevent horizontal overflow and respect small screens. */
+@media (max-width: 639px) {
+  html, body, #root { width: 100%; max-width: 100%; overflow-x: clip; }
+  body { -webkit-text-size-adjust: 100%; }
+  button, a, input, select, textarea { touch-action: manipulation; }
+  input, select, textarea { font-size: 16px; }
+  .chat-window-border { padding-bottom: env(safe-area-inset-bottom); }
+  .chat-trigger-btn { animation: none; }
+}
