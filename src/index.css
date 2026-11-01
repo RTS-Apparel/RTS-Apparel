@@ -242,3 +242,32 @@ tbody tr:hover {
   .rts-logo-orbit, .rts-logo-orbit::before, .rts-logo-core::after { animation: none; }
   .rts-logo-orbit, .rts-logo-core img, .rts-logo-wordmark { transition: none; }
 }
+
+
+/* Mobile chatbot: keep the composer above the on-screen keyboard and messages scrollable. */
+.chat-window-border {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.chat-window-border > .flex-1.overflow-y-auto {
+  min-height: 0;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-padding-bottom: 16px;
+}
+.chat-input-form {
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+}
+@media (max-width: 767px) {
+  .chat-window-border {
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+  }
+  .chat-input-form input {
+    min-width: 0;
+    font-size: 16px;
+    line-height: 1.4;
+  }
+}
