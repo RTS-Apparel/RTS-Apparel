@@ -167,6 +167,14 @@ export const Footer: React.FC = () => {
                 {t.contactUs}
               </Link>
             </li>
+            <li>
+              <Link
+                to="/join-arts-team"
+                className="text-[#CCCCCC] hover:text-[#E63946] transition-colors"
+              >
+                Join Our Team
+              </Link>
+            </li>
           </ul>
         </div>
 
