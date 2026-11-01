@@ -12,7 +12,8 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true, // Temporarily expose source mapping to identify the production startup crash.
+    sourcemap: true, // Keep source maps available while validating the production startup fix.
+    minify: false, // Preserve module initialization order and readable stack traces while isolating the TDZ crash.
     // Let Vite/Rolldown create its dependency graph automatically.
     // Custom broad manual chunks can split React-dependent packages into
     // incompatible chunks and cause blank-page startup failures in production.
