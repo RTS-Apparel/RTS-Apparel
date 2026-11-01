@@ -115,7 +115,7 @@ export const ChatWidget: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-5 right-5 z-50">
+    <div className={isOpen ? "fixed bottom-5 right-5 z-50" : "fixed right-3 top-[42%] -translate-y-1/2 z-50 md:top-auto md:bottom-5 md:right-5 md:translate-y-0"}>
       <AnimatePresence mode="wait">
         {isOpen ? (
           <motion.div
