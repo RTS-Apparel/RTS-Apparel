@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   ArrowRight,
   Sparkles,
   ChevronLeft,
   ChevronRight,
-  Users2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProducts } from "../hooks/useProducts";
@@ -36,8 +35,6 @@ export const HomePage: React.FC = () => {
   } = useProducts();
   const language = useDataStore((s) => s.language);
   const t = CUSTOMER_TRANSLATIONS[language];
-  const location = useLocation();
-  const navigate = useNavigate();
 
   const slides =
     activeBanners.length > 0
@@ -370,44 +367,7 @@ export const HomePage: React.FC = () => {
         </section>
       )}
 
-      {/* Discreet Join Our Team icon button — ONLY on Home page (/) */}
-      {location.pathname === "/" && (
-        <button
-          type="button"
-          onClick={() => navigate("/join-arts-team")}
-          title="Join Our Team"
-          aria-label="Join Our Team"
-          style={{
-            position: "fixed",
-            bottom: "90px",
-            right: "24px",
-            width: "42px",
-            height: "42px",
-            borderRadius: "50%",
-            background: "#1A1A1A",
-            border: "1px solid #E63946",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            zIndex: 999,
-            boxShadow: "0 2px 12px rgba(230,57,70,0.3)",
-            transition: "all 0.2s",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = "#E63946";
-            const svg = e.currentTarget.querySelector("svg");
-            if (svg) svg.style.color = "#FFFFFF";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "#1A1A1A";
-            const svg = e.currentTarget.querySelector("svg");
-            if (svg) svg.style.color = "#E63946";
-          }}
-        >
-          <Users2 size={18} color="#E63946" />
-        </button>
-      )}
+
     </div>
   );
 };
