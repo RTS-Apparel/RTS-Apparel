@@ -10,6 +10,7 @@ import {
   LogOut,
   Globe,
   Heart,
+  ArrowLeft,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDataStore } from "../../store/dataStore";
@@ -142,9 +143,22 @@ export const Navbar: React.FC = () => {
             )}
           </button>
 
-          <Link to="/" aria-label="ARTS APPAREL Home">
-            <BrandLogo size="lg" variant="light" />
-          </Link>
+          <div className="flex items-center gap-1 sm:gap-2">
+            {location.pathname !== "/" && (
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                aria-label="Go back"
+                title="Go back"
+                className="inline-flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-[#E0E0E0] bg-white text-[#1A1A1A] hover:border-[#E63946] hover:bg-[#FFF5F5] hover:text-[#E63946] transition-colors shrink-0"
+              >
+                <ArrowLeft className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+              </button>
+            )}
+            <Link to="/" aria-label="ARTS APPAREL Home">
+              <BrandLogo size="lg" variant="light" />
+            </Link>
+          </div>
         </div>
 
         {/* Desktop Category Links */}
