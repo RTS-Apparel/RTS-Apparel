@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { MessageCircle, Send, ChevronDown, Bot } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { aiChat } from "../../lib/ai";
@@ -26,7 +26,7 @@ export const ChatWidget: React.FC = () => {
   const [hasOpenedOnce, setHasOpenedOnce] = useState(false);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);\n  const messagesContainerRef = useRef<HTMLDivElement | null>(null);\n  const inputRef = useRef<HTMLInputElement | null>(null);\n  const [mobileViewport, setMobileViewport] = useState<{ top: number; height: number } | null>(null);
 
   const [messages, setMessages] = useState<ChatTurn[]>([
     {
@@ -102,7 +102,7 @@ export const ChatWidget: React.FC = () => {
             transition={{ duration: 0.28, ease: "easeOut" }}
             role="dialog"
             aria-label="ARTS APPAREL Support Assistant"
-            className="chat-window-border fixed inset-0 md:static w-screen h-screen md:w-[380px] md:h-[520px] md:rounded-2xl bg-[#FFFFFF] border border-[#E0E0E0] shadow-2xl overflow-hidden flex flex-col origin-bottom-right"
+            style={mobileViewport ? { top: `${mobileViewport.top}px`, height: `${mobileViewport.height}px`, bottom: "auto" } : undefined}\n            className="chat-window-border fixed inset-0 md:static w-screen h-[100dvh] min-h-0 md:w-[380px] md:h-[520px] md:rounded-2xl bg-[#FFFFFF] border border-[#E0E0E0] shadow-2xl overflow-hidden flex flex-col origin-bottom-right"
           >
             {/* Header: bg #1A1A1A, title "A(white)RTS(red) APPAREL(white)", status green dot */}
             <div className="px-4 py-3.5 bg-[#1A1A1A] border-b border-[#333333] flex items-center justify-between shrink-0">
@@ -143,7 +143,7 @@ export const ChatWidget: React.FC = () => {
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-[#FFFFFF]">
+            <div ref={messagesContainerRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 space-y-3.5 bg-[#FFFFFF] [scrollbar-gutter:stable]">
               {messages.map((m) => (
                 <motion.div
                   key={m.id}
@@ -227,7 +227,7 @@ export const ChatWidget: React.FC = () => {
             {/* Input Area */}
             <form
               onSubmit={handleSend}
-              className="p-3 border-t border-[#E0E0E0] bg-[#FFFFFF] flex items-center gap-2 shrink-0"
+              className="chat-input-form p-3 border-t border-[#E0E0E0] bg-[#FFFFFF] flex items-center gap-2 shrink-0"
             >
               <input
                 type="text"
