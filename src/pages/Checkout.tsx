@@ -3,7 +3,6 @@ import { useNavigate, Link } from "react-router-dom";
 import {
   MapPin,
   CreditCard,
-  Award,
   CheckCircle2,
   ClipboardCheck,
   Banknote,
@@ -28,9 +27,6 @@ export const CheckoutPage: React.FC = () => {
   const {
     enrichedItems,
     totals,
-    referralCode,
-    referralAgentName,
-    applyReferralCode,
     clearCart,
   } = useCart();
 
@@ -56,7 +52,6 @@ export const CheckoutPage: React.FC = () => {
   );
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod");
   const [paymentReference, setPaymentReference] = useState("");
-  const [refInput, setRefInput] = useState(referralCode || "");
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -131,7 +126,7 @@ export const CheckoutPage: React.FC = () => {
       total_amount: grandTotal,
       payment_method: paymentMethod,
       payment_proof_url: paymentReference.trim() || null,
-      referral_code: referralCode || null,
+      referral_code: null,
       notes: notes.trim() || null,
     });
 
@@ -375,37 +370,6 @@ export const CheckoutPage: React.FC = () => {
             )}
           </div>
 
-          {/* Step 3: Partner Agent Referral Code */}
-          <div className="rounded-xl bg-[#FFFFFF] border border-[#E0E0E0] p-6 space-y-3 shadow-xs">
-            <div className="flex items-center gap-2 text-sm font-semibold text-[#1A1A1A]">
-              <Award className="w-4 h-4 text-[#E63946]" />
-              <h2>{t.agentReferralCode}</h2>
-            </div>
-
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={refInput}
-                onChange={(e) => setRefInput(e.target.value.toUpperCase())}
-                placeholder="Enter Agent Code (e.g. RTS-ALI123)"
-                className="flex-1 h-10 px-3.5 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-xs font-mono text-[#1A1A1A] placeholder:text-[#999999] focus:border-2 focus:border-[#E63946] focus:outline-none"
-              />
-              <button
-                type="button"
-                onClick={() => applyReferralCode(refInput)}
-                className="px-4 h-10 rounded-[6px] border-2 border-[#1A1A1A] text-[#1A1A1A] text-xs font-semibold hover:bg-[#1A1A1A] hover:text-[#FFFFFF] transition-colors"
-              >
-                {t.apply}
-              </button>
-            </div>
-
-            {referralAgentName && (
-              <p className="text-xs text-[#22C55E] font-medium">
-                ✓ Order linked to Partner Agent:{" "}
-                <strong>{referralAgentName}</strong> ({referralCode})
-              </p>
-            )}
-          </div>
         </div>
 
         {/* Right Summary Column (Step 3 Order Review) */}
