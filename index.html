@@ -30,7 +30,7 @@
           panel.textContent = "ARTS APPAREL — JavaScript startup error\\n\\n" + String(message);
         }
         window.addEventListener("error", function (event) {
-          showRuntimeError(event.message || (event.target && (event.target.src || event.target.href)) || "Unknown script/resource error");
+          showRuntimeError((event.error && event.error.stack ? event.error.stack + "\\n" : "") + (event.filename ? event.filename + ":" + event.lineno + ":" + event.colno + "\\n" : "") + (event.message || (event.target && (event.target.src || event.target.href)) || "Unknown script/resource error"));
         }, true);
         window.addEventListener("unhandledrejection", function (event) {
           var reason = event.reason;
