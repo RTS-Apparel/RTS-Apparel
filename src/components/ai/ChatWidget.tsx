@@ -26,7 +26,37 @@ export const ChatWidget: React.FC = () => {
   const [hasOpenedOnce, setHasOpenedOnce] = useState(false);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);\n  const messagesContainerRef = useRef<HTMLDivElement | null>(null);\n  const inputRef = useRef<HTMLInputElement | null>(null);\n  const [mobileViewport, setMobileViewport] = useState<{ top: number; height: number } | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const [mobileViewport, setMobileViewport] = useState<{ top: number; height: number } | null>(null);
+
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+    const updateViewport = () => {
+      if (window.innerWidth < 768) setMobileViewport({ top: viewport.offsetTop, height: viewport.height });
+      else setMobileViewport(null);
+    };
+    updateViewport();
+    viewport.addEventListener("resize", updateViewport);
+    viewport.addEventListener("scroll", updateViewport);
+    window.addEventListener("resize", updateViewport);
+    return () => {
+      viewport.removeEventListener("resize", updateViewport);
+      viewport.removeEventListener("scroll", updateViewport);
+      window.removeEventListener("resize", updateViewport);
+    };
+  }, []);
+
+  const scrollMessagesToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
+    const el = messagesContainerRef.current;
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior });
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) requestAnimationFrame(() => scrollMessagesToBottom("auto"));
+  }, [messages, isLoading, isOpen, mobileViewport, scrollMessagesToBottom]);
 
   const [messages, setMessages] = useState<ChatTurn[]>([
     {
@@ -42,12 +72,6 @@ export const ChatWidget: React.FC = () => {
     setIsOpen(true);
     setHasOpenedOnce(true);
   };
-
-  useEffect(() => {
-    if (isOpen) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages, isLoading, isOpen]);
 
   const handleSend = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -102,7 +126,7 @@ export const ChatWidget: React.FC = () => {
             transition={{ duration: 0.28, ease: "easeOut" }}
             role="dialog"
             aria-label="ARTS APPAREL Support Assistant"
-            style={mobileViewport ? { top: `${mobileViewport.top}px`, height: `${mobileViewport.height}px`, bottom: "auto" } : undefined}\n            className="chat-window-border fixed inset-0 md:static w-screen h-[100dvh] min-h-0 md:w-[380px] md:h-[520px] md:rounded-2xl bg-[#FFFFFF] border border-[#E0E0E0] shadow-2xl overflow-hidden flex flex-col origin-bottom-right"
+            style={mobileViewport ? { top: `${mobileViewport.top}px`, height: `${mobileViewport.height}px`, bottom: "auto" } : undefined}
           >
             {/* Header: bg #1A1A1A, title "A(white)RTS(red) APPAREL(white)", status green dot */}
             <div className="px-4 py-3.5 bg-[#1A1A1A] border-b border-[#333333] flex items-center justify-between shrink-0">
@@ -229,14 +253,21 @@ export const ChatWidget: React.FC = () => {
               onSubmit={handleSend}
               className="chat-input-form p-3 border-t border-[#E0E0E0] bg-[#FFFFFF] flex items-center gap-2 shrink-0"
             >
-              <input
-                type="text"
+              <textarea
+                ref={inputRef}
+                rows={1}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
+                onFocus={() => window.setTimeout(() => scrollMessagesToBottom("smooth"), 250)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    void handleSend();
+                  }
+                }}
                 placeholder="Kuch bhi poochho Bhai... 😊"
                 aria-label="Kuch bhi poochho Bhai"
-                className="flex-1 h-11 px-3.5 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-xs sm:text-sm text-[#1A1A1A] placeholder-[#999999] focus:outline-none focus:border-2 focus:border-[#E63946]"
+                className="flex-1 min-w-0 min-h-11 max-h-24 resize-none px-3.5 py-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-sm leading-5 text-[#1A1A1A] placeholder-[#999999] focus:outline-none focus:border-2 focus:border-[#E63946] overflow-y-auto"
               />
               <motion.button
                 type="submit"
