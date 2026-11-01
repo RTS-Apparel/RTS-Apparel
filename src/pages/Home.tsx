@@ -176,9 +176,9 @@ export const HomePage: React.FC = () => {
                   )
                 }
                 aria-label="Previous slide"
-                className="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-[#1A1A1A]/80 text-[#FFFFFF] hover:bg-[#E63946] transition-colors border border-[#333333]"
+                className="flex absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 p-2 sm:p-2.5 rounded-full bg-[#1A1A1A]/85 text-[#FFFFFF] hover:bg-[#E63946] active:bg-[#E63946] transition-colors border border-white/40 shadow-lg"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
               <button
                 type="button"
@@ -186,9 +186,9 @@ export const HomePage: React.FC = () => {
                   setCurrentSlide((prev) => (prev + 1) % slides.length)
                 }
                 aria-label="Next slide"
-                className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-[#1A1A1A]/80 text-[#FFFFFF] hover:bg-[#E63946] transition-colors border border-[#333333]"
+                className="flex absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 p-2 sm:p-2.5 rounded-full bg-[#1A1A1A]/85 text-[#FFFFFF] hover:bg-[#E63946] active:bg-[#E63946] transition-colors border border-white/40 shadow-lg"
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </>
           )}
