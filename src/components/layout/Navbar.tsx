@@ -92,9 +92,9 @@ export const Navbar: React.FC = () => {
       }`}
     >
       {/* Top Announcement & Customer Language Switcher Bar */}
-      <div className="bg-[#1A1A1A] text-[#FFFFFF] text-xs py-2 px-4 border-b border-[#333333]">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-          <p className="font-medium tracking-wide truncate text-[#CCCCCC]">
+      <div className="bg-[#1A1A1A] text-[#FFFFFF] text-[10px] sm:text-xs py-1.5 sm:py-2 px-3 sm:px-4 border-b border-[#333333]">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+          <p className="hidden sm:block font-medium tracking-wide truncate text-[#CCCCCC]">
             {announcementMessage}
           </p>
 
@@ -127,7 +127,7 @@ export const Navbar: React.FC = () => {
       </div>
 
       {/* Main Navigation Row */}
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 h-24 sm:h-28 lg:h-40 flex items-center justify-between gap-2 sm:gap-3 bg-[#FFFFFF]">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 h-[68px] sm:h-24 lg:h-40 flex items-center justify-between gap-1.5 sm:gap-3 bg-[#FFFFFF]">
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <button
             type="button"
@@ -143,7 +143,7 @@ export const Navbar: React.FC = () => {
           </button>
 
           <Link to="/" aria-label="ARTS APPAREL Home">
-            <BrandLogo size="lg" showTagline variant="light" />
+            <BrandLogo size="lg" variant="light" />
           </Link>
         </div>
 
@@ -198,7 +198,7 @@ export const Navbar: React.FC = () => {
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-1 sm:gap-2.5">
           <form
             onSubmit={handleSearch}
             className="hidden md:flex items-center relative"
