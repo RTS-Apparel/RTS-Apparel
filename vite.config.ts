@@ -12,23 +12,9 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('lucide-react')) return 'ui';
-            if (id.includes('@supabase/supabase-js')) return 'supabase';
-            if (
-              id.includes('react') ||
-              id.includes('react-dom') ||
-              id.includes('react-router-dom')
-            ) {
-              return 'vendor';
-            }
-          }
-        },
-      },
-    },
+    // Let Vite/Rolldown create its dependency graph automatically.
+    // Custom broad manual chunks can split React-dependent packages into
+    // incompatible chunks and cause blank-page startup failures in production.
     chunkSizeWarningLimit: 1000,
   },
   optimizeDeps: {
