@@ -199,3 +199,46 @@ tbody tr:hover {
   .chat-window-border { padding-bottom: env(safe-area-inset-bottom); }
   .chat-trigger-btn { animation: none; }
 }
+
+/* Premium 3D illuminated brand mark — shared by every BrandLogo instance. */
+@keyframes rtsLogoLightOrbit { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes rtsLogoShine {
+  0%, 58% { transform: translateX(-160%) rotate(24deg); opacity: 0; }
+  68% { opacity: .9; }
+  84%, 100% { transform: translateX(160%) rotate(24deg); opacity: 0; }
+}
+@keyframes rtsLogoAura {
+  0%, 100% { filter: drop-shadow(0 0 3px rgba(230,57,70,.25)); }
+  50% { filter: drop-shadow(0 0 9px rgba(230,57,70,.52)); }
+}
+.rts-logo-orbit {
+  background: conic-gradient(from 0deg, #7f101b, #ff6975, #fff0f1, #b71c2b, #ffb2b8, #7f101b);
+  box-shadow: 0 3px 8px rgba(20,10,10,.24), 0 0 0 1px rgba(230,57,70,.2);
+  animation: rtsLogoAura 3.8s ease-in-out infinite;
+  transform: perspective(500px) rotateX(4deg);
+  transition: transform .35s ease, box-shadow .35s ease;
+}
+.rts-logo-orbit::before {
+  content: ""; position: absolute; inset: -2px; border-radius: inherit;
+  background: conic-gradient(from 0deg, transparent 0 48%, rgba(255,255,255,.95) 55%, transparent 63% 100%);
+  animation: rtsLogoLightOrbit 5s linear infinite; z-index: -1;
+}
+.rts-logo-core {
+  box-shadow: inset 0 1px 5px rgba(255,255,255,.9), inset 0 -3px 8px rgba(30,20,20,.2), 0 2px 5px rgba(0,0,0,.25);
+}
+.rts-logo-core::after {
+  content: ""; position: absolute; inset: -35% auto -35% -45%; width: 42%; pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.72), transparent);
+  transform: translateX(-160%) rotate(24deg); animation: rtsLogoShine 6s ease-in-out infinite;
+}
+.rts-logo-core img { filter: saturate(1.08) contrast(1.04); transition: transform .45s ease, filter .45s ease; }
+.rts-logo-wordmark { text-shadow: 0 1px 0 rgba(255,255,255,.28), 0 2px 3px rgba(20,20,20,.18); transition: text-shadow .3s ease, transform .3s ease; }
+.rts-logo-orbit:hover {
+  transform: perspective(500px) rotateX(0deg) rotateY(-8deg) scale(1.045);
+  box-shadow: 0 7px 18px rgba(20,10,10,.25), 0 0 18px rgba(230,57,70,.38);
+}
+.rts-logo-orbit:hover .rts-logo-core img { transform: scale(1.06); filter: saturate(1.2) contrast(1.08); }
+@media (prefers-reduced-motion: reduce) {
+  .rts-logo-orbit, .rts-logo-orbit::before, .rts-logo-core::after { animation: none; }
+  .rts-logo-orbit, .rts-logo-core img, .rts-logo-wordmark { transition: none; }
+}
