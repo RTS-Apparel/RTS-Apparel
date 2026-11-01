@@ -72,7 +72,7 @@ export const HomePage: React.FC = () => {
   const displaySale = saleItems.length > 0 ? saleItems : saleProducts;
 
   return (
-    <div className="space-y-16 pb-12 bg-[#FFFFFF]">
+    <div className="space-y-10 sm:space-y-16 pb-10 sm:pb-12 bg-[#FFFFFF]">
       {/* HERO BANNER SECTION:
           - Height: 500px desktop, 280px mobile
           - object-fit: cover, object-position: top center
@@ -81,7 +81,7 @@ export const HomePage: React.FC = () => {
           - Auto-slide: every 5 seconds
           - Dots navigation below banner */}
       <div>
-        <section className="relative h-[280px] md:h-[500px] w-full flex items-center border-b-2 border-[#E63946] overflow-hidden bg-[#1A1A1A]">
+        <section className="relative h-[300px] sm:h-[360px] md:h-[500px] w-full flex items-center border-b-2 border-[#E63946] overflow-hidden bg-[#1A1A1A]">
           <AnimatePresence mode="wait">
             {heroBanner && (
               <motion.div
@@ -103,7 +103,7 @@ export const HomePage: React.FC = () => {
                   className="absolute inset-0"
                   style={{
                     background:
-                      "linear-gradient(to right, rgba(0,0,0,0.75) 40%, transparent)",
+                      "linear-gradient(to right, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.48) 72%, rgba(0,0,0,0.18) 100%)",
                   }}
                 />
               </motion.div>
@@ -111,7 +111,7 @@ export const HomePage: React.FC = () => {
           </AnimatePresence>
 
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex items-center">
-            <div className="max-w-xl space-y-3 md:space-y-5 text-left">
+            <div className="max-w-xl space-y-3 md:space-y-5 text-left pr-2">
               {/* Tag/label above heading */}
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[6px] bg-[#E63946] text-[#FFFFFF] text-[10px] sm:text-xs uppercase tracking-[0.18em] font-semibold">
                 <Sparkles className="w-3.5 h-3.5 text-[#FFFFFF]" />
@@ -240,7 +240,7 @@ export const HomePage: React.FC = () => {
         </motion.div>
 
         <div
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6"
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-5 lg:gap-6"
           style={{ perspective: 1000 }}
         >
           {categories.map((cat, idx) => {
