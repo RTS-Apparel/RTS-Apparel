@@ -15,6 +15,7 @@ import {
   Wallet,
   Truck,
   BarChart3,
+  ArrowLeft,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useDataStore } from "../../store/dataStore";
@@ -56,7 +57,18 @@ export const AdminSidebar: React.FC = () => {
     <aside className="w-full lg:w-64 bg-[#1A1A1A] rounded-xl border border-[#333333] shrink-0 flex flex-col justify-between overflow-hidden self-start shadow-xl">
       <div>
         <div className="p-5 border-b border-[#333333]">
-          <BrandLogo size="sm" showTagline variant="dark" />
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              aria-label="Go back"
+              title="Go back"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#444444] text-[#FFFFFF] hover:border-[#E63946] hover:bg-[#2A2A2A] hover:text-[#E63946] transition-colors shrink-0"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+            <BrandLogo size="sm" showTagline variant="dark" />
+          </div>
           <p className="text-xs text-[#CCCCCC] mt-2 font-medium">
             {t.adminConsoleTitle}
           </p>
