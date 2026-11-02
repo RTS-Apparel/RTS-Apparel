@@ -24,6 +24,7 @@ import Search from "./pages/Search";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import AgentApply from "./pages/AgentApply";
+import ChatPage from "./pages/ChatPage";
 
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
@@ -92,6 +93,16 @@ const AnimatedRoutes: React.FC = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
+        {/* Dedicated full-screen customer assistant — no storefront navigation */}
+        <Route
+          path="/assistant"
+          element={
+            <PageMotion>
+              <ChatPage />
+            </PageMotion>
+          }
+        />
+
         {/* Customer Storefront Routes */}
         <Route
           path="/"
