@@ -54,7 +54,7 @@ export const ChatWidget: React.FC = () => {
     if (el) el.scrollTo({ top: el.scrollHeight, behavior });
   }, []);
 
-  useEffect(() => {
+  const [messages, setMessages] = useState<ChatTurn[]>([  useEffect(() => {
     if (isOpen) requestAnimationFrame(() => scrollMessagesToBottom("auto"));
   }, [messages, isLoading, isOpen, mobileViewport, scrollMessagesToBottom]);
 
@@ -67,6 +67,10 @@ export const ChatWidget: React.FC = () => {
       timestamp: getFormattedTime(),
     },
   ]);
+
+  useEffect(() => {
+    if (isOpen) requestAnimationFrame(() => scrollMessagesToBottom("auto"));
+  }, [messages, isLoading, isOpen, mobileViewport, scrollMessagesToBottom]);
 
   const handleOpen = () => {
     setIsOpen(true);
