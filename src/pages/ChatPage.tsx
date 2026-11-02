@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowLeft, Bot, Send } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { aiChat } from "../../lib/ai";
+import { aiChat } from "../lib/ai";
 
 interface ChatTurn {
   id: string;
@@ -57,7 +57,7 @@ export const ChatPage: React.FC = () => {
     <main className="min-h-[100dvh] h-[100dvh] w-full bg-[#F4F4F4] text-[#1A1A1A] flex flex-col overflow-hidden">
       <header className="shrink-0 bg-[#111111] text-white border-b border-[#333333] shadow-lg">
         <div className="w-full max-w-4xl mx-auto px-3 sm:px-6 h-[68px] flex items-center gap-3">
-          <button type="button" onClick={() => navigate(-1)} aria-label="Back to website" className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10 active:bg-white/15 transition-colors">
+          <button type="button" onClick={() => navigate("/")} aria-label="Back to website" className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10 active:bg-white/15 transition-colors">
             <ArrowLeft size={23} />
           </button>
           <div className="w-10 h-10 rounded-full bg-[#E63946] flex items-center justify-center"><Bot size={22} /></div>
