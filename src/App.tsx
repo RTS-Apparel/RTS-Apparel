@@ -6,7 +6,6 @@ import Footer from "./components/layout/Footer";
 import { CartDrawer } from "./components/cart/CartDrawer";
 import { ChatWidget } from "./components/ai/ChatWidget";
 import { ToastContainer } from "./components/common/Toast";
-import { ScrollProgressBar } from "./components/common/ScrollProgressBar";
 import { CustomCursor } from "./components/common/CustomCursor";
 import { PageLoader } from "./components/common/PageLoader";
 import { ProtectedRoute } from "./components/common/ProtectedRoute";
@@ -591,7 +590,6 @@ export function App() {
   return (
     <BrowserRouter>
       <PageLoader />
-      <ScrollProgressBar />
       <CustomCursor />
       <AnimatedRoutes />
     </BrowserRouter>
