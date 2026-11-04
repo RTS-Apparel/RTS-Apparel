@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Home, LayoutGrid, ShoppingBag, ShoppingCart, Package, Heart,
-  UserRound, Truck, MessageCircle, Info, Phone, Menu, X, ChevronRight,
+  UserRound, Truck, MessageCircle, Info, Phone, X, ChevronRight,
 } from "lucide-react";
 import { useDataStore } from "../../store/dataStore";
 import { useCart } from "../../hooks/useCart";
