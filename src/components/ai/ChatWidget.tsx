@@ -14,7 +14,7 @@ export const ChatWidget: React.FC = () => {
       title="Chat with ARTS APPAREL"
       whileHover={{ scale: 1.06 }}
       whileTap={{ scale: 0.94 }}
-      className="chat-trigger-btn fixed z-50 bottom-24 left-4 md:bottom-6 md:left-auto md:right-6 w-14 h-14 md:w-16 md:h-16 rounded-full bg-[#E63946] hover:bg-[#C1121F] text-white shadow-[0_8px_28px_rgba(230,57,70,0.38)] border-2 border-white flex items-center justify-center transition-colors"
+      className="chat-trigger-btn fixed z-[80] bottom-5 left-16 md:bottom-6 md:left-auto md:right-6 w-14 h-14 md:w-16 md:h-16 rounded-full bg-[#E63946] hover:bg-[#C1121F] text-white shadow-[0_8px_28px_rgba(230,57,70,0.38)] border-2 border-white flex items-center justify-center transition-colors"
     >
       <MessageCircle size={25} strokeWidth={2.2} />
       <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#22C55E] border-2 border-white" />
