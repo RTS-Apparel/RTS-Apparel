@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Home, LayoutGrid, ShoppingBag, ShoppingCart, Package, Heart,
-  UserRound, Truck, MessageCircle, Info, Phone, Menu, X, ChevronRight, Facebook,
+  UserRound, Truck, MessageCircle, Info, Phone, Menu, X, ChevronRight,
 } from "lucide-react";
 import { useDataStore } from "../../store/dataStore";
 import { useCart } from "../../hooks/useCart";
@@ -103,8 +103,8 @@ const StorefrontSidebar: React.FC = () => {
         <div className="mt-4 border-t border-[#EEEEEE] pt-4">
           <p className="mb-3 text-center text-[10px] font-bold uppercase tracking-[0.18em] text-[#999999]">Follow ARTS APPAREL</p>
           <div className="flex items-center justify-center gap-3">
-            <a href={facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="Open ARTS APPAREL Facebook page" className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#DDDDDD] bg-white text-[#444444] transition-colors hover:border-[#1877F2] hover:bg-[#1877F2] hover:text-white">
-              <Facebook size={19} />
+            <a href={facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="Open ARTS APPAREL Facebook page" className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#1877F2] bg-[#1877F2] text-white shadow-sm transition-transform hover:-translate-y-0.5 hover:bg-[#166FE5]">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.35 21v-8.2h2.76l.41-3.2h-3.17V7.56c0-.93.26-1.56 1.59-1.56h1.69V3.14c-.29-.04-1.3-.14-2.47-.14-2.45 0-4.13 1.5-4.13 4.25V9.6H7.25v3.2h2.78V21h3.32z"/></svg>
             </a>
             <a href={tiktokUrl} target="_blank" rel="noopener noreferrer" aria-label="Open ARTS APPAREL TikTok profile" className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#DDDDDD] bg-white text-[#444444] transition-colors hover:border-black hover:bg-black hover:text-white">
               <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
