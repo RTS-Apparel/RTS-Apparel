@@ -211,6 +211,21 @@ export const HomePage: React.FC = () => {
         )}
       </div>
 
+      <section aria-label="Shopping benefits" className="mx-auto grid max-w-7xl grid-cols-1 gap-3 px-4 sm:grid-cols-3 sm:px-6 lg:px-8">
+        <div className="rounded-lg border border-[#E0E0E0] bg-white px-4 py-4 text-center">
+          <p className="text-sm font-bold text-[#1A1A1A]">Cash on Delivery Available</p>
+          <p className="mt-1 text-xs text-[#666666]">Pay safely when your parcel arrives</p>
+        </div>
+        <div className="rounded-lg border border-[#E0E0E0] bg-white px-4 py-4 text-center">
+          <p className="text-sm font-bold text-[#1A1A1A]">Delivery in 3–5 Working Days</p>
+          <p className="mt-1 text-xs text-[#666666]">Across Pakistan</p>
+        </div>
+        <div className="rounded-lg border border-[#E0E0E0] bg-white px-4 py-4 text-center">
+          <p className="text-sm font-bold text-[#1A1A1A]">100% Original Products</p>
+          <p className="mt-1 text-xs text-[#666666]">Easy returns on eligible items</p>
+        </div>
+      </section>
+
       {/* Categories Showcase — 5 categories (Shirts, Trousers, Kurta Shalwar, Hoodies, Jackets), each with product count badge */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-8">
         <motion.div
