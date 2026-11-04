@@ -263,27 +263,39 @@ export const CartDrawer: React.FC = () => {
                   )}
                 </form>
 
-                <div className="space-y-1 text-sm border-t border-[#E0E0E0] pt-3">
+                <div className="space-y-2.5 border-t border-[#E0E0E0] pt-3">
+                  <div className="flex justify-between text-xs text-[#666666] font-mono tabular-nums">
+                    <span>Items ({totals.itemCount})</span>
+                    <span>{formatPKR(totals.originalSubtotal)}</span>
+                  </div>
                   {totals.discountAmount > 0 && (
-                    <div className="flex justify-between text-xs text-[#22C55E] font-mono tabular-nums font-semibold">
-                      <span>Atelier Savings</span>
-                      <span>- {formatPKR(totals.discountAmount)}</span>
+                    <div className="flex justify-between text-xs text-[#16834A] font-mono tabular-nums font-semibold">
+                      <span>Product discounts</span>
+                      <span>− {formatPKR(totals.discountAmount)}</span>
                     </div>
                   )}
-                  <div className="flex justify-between text-xs text-[#666666] font-mono tabular-nums">
-                    <span>Subtotal</span>
+                  <div className="flex justify-between text-xs text-[#444444] font-mono tabular-nums">
+                    <span>Subtotal after discounts</span>
                     <span>{formatPKR(totals.subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-xs text-[#666666] font-mono tabular-nums">
-                    <span>Delivery ({selectedCity})</span>
+                    <span>Delivery · {selectedCity}</span>
                     <span>{formatPKR(cityRate)}</span>
                   </div>
-                  <div className="flex justify-between text-base font-bold text-[#1A1A1A] font-mono tabular-nums pt-1">
-                    <span>Estimated Total</span>
-                    <span className="text-[#E63946]">
+                  <div className="border-t border-dashed border-[#D4D4D4] pt-3 flex items-end justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-bold text-[#1A1A1A]">Total payable</p>
+                      <p className="text-[10px] text-[#777777] mt-0.5">Delivery included · PKR</p>
+                    </div>
+                    <span className="text-xl font-bold text-[#E63946] font-mono tabular-nums">
                       {formatPKR(totals.subtotal + cityRate)}
                     </span>
                   </div>
+                  {totals.discountAmount > 0 && (
+                    <p className="text-[11px] text-[#16834A] font-medium bg-[#EAF7EF] rounded-lg px-3 py-2">
+                      You save {formatPKR(totals.discountAmount)} on this order
+                    </p>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
