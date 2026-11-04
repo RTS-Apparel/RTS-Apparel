@@ -189,6 +189,10 @@ export const ProductDetail: React.FC = () => {
           <p className="text-sm text-[#666666] leading-relaxed">
             {displayDesc}
           </p>
+          <div className="flex flex-wrap gap-2 text-xs font-medium">
+            <span className="rounded-full border border-[#E0E0E0] bg-[#F5F5F5] px-3 py-2 text-[#1A1A1A]">Cash on Delivery Available</span>
+            <span className="rounded-full border border-[#E0E0E0] bg-[#F5F5F5] px-3 py-2 text-[#1A1A1A]">Delivery: 3–5 working days across Pakistan</span>
+          </div>
 
           {/* Size Selector */}
           <div className="space-y-2.5">
