@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Home, LayoutGrid, ShoppingBag, ShoppingCart, Package, Heart,
-  UserRound, Truck, MessageCircle, Info, Phone, Menu, X, ChevronRight,
+  UserRound, Truck, MessageCircle, Info, Phone, Menu, X, ChevronRight, Facebook,
 } from "lucide-react";
 import { useDataStore } from "../../store/dataStore";
 import { useCart } from "../../hooks/useCart";
@@ -17,6 +17,9 @@ const StorefrontSidebar: React.FC = () => {
     .filter((category) => category.is_active)
     .sort((a, b) => a.display_order - b.display_order);
   const language = useLanguageStore((s) => s.language);
+  const siteSettings = useDataStore((s) => s.siteSettings);
+  const facebookUrl = siteSettings.facebook_url?.trim() || "https://www.facebook.com/share/1E3Yv7ro6S/";
+  const tiktokUrl = siteSettings.tiktok_url?.trim() || "https://www.tiktok.com/@artsapparel3?_r=1&_t=ZS-9AzeKQChL6N";
   const { totalCount, totals, setDrawerOpen } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -95,6 +98,19 @@ const StorefrontSidebar: React.FC = () => {
           <div className="mt-3 grid grid-cols-2 gap-2">
             <Link to="/cart" onClick={closeMobile} className="rounded-md border border-[#DDDDDD] py-2 text-center text-[11px] font-semibold text-[#333333] hover:border-[#E63946]">View bag</Link>
             <Link to="/checkout" onClick={closeMobile} className="rounded-md bg-[#E63946] py-2 text-center text-[11px] font-semibold text-white hover:bg-[#C1121F]">Checkout</Link>
+          </div>
+        </div>
+        <div className="mt-4 border-t border-[#EEEEEE] pt-4">
+          <p className="mb-3 text-center text-[10px] font-bold uppercase tracking-[0.18em] text-[#999999]">Follow ARTS APPAREL</p>
+          <div className="flex items-center justify-center gap-3">
+            <a href={facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="Open ARTS APPAREL Facebook page" className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#DDDDDD] bg-white text-[#444444] transition-colors hover:border-[#1877F2] hover:bg-[#1877F2] hover:text-white">
+              <Facebook size={19} />
+            </a>
+            <a href={tiktokUrl} target="_blank" rel="noopener noreferrer" aria-label="Open ARTS APPAREL TikTok profile" className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#DDDDDD] bg-white text-[#444444] transition-colors hover:border-black hover:bg-black hover:text-white">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/>
+              </svg>
+            </a>
           </div>
         </div>
         <p className="mt-3 text-center text-[10px] leading-relaxed text-[#999999]">Nationwide delivery across Pakistan</p>
