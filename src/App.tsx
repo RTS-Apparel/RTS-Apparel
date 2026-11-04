@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import Navbar from "./components/layout/Navbar";
+import StorefrontSidebar from "./components/layout/StorefrontSidebar";
 import Footer from "./components/layout/Footer";
 import { CartDrawer } from "./components/cart/CartDrawer";
 import { ChatWidget } from "./components/ai/ChatWidget";
@@ -77,8 +78,13 @@ const StorefrontLayout: React.FC<{ children: React.ReactNode }> = ({
   return (
     <div className="min-h-screen flex flex-col bg-[#FFFFFF] text-[#1A1A1A] relative">
       <Navbar />
-      <main className="flex-1 relative z-10">{children}</main>
-      <Footer />
+      <div className="flex min-w-0 flex-1">
+        <StorefrontSidebar />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <main className="relative z-10 flex-1">{children}</main>
+          <Footer />
+        </div>
+      </div>
       <CartDrawer />
       <ChatWidget />
       <ToastContainer />
