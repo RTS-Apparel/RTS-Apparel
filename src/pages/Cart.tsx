@@ -92,7 +92,7 @@ export const CartPage: React.FC = () => {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        <div className="lg:col-span-8 space-y-4">
+        <div className="lg:col-span-8 space-y-4 order-2 lg:order-2">
           {enrichedItems.map((item) => {
             const unitPrice = calculateDiscountedPrice(
               item.product.price,
@@ -193,7 +193,7 @@ export const CartPage: React.FC = () => {
         </div>
 
         {/* Order Summary Sidebar */}
-        <div className="lg:col-span-4 rounded-xl bg-[#FFFFFF] border border-[#E0E0E0] p-6 space-y-5 sticky top-28 shadow-sm">
+        <div className="lg:col-span-4 rounded-xl bg-[#FFFFFF] border border-[#E0E0E0] p-6 space-y-5 sticky top-28 shadow-sm order-1 lg:order-1">
           <h2 className="text-lg font-serif-display font-semibold text-[#1A1A1A]">
             {t.orderSummary}
           </h2>
