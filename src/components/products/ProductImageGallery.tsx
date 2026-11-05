@@ -71,8 +71,7 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
     <div className="flex flex-col gap-4">
       {/* Main large image: OptimizedImage with priority={true} and height 450px */}
       <div
-        className="w-full rounded-xl bg-[#1A1A1A] border border-[#E0E0E0] hover:border-[#E63946] overflow-hidden relative group select-none transition-colors"
-        style={{ height: "450px" }}
+        className="w-full aspect-[4/5] sm:aspect-auto sm:h-[450px] rounded-xl bg-[#1A1A1A] border border-[#E0E0E0] hover:border-[#E63946] overflow-hidden relative group select-none transition-colors"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
@@ -92,7 +91,7 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
               src={`${selectedImage}?w=800&q=75&fm=webp&fit=crop`}
               alt={label}
               priority={true}
-              style={{ height: "450px" }}
+              style={{ height: "100%" }}
             />
           </motion.div>
         </AnimatePresence>
