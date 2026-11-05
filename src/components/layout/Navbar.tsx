@@ -130,11 +130,13 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
           <button
             type="button"
             onClick={onMenuClick}
-            className="p-2 text-[#1A1A1A] hover:text-[#E63946] rounded-lg hover:bg-[#F5F5F5] transition-colors"
+            className="relative z-50 inline-flex h-11 w-11 shrink-0 flex-col items-center justify-center gap-[5px] rounded-lg border-2 border-[#E63946] bg-[#1A1A1A] text-white shadow-md transition-all hover:bg-[#E63946] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E63946] focus-visible:ring-offset-2"
             aria-label="Open shop menu"
             title="Open shop menu"
           >
-            <Menu className="w-6 h-6" />
+            <span className="block h-[2.5px] w-6 rounded-full bg-white" />
+            <span className="block h-[2.5px] w-6 rounded-full bg-white" />
+            <span className="block h-[2.5px] w-6 rounded-full bg-white" />
           </button>
 
           <div className="flex items-center gap-1 sm:gap-2">
