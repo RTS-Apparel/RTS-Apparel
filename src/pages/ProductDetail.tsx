@@ -128,10 +128,10 @@ export const ProductDetail: React.FC = () => {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="max-w-7xl mx-auto px-4 md:px-8 py-10 space-y-16 bg-[#FFFFFF]"
+      className="max-w-7xl mx-auto px-3 sm:px-4 md:px-8 py-5 sm:py-10 space-y-8 sm:space-y-16 bg-[#FFFFFF]"
     >
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs font-mono text-[#666666]">
+      <div className="flex flex-wrap items-center gap-2 text-[11px] sm:text-xs font-mono text-[#666666] min-w-0">
         <Link to="/" className="hover:text-[#E63946] text-[#1A1A1A] font-medium">
           {t.home}
         </Link>
@@ -153,7 +153,7 @@ export const ProductDetail: React.FC = () => {
       </div>
 
       {/* Main Product Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10">
         <div className="lg:col-span-6">
           <ProductImageGallery images={product.images} alt={displayTitle} />
         </div>
@@ -165,7 +165,7 @@ export const ProductDetail: React.FC = () => {
                 {displayCat}
               </span>
             )}
-            <h1 className="text-3xl sm:text-4xl font-serif-display font-bold text-[#1A1A1A]">
+            <h1 className="text-2xl sm:text-4xl font-serif-display font-bold text-[#1A1A1A] break-words">
               {displayTitle}
             </h1>
 
