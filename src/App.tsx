@@ -5,7 +5,6 @@ import Navbar from "./components/layout/Navbar";
 import StorefrontSidebar from "./components/layout/StorefrontSidebar";
 import Footer from "./components/layout/Footer";
 import { CartDrawer } from "./components/cart/CartDrawer";
-import { ChatWidget } from "./components/ai/ChatWidget";
 import { ToastContainer } from "./components/common/Toast";
 import { CustomCursor } from "./components/common/CustomCursor";
 import { PageLoader } from "./components/common/PageLoader";
@@ -89,7 +88,6 @@ const StorefrontLayout: React.FC<{ children: React.ReactNode }> = ({
         </div>
       </div>
       <CartDrawer />
-      <ChatWidget />
       <ToastContainer />
     </div>
   );
