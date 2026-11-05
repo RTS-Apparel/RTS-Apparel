@@ -110,17 +110,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         className="group h-full rounded-xl bg-[#FFFFFF] border border-[#E0E0E0] hover:border-[#E63946] transition-all duration-300 flex flex-col overflow-hidden shadow-xs hover:shadow-md"
       >
         {/* Product image area using OptimizedImage and useInView */}
-        <div className="relative overflow-hidden bg-[#1A1A1A]" style={{ height: "220px" }}>
+        <div className="relative aspect-[4/5] sm:aspect-auto sm:h-[220px] overflow-hidden bg-[#1A1A1A]">
           {inView ? (
             <OptimizedImage
               src={`${product.images[0]}?w=400&q=70&fm=webp&fit=crop`}
               alt={product.name_en || displayTitle}
               priority={false}
-              style={{ height: "220px" }}
+              style={{ height: "100%" }}
               className="group-hover:scale-[1.06] transition-transform duration-500"
             />
           ) : (
-            <div style={{ height: "220px", background: "#1A1A1A" }} />
+            <div className="h-full w-full bg-[#1A1A1A]" />
           )}
 
           {/* Discount & New badges */}
@@ -157,14 +157,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </motion.button>
         </div>
 
-        <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-3 bg-[#FFFFFF]">
+        <div className="p-2.5 sm:p-5 flex-1 flex flex-col justify-between space-y-2.5 sm:space-y-3 bg-[#FFFFFF]">
           <div>
             {displayCat && (
               <p className="text-[11px] font-mono uppercase tracking-widest text-[#E63946] font-semibold mb-1">
                 {displayCat}
               </p>
             )}
-            <h3 className="font-serif-display text-base font-semibold text-[#1A1A1A] group-hover:text-[#E63946] transition-colors line-clamp-1">
+            <h3 className="font-serif-display text-sm sm:text-base font-semibold text-[#1A1A1A] group-hover:text-[#E63946] transition-colors line-clamp-2 min-h-[2.5rem] sm:min-h-0">
               {displayTitle}
             </h3>
           </div>
@@ -172,7 +172,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <div className="space-y-3">
             <div className="pt-2 border-t border-[#E0E0E0] flex items-baseline justify-between gap-2">
               <div className="flex items-baseline gap-2 font-mono tabular-nums">
-                <span className="text-sm font-bold text-[#E63946]">
+                <span className="text-xs sm:text-sm font-bold text-[#E63946] whitespace-nowrap">
                   {formatPKR(finalPrice)}
                 </span>
                 {discountPercent > 0 && (
@@ -189,7 +189,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <button
               type="button"
               onClick={handleQuickAdd}
-              className="w-full rounded-[6px] bg-[#1A1A1A] hover:bg-[#E63946] text-[#FFFFFF] py-2.5 px-3 flex items-center justify-center gap-2 text-xs font-semibold transition-colors duration-200"
+              className="w-full min-h-11 rounded-[6px] bg-[#1A1A1A] hover:bg-[#E63946] text-[#FFFFFF] py-2.5 px-2 sm:px-3 flex items-center justify-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-semibold transition-colors duration-200"
               title={t.addToCart}
             >
               <ShoppingCart size={16} className="text-[#FFFFFF]" />
