@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -11,7 +11,7 @@ import { formatPKR } from "../../lib/utils";
 import { getCategoryName } from "../../lib/i18n";
 import { useDataStore as useLanguageStore } from "../../store/dataStore";
 
-const StorefrontSidebar: React.FC = () => {
+const StorefrontSidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   const location = useLocation();
   const categories = useDataStore((s) => s.categories)
     .filter((category) => category.is_active)
@@ -21,18 +21,7 @@ const StorefrontSidebar: React.FC = () => {
   const facebookUrl = siteSettings.facebook_url?.trim() || "https://www.facebook.com/share/1E3Yv7ro6S/";
   const tiktokUrl = siteSettings.tiktok_url?.trim() || "https://www.tiktok.com/@artsapparel3?_r=1&_t=ZS-9AzeKQChL6N";
   const { totalCount, totals, setDrawerOpen } = useCart();
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [touchStartX, setTouchStartX] = useState<number | null>(null);
-  const openFromSwipe = (event: React.TouchEvent) => {
-    if (touchStartX !== null && event.changedTouches[0].clientX - touchStartX > 45) setMobileOpen(true);
-    setTouchStartX(null);
-  };
-  const closeFromSwipe = (event: React.TouchEvent) => {
-    if (touchStartX !== null && touchStartX - event.changedTouches[0].clientX > 65) closeMobile();
-    setTouchStartX(null);
-  };
-
-  const closeMobile = () => setMobileOpen(false);
+  const closeMobile = onClose;
   const active = (path: string) => location.pathname === path ||
     (path !== "/" && location.pathname.startsWith(path + "/"));
   const navClass = (path: string) =>
@@ -127,43 +116,12 @@ const StorefrontSidebar: React.FC = () => {
 
   return (
     <>
-      <aside className="sticky top-0 hidden h-[calc(100vh-0px)] w-[258px] shrink-0 border-r border-[#EAEAEA] bg-white lg:block">
-        {content}
-      </aside>
-
-      {/* Mobile edge rail: swipe right or tap an icon to reveal the full sidebar */}
-      <nav aria-label="Quick shop navigation" onTouchStart={(event) => setTouchStartX(event.touches[0].clientX)} onTouchEnd={openFromSwipe}
-        className="fixed left-0 top-1/2 z-[65] flex -translate-y-1/2 flex-col gap-1 rounded-r-2xl border border-l-0 border-[#E8E8E8] bg-white/95 p-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.16)] backdrop-blur lg:hidden">
-        {[
-          { to: "/", label: "Home", Icon: Home },
-          { to: "/search", label: "Products", Icon: LayoutGrid },
-          { to: "/cart", label: "Shopping bag", Icon: ShoppingCart },
-          { to: "/account/wishlist", label: "Wishlist", Icon: Heart },
-          { to: "/account", label: "My account", Icon: UserRound },
-          { to: "/account/orders", label: "My orders", Icon: Package },
-          { to: "/track", label: "Track order", Icon: Truck },
-          { to: "/assistant", label: "AI assistant", Icon: MessageCircle },
-        ].map(({ to, label, Icon }) => (
-          <button key={to} type="button" aria-label={label} title={label}
-            onClick={() => { if (to === "/cart") setDrawerOpen(true); else window.location.href = to; }}
-            className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-colors ${active(to) ? "bg-[#FFF0F1] text-[#C1121F]" : "text-[#555555] hover:bg-[#F5F5F5]"}`}>
-            <Icon size={19} />
-            {to === "/cart" && totalCount > 0 && <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#E63946] px-1 text-[9px] font-bold text-white">{totalCount}</span>}
-          </button>
-        ))}
-        <span className="my-0.5 h-px bg-[#EEEEEE]" />
-        <button type="button" onClick={() => setMobileOpen(true)} aria-label="Expand full sidebar"
-          className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1A1A1A] text-white">
-          <ChevronRight size={20} />
-        </button>
-      </nav>
-
       <AnimatePresence>
-        {mobileOpen && (
-          <motion.div className="fixed inset-0 z-[70] bg-black/35 lg:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={closeMobile}>
+        {isOpen && (
+          <motion.div className="fixed inset-0 z-[100] bg-black/40" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={closeMobile}>
             <motion.aside initial={{ x: "-100%" }} animate={{ x: 0 }} exit={{ x: "-100%" }} transition={{ type: "spring", damping: 28, stiffness: 280 }}
-              onClick={(event) => event.stopPropagation()} onTouchStart={(event) => setTouchStartX(event.touches[0].clientX)} onTouchEnd={closeFromSwipe}
-              className="flex h-full w-[min(86vw,320px)] flex-col border-r border-[#EEEEEE] bg-white shadow-2xl">
+              onClick={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-label="Shop navigation"
+              className="flex h-full w-[min(88vw,360px)] flex-col border-r border-[#EEEEEE] bg-white shadow-2xl">
               <div className="flex items-center justify-between border-b border-[#EEEEEE] px-4 py-3">
                 <span className="text-xs font-bold uppercase tracking-[0.16em] text-[#888888]">ARTS APPAREL MENU</span>
                 <button type="button" onClick={closeMobile} aria-label="Close sidebar" className="rounded-lg p-2 text-[#555555] hover:bg-[#F5F5F5]"><X size={20} /></button>
