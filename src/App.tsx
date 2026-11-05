@@ -13,7 +13,6 @@ import { ProtectedRoute } from "./components/common/ProtectedRoute";
 import { pageVariants } from "./lib/animations";
 import { useAuthStore } from "./store/authStore";
 import { useDataStore } from "./store/dataStore";
-import { MessageCircle } from "lucide-react";
 
 import Home from "./pages/Home";
 import Category from "./pages/Category";
@@ -78,9 +77,6 @@ const StorefrontLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const whatsappNumber = useDataStore((s) => s.siteSettings.whatsapp_number);
-  const whatsappDigits = (whatsappNumber || "03058165623").replace(/\D/g, "");
-  const whatsappHref = `https://wa.me/${whatsappDigits.startsWith("0") ? `92${whatsappDigits.slice(1)}` : whatsappDigits}`;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FFFFFF] text-[#1A1A1A] relative">
@@ -94,9 +90,6 @@ const StorefrontLayout: React.FC<{ children: React.ReactNode }> = ({
       </div>
       <CartDrawer />
       <ChatWidget />
-      <a href={whatsappHref} target="_blank" rel="noopener noreferrer" aria-label="Chat with ARTS APPAREL on WhatsApp" className="fixed bottom-5 right-5 z-[60] flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl ring-4 ring-white/80 transition-transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-[#25D366]/40">
-        <MessageCircle size={27} strokeWidth={2.4} />
-      </a>
       <ToastContainer />
     </div>
   );
