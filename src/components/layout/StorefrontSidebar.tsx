@@ -77,7 +77,7 @@ const StorefrontSidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             <Link to="/account" onClick={closeMobile} className={navClass("/account")}><UserRound size={17} /><span>My account</span></Link>
             <Link to="/account/orders" onClick={closeMobile} className={navClass("/account/orders")}><Package size={17} /><span>My orders</span></Link>
             <Link to="/track" onClick={closeMobile} className={navClass("/track")}><Truck size={17} /><span>Track an order</span></Link>
-            <Link to="/assistant" onClick={closeMobile} className={navClass("/assistant")}><MessageCircle size={17} /><span>AI assistant</span></Link>
+            <Link to="/assistant" onClick={closeMobile} className={`flex items-center gap-3 rounded-lg border border-[#F6C7CB] bg-[#FFF0F1] px-3 py-2.5 text-sm font-semibold text-[#C1121F] transition-colors hover:bg-[#FFE3E6] ${active("/assistant") ? "ring-1 ring-[#E63946]" : ""}`}><MessageCircle size={18} /><span>AI assistant</span><span className="ml-auto rounded-full bg-[#E63946] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">Chat</span></Link>
             <Link to="/about" onClick={closeMobile} className={navClass("/about")}><Info size={17} /><span>About us</span></Link>
             <Link to="/contact" onClick={closeMobile} className={navClass("/contact")}><Phone size={17} /><span>Contact</span></Link>
           </nav>
