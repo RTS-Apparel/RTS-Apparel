@@ -80,7 +80,7 @@ export const CartPage: React.FC = () => {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="max-w-7xl mx-auto px-4 md:px-8 py-10 space-y-8"
+      className="max-w-7xl mx-auto px-3 sm:px-4 md:px-8 py-5 sm:py-10 space-y-6 sm:space-y-8"
     >
       <PageHeading
         title={`${t.shoppingBag} (${totals.itemCount})`}
@@ -102,7 +102,7 @@ export const CartPage: React.FC = () => {
             return (
               <div
                 key={`${item.product_id}-${item.size}-${item.color}`}
-                className="p-4 sm:p-5 rounded-xl bg-[#FFFFFF] border border-[#E0E0E0] hover:border-[#E63946] transition-colors flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs"
+                className="p-3 sm:p-5 rounded-xl bg-[#FFFFFF] border border-[#E0E0E0] hover:border-[#E63946] transition-colors flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 shadow-xs"
               >
                 <div className="flex items-center gap-4">
                   <LuxuryImage
@@ -193,7 +193,7 @@ export const CartPage: React.FC = () => {
         </div>
 
         {/* Order Summary Sidebar */}
-        <div className="lg:col-span-4 rounded-xl bg-[#FFFFFF] border border-[#E0E0E0] p-6 space-y-5 sticky top-28 shadow-sm order-1 lg:order-1">
+        <div className="lg:col-span-4 rounded-xl bg-[#FFFFFF] border border-[#E0E0E0] p-4 sm:p-6 space-y-5 lg:sticky lg:top-28 shadow-sm order-1 lg:order-1">
           <h2 className="text-lg font-serif-display font-semibold text-[#1A1A1A]">
             {t.orderSummary}
           </h2>
