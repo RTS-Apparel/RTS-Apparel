@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import Navbar from "./components/layout/Navbar";
@@ -77,15 +77,16 @@ const PageMotion: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 const StorefrontLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const whatsappNumber = useDataStore((s) => s.siteSettings.whatsapp_number);
   const whatsappDigits = (whatsappNumber || "03058165623").replace(/\D/g, "");
   const whatsappHref = `https://wa.me/${whatsappDigits.startsWith("0") ? `92${whatsappDigits.slice(1)}` : whatsappDigits}`;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FFFFFF] text-[#1A1A1A] relative">
-      <Navbar />
+      <Navbar onMenuClick={() => setSidebarOpen(true)} />
       <div className="flex min-w-0 flex-1">
-        <StorefrontSidebar />
+        <StorefrontSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <div className="flex min-w-0 flex-1 flex-col">
           <main className="relative z-10 flex-1">{children}</main>
           <Footer />
