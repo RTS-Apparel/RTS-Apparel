@@ -21,6 +21,7 @@ import { BrandLogo } from "../common/BrandLogo";
 
 export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) => {
   const categories = useDataStore((s) => s.categories);
+  const whatsappNumber = useDataStore((s) => s.siteSettings.whatsapp_number);
   const language = useDataStore((s) => s.language);
   const setLanguage = useDataStore((s) => s.setLanguage);
   const wishlist = useDataStore((s) => s.wishlist);
@@ -67,6 +68,9 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
     }
   };
 
+  const whatsappDigits = (whatsappNumber || "03058165623").replace(/\\D/g, "");
+  const whatsappHref = `https://wa.me/${whatsappDigits.startsWith("0") ? `92${whatsappDigits.slice(1)}` : whatsappDigits}`;
+
   const languageOptions: { code: CustomerLanguage; label: string }[] = [
     { code: "en", label: "English" },
     { code: "ur", label: "اردو" },
@@ -97,6 +101,15 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
           </p>
 
           <div className="flex items-center gap-3 ml-auto">
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="whitespace-nowrap text-[11px] sm:text-xs font-bold uppercase tracking-wide text-white transition-colors hover:text-[#E63946] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E63946] rounded-sm"
+              aria-label="Contact us on WhatsApp"
+            >
+              Contact Us
+            </a>
             <div
               className="inline-flex items-center bg-[#2A2A2A] border border-[#333333] rounded px-1.5 py-0.5"
               role="group"
