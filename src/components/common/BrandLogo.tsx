@@ -70,7 +70,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
           </span>
           <span
             className="inline-flex items-center justify-center ml-0.5"
-            style={{ color: apparelTextColor }}
+            style={{ color: "#E63946" }}
           >
             RTS
           </span>
