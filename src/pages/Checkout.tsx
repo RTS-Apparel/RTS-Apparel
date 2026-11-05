@@ -140,7 +140,7 @@ export const CheckoutPage: React.FC = () => {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="max-w-7xl mx-auto px-4 md:px-8 py-10 space-y-8"
+      className="max-w-7xl mx-auto px-3 sm:px-4 md:px-8 py-5 sm:py-10 space-y-6 sm:space-y-8"
     >
       <PageHeading
         title={t.checkout}
@@ -164,7 +164,7 @@ export const CheckoutPage: React.FC = () => {
           )}
 
           {/* Step 1: Delivery Address & City */}
-          <div className="rounded-xl bg-[#FFFFFF] border border-[#E0E0E0] p-6 space-y-4 shadow-xs">
+          <div className="rounded-xl bg-[#FFFFFF] border border-[#E0E0E0] p-4 sm:p-6 space-y-4 shadow-xs">
             <div className="flex items-center gap-2 text-sm font-semibold text-[#1A1A1A]">
               <MapPin size={20} className="text-[#E63946]" />
               <h2>{t.deliveryDestination}</h2>
