@@ -93,7 +93,7 @@ export const CartDrawer: React.FC = () => {
                     }}
                     className="btn-primary-futuristic px-5 py-2.5 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-sm hover:bg-[#C1121F]"
                   >
-                    Explore Kurta Shalwar
+                    Explore Products
                   </button>
                 </div>
               ) : (
