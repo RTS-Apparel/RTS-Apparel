@@ -100,12 +100,12 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
             {announcementMessage}
           </p>
 
-          <div className="flex items-center gap-3 ml-auto">
+          <div className="flex items-center gap-2 sm:gap-3 ml-auto min-w-0">
             <a
               href={whatsappHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="whitespace-nowrap text-[11px] sm:text-xs font-bold uppercase tracking-wide text-white transition-colors hover:text-[#E63946] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E63946] rounded-sm"
+              className="inline-flex min-h-8 items-center gap-1.5 whitespace-nowrap rounded-sm px-1 text-[10px] sm:text-xs font-bold uppercase tracking-wide text-white transition-colors hover:text-[#E63946] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E63946] shrink-0"
               aria-label="Contact us on WhatsApp"
             >
               <svg
@@ -130,7 +130,7 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
                   <button
                     type="button"
                     onClick={() => setLanguage(opt.code)}
-                    className={`px-2 py-0.5 rounded text-[11px] transition-colors ${
+                    className={`px-1.5 sm:px-2 py-1 rounded text-[10px] sm:text-[11px] whitespace-nowrap transition-colors ${
                       language === opt.code
                         ? "bg-[#E63946] text-[#FFFFFF] font-semibold"
                         : "text-[#CCCCCC] hover:text-[#FFFFFF]"
@@ -146,7 +146,7 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
       </div>
 
       {/* Main Navigation Row */}
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 h-[68px] sm:h-24 lg:h-40 flex items-center justify-between gap-1.5 sm:gap-3 bg-[#FFFFFF]">
+      <div className="max-w-7xl mx-auto w-full px-2 sm:px-4 lg:px-6 h-[68px] sm:h-24 lg:h-40 flex items-center justify-between gap-1.5 sm:gap-3 bg-[#FFFFFF]">
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <button
             type="button"
