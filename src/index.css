@@ -195,7 +195,11 @@ tbody tr:hover {
   html, body, #root { width: 100%; max-width: 100%; overflow-x: clip; }
   body { -webkit-text-size-adjust: 100%; }
   button, a, input, select, textarea { touch-action: manipulation; }
-  input, select, textarea { font-size: 16px; }
+  button, a { -webkit-tap-highlight-color: transparent; }
+  input, select, textarea { font-size: 16px; max-width: 100%; }
+  img, video, canvas, svg { max-width: 100%; }
+  main, section, article, form { min-width: 0; }
+  :focus-visible { outline: 2px solid #E63946; outline-offset: 2px; }
   .chat-window-border { padding-bottom: env(safe-area-inset-bottom); }
   .chat-trigger-btn { animation: none; }
 }
