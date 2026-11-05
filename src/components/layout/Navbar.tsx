@@ -5,7 +5,6 @@ import {
   Search,
   User,
   Menu,
-  X,
   Truck,
   LogOut,
   Globe,
@@ -20,7 +19,7 @@ import { CUSTOMER_TRANSLATIONS, getCategoryName } from "../../lib/i18n";
 import { CustomerLanguage } from "../../types";
 import { BrandLogo } from "../common/BrandLogo";
 
-export const Navbar: React.FC = () => {
+export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) => {
   const categories = useDataStore((s) => s.categories);
   const language = useDataStore((s) => s.language);
   const setLanguage = useDataStore((s) => s.setLanguage);
@@ -29,7 +28,6 @@ export const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const { totalCount, setDrawerOpen } = useCart();
 
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [scrolled, setScrolled] = useState(false);
   const [cartWiggle, setCartWiggle] = useState(false);
@@ -66,7 +64,6 @@ export const Navbar: React.FC = () => {
     if (searchText.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchText.trim())}`);
       setSearchText("");
-      setMobileOpen(false);
     }
   };
 
@@ -132,15 +129,12 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <button
             type="button"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden p-2 text-[#1A1A1A] hover:text-[#E63946]"
-            aria-label="Toggle Menu"
+            onClick={onMenuClick}
+            className="p-2 text-[#1A1A1A] hover:text-[#E63946] rounded-lg hover:bg-[#F5F5F5] transition-colors"
+            aria-label="Open shop menu"
+            title="Open shop menu"
           >
-            {mobileOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
+            <Menu className="w-6 h-6" />
           </button>
 
           <div className="flex items-center gap-1 sm:gap-2">
@@ -319,81 +313,6 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Menu Slide-In From Left */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, x: -300 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -300 }}
-            transition={{ type: "spring", stiffness: 300, damping: 28 }}
-            className="lg:hidden bg-[#FFFFFF] border-t border-[#E0E0E0] border-b-2 border-b-[#E63946] px-4 pt-3 pb-6 space-y-4 overflow-hidden shadow-lg"
-          >
-            <form onSubmit={handleSearch} className="flex items-center relative">
-              <input
-                type="text"
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                placeholder={t.searchPlaceholder}
-                className="bg-[#FFFFFF] border border-[#E0E0E0] rounded-[6px] text-sm text-[#1A1A1A] px-3 py-2.5 pr-10 w-full focus:border-2 focus:border-[#E63946] focus:outline-none placeholder:text-[#999999]"
-              />
-              <button type="submit" className="absolute right-3 text-[#1A1A1A] hover:text-[#E63946]">
-                <Search size={18} />
-              </button>
-            </form>
-
-            <div className="grid grid-cols-1 gap-2">
-              <Link
-                to="/"
-                onClick={() => setMobileOpen(false)}
-                className={`py-2.5 px-3 rounded-[6px] text-sm font-semibold border ${
-                  location.pathname === "/"
-                    ? "bg-[#E63946] text-[#FFFFFF] border-[#E63946]"
-                    : "bg-[#F5F5F5] border-[#E0E0E0] text-[#1A1A1A] hover:border-[#E63946]"
-                }`}
-              >
-                {t.home}
-              </Link>
-              {activeCategories.map((cat) => {
-                const catName = getCategoryName(cat, language);
-                const active = location.pathname === `/category/${cat.slug}`;
-                return (
-                  <Link
-                    key={cat.id}
-                    to={`/category/${cat.slug}`}
-                    onClick={() => setMobileOpen(false)}
-                    className={`py-2.5 px-3 rounded-[6px] flex items-center justify-between text-sm font-semibold border ${
-                      active
-                        ? "bg-[#E63946] text-[#FFFFFF] border-[#E63946]"
-                        : "bg-[#F5F5F5] border-[#E0E0E0] text-[#1A1A1A] hover:border-[#E63946]"
-                    }`}
-                  >
-                    <span>{catName}</span>
-                  </Link>
-                );
-              })}
-              <Link
-                to="/track"
-                onClick={() => setMobileOpen(false)}
-                className={`py-2.5 px-3 rounded-[6px] flex items-center justify-between text-sm font-semibold border ${
-                  location.pathname === "/track"
-                    ? "bg-[#E63946] text-[#FFFFFF] border-[#E63946]"
-                    : "bg-[#F5F5F5] border-[#E0E0E0] text-[#1A1A1A] hover:border-[#E63946]"
-                }`}
-              >
-                <span>{t.orderTracking}</span>
-                <Truck
-                  className={`w-4 h-4 ${
-                    location.pathname === "/track"
-                      ? "text-[#FFFFFF]"
-                      : "text-[#E63946]"
-                  }`}
-                />
-              </Link>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.header>
   );
 };
