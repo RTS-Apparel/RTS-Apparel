@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { LogIn, UserPlus, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
@@ -8,9 +8,12 @@ import { useDataStore } from "../../store/dataStore";
 import { CUSTOMER_TRANSLATIONS } from "../../lib/i18n";
 import { pageVariants } from "../../lib/animations";
 import { User, UserRole } from "../../types";
+import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
 
 export const LoginPage: React.FC = () => {
   const setAuth = useAuthStore((s) => s.setAuth);
+  const authUser = useAuthStore((s) => s.user);
+  const authLoading = useAuthStore((s) => s.isLoading);
   const language = useDataStore((s) => s.language);
   const t = CUSTOMER_TRANSLATIONS[language];
 
@@ -19,7 +22,39 @@ export const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
+  const [googleCallback, setGoogleCallback] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const oauthError = params.get("error_description") || params.get("error");
+    if (oauthError) {
+      setError(oauthError);
+    } else if (params.get("google") === "1") {
+      setGoogleCallback(true);
+    }
+    if (params.has("google") || params.has("error")) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!googleCallback || authLoading) return;
+    if (!authUser) {
+      setError("Google sign-in could not be completed. Please try again.");
+      setGoogleCallback(false);
+      return;
+    }
+    if (authUser.is_blocked) {
+      void supabase.auth.signOut();
+      setError("Aapka account block kar diya gaya hai.");
+      setGoogleCallback(false);
+      return;
+    }
+    if (authUser.role === "admin") navigate("/admin", { replace: true });
+    else if (authUser.role === "agent") navigate(authUser.is_approved ? "/team" : "/pending-approval", { replace: true });
+    else navigate("/account", { replace: true });
+  }, [googleCallback, authLoading, authUser, navigate]);
 
   async function handleLogin(loginEmail: string, loginPassword: string) {
     setLoading(true);
@@ -252,7 +287,19 @@ export const LoginPage: React.FC = () => {
           </button>
         </form>
 
+        <div className="flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#999999]">
+          <span className="h-px flex-1 bg-[#E8E8E8]" />
+          <span>Or continue with</span>
+          <span className="h-px flex-1 bg-[#E8E8E8]" />
+        </div>
+        <GoogleAuthButton onError={setError} />
 
+        <p className="text-center text-xs text-[#666666]">
+          New to ARTS APPAREL?{" "}
+          <Link to="/signup" className="font-semibold text-[#E63946] hover:underline">
+            Create an account
+          </Link>
+        </p>
       </div>
     </motion.main>
   );
