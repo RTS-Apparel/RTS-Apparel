@@ -4,6 +4,7 @@ import { UserPlus, LogIn, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "../../hooks/useAuth";
 import { pageVariants } from "../../lib/animations";
+import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
 
 export const SignupPage: React.FC = () => {
   const { signup } = useAuth();
@@ -129,6 +130,13 @@ export const SignupPage: React.FC = () => {
             <span>Create Account</span>
           </button>
         </form>
+
+        <div className="flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#999999]">
+          <span className="h-px flex-1 bg-[#E8E8E8]" />
+          <span>Or sign up with</span>
+          <span className="h-px flex-1 bg-[#E8E8E8]" />
+        </div>
+        <GoogleAuthButton onError={setError} />
 
         <p className="text-xs text-[#666666] text-center">
           Already registered?{" "}
