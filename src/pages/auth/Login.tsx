@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { LogIn, UserPlus, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { LogIn, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase, isSupabaseConfigured } from "../../lib/supabase";
 import { useAuthStore } from "../../store/authStore";
