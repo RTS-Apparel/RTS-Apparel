@@ -46,7 +46,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
       <span className={`${logoSizeClass} rts-logo-orbit shrink-0 relative isolate rounded-full p-[2px]`}>
         <span className="rts-logo-core relative block h-full w-full overflow-hidden rounded-full bg-white">
         <img
-          src="https://cdn.phototourl.com/member/2026-10-31-622505d6-04bd-44dc-8ab9-397e44cb219e.png"
+          src="https://cdn.phototourl.com/member/2026-11-07-dd27907a-4e61-47e2-80a7-9e3fcc8d574d.jpg"
           alt="ARTS APPAREL Logo"
           onLoad={() => setImgVisible(true)}
           onError={() => setImgVisible(false)}
