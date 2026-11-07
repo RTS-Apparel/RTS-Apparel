@@ -370,3 +370,23 @@ tbody tr:hover {
     white-space: pre-wrap;
   }
 }
+
+
+/* Keep the storefront comfortably framed on standard laptop displays. */
+@media (min-width: 1024px) and (max-width: 1440px) {
+  .storefront-shell {
+    width: calc(100% - 32px);
+    max-width: 1400px;
+    margin-inline: auto;
+    overflow-x: clip;
+    box-shadow: 0 0 28px rgba(26, 26, 26, 0.045);
+  }
+}
+
+@media (min-width: 1441px) {
+  .storefront-shell {
+    width: 100%;
+    max-width: 1600px;
+    margin-inline: auto;
+  }
+}
