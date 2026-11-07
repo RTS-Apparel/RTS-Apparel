@@ -41,12 +41,18 @@ export const CategoryIcon: React.FC<{
     terms.some((term) => key.includes(term.replace(/[_-]+/g, " ")) || words.includes(term)),
   );
   const Icon = match?.Icon || Tag;
+  const categoryImage =
+    /\b(shirt|shirts|t-shirt|tshirt|tee|polo)\b/.test(key) ? "/images/categories/shirts.webp" :
+    /\b(trouser|trousers|pant|pants|jean|jeans|bottom|chino|cargo)\b/.test(key) ? "/images/categories/trousers.webp" :
+    /\b(kurta|shalwar|kameez|ethnic|traditional|eastern)\b/.test(key) ? "/images/categories/kurta-shalwar.webp" :
+    /\b(hoodie|hoodies|sweatshirt|sweater|winterwear|fleece)\b/.test(key) ? "/images/categories/hoodies.webp" :
+    /\b(jacket|jackets|coat|coats|outerwear|blazer)\b/.test(key) ? "/images/categories/jackets.webp" : null;
   const dimensions = size === "sm" ? "h-8 w-8" : size === "lg" ? "h-14 w-14" : "h-11 w-11";
   const glyph = size === "sm" ? "h-4 w-4" : size === "lg" ? "h-7 w-7" : "h-5 w-5";
   const content = (
     <span className={`relative inline-flex ${dimensions} shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#E63946]/20 bg-gradient-to-br from-[#FFF7F7] to-[#FFE5E7] text-[#D62839] shadow-sm ${className}`}>
       <span className="pointer-events-none absolute inset-1 rounded-lg border border-white/90" />
-      <Icon className={`${glyph} relative z-10`} strokeWidth={1.8} aria-hidden="true" />
+      {categoryImage ? <img src={categoryImage} alt="" className="relative z-10 h-full w-full object-cover" loading="lazy" /> : <Icon className={`${glyph} relative z-10`} strokeWidth={1.8} aria-hidden="true" />}
     </span>
   );
   if (!animated) return content;
