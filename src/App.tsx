@@ -99,13 +99,16 @@ const AnimatedRoutes: React.FC = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        {/* Dedicated full-screen customer assistant — no storefront navigation */}
+        {/* Floating customer assistant over the storefront */}
         <Route
           path="/assistant"
           element={
-            <PageMotion>
+            <StorefrontLayout>
+              <PageMotion>
+                <Home />
+              </PageMotion>
               <ChatPage />
-            </PageMotion>
+            </StorefrontLayout>
           }
         />
 
