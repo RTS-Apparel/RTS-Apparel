@@ -372,3 +372,12 @@ tbody tr:hover {
 }
 
 
+
+
+/* Keep navigation labels intact; global overflow wrapping must not split menu words. */
+.storefront-shell header nav a,
+.storefront-shell header nav a span {
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: keep-all;
+}
