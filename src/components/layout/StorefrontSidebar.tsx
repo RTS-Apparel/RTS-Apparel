@@ -10,6 +10,7 @@ import { useCart } from "../../hooks/useCart";
 import { formatPKR } from "../../lib/utils";
 import { getCategoryName } from "../../lib/i18n";
 import { useDataStore as useLanguageStore } from "../../store/dataStore";
+import { CategoryIcon } from "../common/CategoryIcon";
 
 const StorefrontSidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   const location = useLocation();
@@ -65,7 +66,7 @@ const StorefrontSidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             {categories.map((category) => (
               <Link key={category.id} to={`/category/${category.slug}`} onClick={closeMobile}
                 className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm transition-colors ${active(`/category/${category.slug}`) ? "bg-[#FFF0F1] font-semibold text-[#C1121F]" : "text-[#555555] hover:bg-[#F5F5F5] hover:text-[#C1121F]"}`}>
-                <span>{getCategoryName(category, language)}</span><ChevronRight size={14} className="text-[#BBBBBB]" />
+                <span className="flex min-w-0 items-center gap-3"><CategoryIcon name={getCategoryName(category, language)} slug={category.slug} size="sm" animated={false} className="!h-7 !w-7 rounded-md" /><span>{getCategoryName(category, language)}</span></span><ChevronRight size={14} className="text-[#BBBBBB]" />
               </Link>
             ))}
           </nav>
