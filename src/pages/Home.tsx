@@ -5,6 +5,9 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
+  Banknote,
+  Truck,
+  ShieldCheck,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProducts } from "../hooks/useProducts";
@@ -211,19 +214,60 @@ export const HomePage: React.FC = () => {
         )}
       </div>
 
-      <section aria-label="Shopping benefits" className="mx-auto grid max-w-7xl grid-cols-1 gap-3 px-4 sm:grid-cols-3 sm:px-6 lg:px-8">
-        <div className="rounded-lg border border-[#E0E0E0] bg-white px-4 py-4 text-center">
-          <p className="text-sm font-bold text-[#1A1A1A]">Cash on Delivery Available</p>
-          <p className="mt-1 text-xs text-[#666666]">Pay safely when your parcel arrives</p>
-        </div>
-        <div className="rounded-lg border border-[#E0E0E0] bg-white px-4 py-4 text-center">
-          <p className="text-sm font-bold text-[#1A1A1A]">Delivery in 3–5 Working Days</p>
-          <p className="mt-1 text-xs text-[#666666]">Across Pakistan</p>
-        </div>
-        <div className="rounded-lg border border-[#E0E0E0] bg-white px-4 py-4 text-center">
-          <p className="text-sm font-bold text-[#1A1A1A]">100% Original Products</p>
-          <p className="mt-1 text-xs text-[#666666]">Easy returns on eligible items</p>
-        </div>
+      <section
+        aria-label="Shopping benefits"
+        className="mx-auto grid max-w-7xl grid-cols-1 gap-4 px-4 sm:grid-cols-3 sm:px-6 lg:px-8"
+      >
+        {[
+          {
+            title: "Cash on Delivery Available",
+            description: "Pay safely when your parcel arrives",
+            Icon: Banknote,
+            delay: 0,
+          },
+          {
+            title: "Delivery in 3–5 Working Days",
+            description: "Reliable delivery across Pakistan",
+            Icon: Truck,
+            delay: 0.1,
+          },
+          {
+            title: "100% Original Products",
+            description: "Authentic quality you can trust",
+            Icon: ShieldCheck,
+            delay: 0.2,
+          },
+        ].map(({ title, description, Icon, delay }) => (
+          <motion.div
+            key={title}
+            initial={{ opacity: 0, y: 22 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.35 }}
+            transition={{ duration: 0.55, delay, ease: "easeOut" }}
+            whileHover={{ y: -5, transition: { duration: 0.22 } }}
+            className="group relative flex items-center gap-4 overflow-hidden rounded-xl border border-[#E7E7E7] bg-white px-5 py-5 text-left shadow-[0_5px_22px_rgba(0,0,0,0.045)] transition-all duration-300 hover:border-[#E63946]/50 hover:shadow-[0_12px_30px_rgba(230,57,70,0.10)] sm:px-4 lg:px-5"
+          >
+            <motion.div
+              initial={{ scale: 0.82, rotate: -8 }}
+              whileInView={{ scale: 1, rotate: 0 }}
+              viewport={{ once: true }}
+              transition={{ type: "spring", stiffness: 190, damping: 13, delay: delay + 0.08 }}
+              className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-[#FFF1F2] text-[#E63946] transition-colors duration-300 group-hover:bg-[#E63946] group-hover:text-white"
+            >
+              <Icon className="h-7 w-7" strokeWidth={1.8} />
+              <span className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-[#E63946]/10" />
+            </motion.div>
+            <div className="min-w-0">
+              <h3 className="text-sm font-bold leading-snug text-[#1A1A1A] sm:text-[13px] lg:text-sm">
+                {title}
+              </h3>
+              <p className="mt-1.5 text-xs leading-relaxed text-[#777777]">
+                {description}
+              </p>
+            </div>
+            <span className="pointer-events-none absolute bottom-0 left-5 right-5 h-[2px] origin-left scale-x-0 bg-[#E63946] transition-transform duration-300 group-hover:scale-x-100" />
+          </motion.div>
+        ))}
       </section>
 
       {/* Categories Showcase — 5 categories (Shirts, Trousers, Kurta Shalwar, Hoodies, Jackets), each with product count badge */}
