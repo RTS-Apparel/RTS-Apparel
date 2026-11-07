@@ -199,7 +199,7 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
               <Link
                 key={cat.id}
                 to={`/category/${cat.slug}`}
-                className={`text-xs uppercase tracking-[0.12em] px-3 py-2 rounded-[6px] font-semibold transition-colors ${
+                className={`inline-flex items-center gap-2 whitespace-nowrap text-xs uppercase tracking-[0.12em] px-3 py-2 rounded-[6px] font-semibold transition-colors ${
                   active
                     ? "bg-[#E63946] text-[#FFFFFF]"
                     : "text-[#1A1A1A] hover:text-[#E63946]"
