@@ -14,6 +14,7 @@ import { useProducts } from "../hooks/useProducts";
 import { useDataStore } from "../store/dataStore";
 import { ProductGrid } from "../components/products/ProductGrid";
 import { OptimizedImage } from "../components/common/OptimizedImage";
+import { CategoryIcon } from "../components/common/CategoryIcon";
 import {
   CUSTOMER_TRANSLATIONS,
   getBannerSubtitle,
@@ -320,13 +321,16 @@ export const HomePage: React.FC = () => {
                   className="group relative overflow-hidden rounded-xl bg-[#1A1A1A] border-2 border-transparent hover:border-[#E63946] p-6 transition-all flex flex-col justify-between space-y-4 h-full shadow-md"
                 >
                   <div className="relative z-10 flex items-start justify-between gap-2">
-                    <div>
+                    <div className="flex min-w-0 items-center gap-3">
+                      <CategoryIcon name={catName} slug={cat.slug} size="lg" />
+                      <div>
                       <h3 className="font-serif-display text-lg font-bold text-[#FFFFFF] group-hover:-translate-y-0.5 transition-all duration-300">
                         {catName}
                       </h3>
                       <p className="text-xs text-[#CCCCCC] mt-1 font-mono">
                         {count} {t.itemsCount}
                       </p>
+                      </div>
                     </div>
                     <span className="px-2.5 py-0.5 rounded-full bg-[#E63946] text-[#FFFFFF] text-xs font-mono font-bold shrink-0">
                       {count}
