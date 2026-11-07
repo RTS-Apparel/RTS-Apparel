@@ -78,7 +78,7 @@ const StorefrontLayout: React.FC<{ children: React.ReactNode }> = ({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FFFFFF] text-[#1A1A1A] relative">
+    <div className="storefront-shell min-h-screen flex flex-col bg-[#FFFFFF] text-[#1A1A1A] relative">
       <Navbar onMenuClick={() => setSidebarOpen(true)} />
       <div className="flex min-w-0 flex-1">
         <StorefrontSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
