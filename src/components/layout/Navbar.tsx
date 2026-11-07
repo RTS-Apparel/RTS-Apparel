@@ -146,7 +146,7 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
       </div>
 
       {/* Main Navigation Row */}
-      <div className="max-w-7xl mx-auto w-full min-w-0 px-2 sm:px-4 lg:px-6 h-16 sm:h-20 lg:h-24 flex items-center justify-between gap-1 sm:gap-3 bg-[#FFFFFF]">
+      <div className="max-w-7xl mx-auto w-full min-w-0 px-2 sm:px-4 lg:px-6 h-[68px] sm:h-24 lg:h-40 flex items-center justify-between gap-1.5 sm:gap-3 bg-[#FFFFFF]">
         <div className="flex min-w-0 items-center gap-1 sm:gap-3 shrink-0">
           <button
             type="button"
@@ -173,13 +173,13 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
               </button>
             )}
             <Link to="/" aria-label="ARTS APPAREL Home">
-              <BrandLogo size="md" variant="light" />
+              <BrandLogo size="lg" variant="light" />
             </Link>
           </div>
         </div>
 
         {/* Desktop Category Links */}
-        <nav className="hidden xl:flex min-w-0 items-center gap-1 shrink">
+        <nav className="hidden lg:flex min-w-0 items-center gap-1 shrink">
           <Link
             to="/"
             className={`text-xs uppercase tracking-[0.12em] px-3 py-2 rounded-[6px] font-semibold transition-colors ${
