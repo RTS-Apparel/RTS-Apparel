@@ -54,7 +54,8 @@ export const ChatPage: React.FC = () => {
   };
 
   return (
-    <main className="min-h-[100dvh] h-[100dvh] w-full bg-[#F4F4F4] text-[#1A1A1A] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-[120] flex items-end justify-end bg-black/25 p-2 backdrop-blur-[2px] sm:items-center sm:p-5" onMouseDown={(event) => { if (event.target === event.currentTarget) navigate(-1); }}>
+    <main className="flex h-[min(760px,calc(100dvh-24px))] w-full max-w-[440px] flex-col overflow-hidden rounded-2xl border border-white/70 bg-[#F4F4F4] text-[#1A1A1A] shadow-[0_24px_90px_rgba(0,0,0,0.28)] sm:h-[min(760px,calc(100dvh-40px))]">
       <header className="shrink-0 bg-[#111111] text-white border-b border-[#333333] shadow-lg">
         <div className="w-full max-w-4xl mx-auto px-3 sm:px-6 h-[68px] flex items-center gap-3">
           <button type="button" onClick={() => navigate("/")} aria-label="Back to website" className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10 active:bg-white/15 transition-colors">
@@ -95,6 +96,7 @@ export const ChatPage: React.FC = () => {
         </div>
       </footer>
     </main>
+    </div>
   );
 };
 
