@@ -8,7 +8,6 @@ import {
   Baby,
   Watch,
   ShoppingBag,
-  Footprints,
   Package,
   Gem,
   Tag,
