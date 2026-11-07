@@ -332,9 +332,6 @@ export const HomePage: React.FC = () => {
                       </p>
                       </div>
                     </div>
-                    <span className="px-2.5 py-0.5 rounded-full bg-[#E63946] text-[#FFFFFF] text-xs font-mono font-bold shrink-0">
-                      {count}
-                    </span>
                   </div>
                   <span className="relative z-10 text-xs font-semibold text-[#FFFFFF] flex items-center gap-1 group-hover:text-[#E63946] transition-colors duration-300">
                     <span>{t.viewDepartment}</span>
