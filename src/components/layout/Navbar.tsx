@@ -18,6 +18,7 @@ import { useCart } from "../../hooks/useCart";
 import { CUSTOMER_TRANSLATIONS, getCategoryName } from "../../lib/i18n";
 import { CustomerLanguage } from "../../types";
 import { BrandLogo } from "../common/BrandLogo";
+import { CategoryIcon } from "../common/CategoryIcon";
 
 export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) => {
   const categories = useDataStore((s) => s.categories);
@@ -204,6 +205,7 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
                     : "text-[#1A1A1A] hover:text-[#E63946]"
                 }`}
               >
+                <CategoryIcon name={catName} slug={cat.slug} size="sm" animated={false} className="!h-6 !w-6 rounded-md" />
                 <span>{catName}</span>
               </Link>
             );
