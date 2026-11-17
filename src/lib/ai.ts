@@ -1,4 +1,5 @@
 import { CustomerLanguage } from "../types";
+import { supabase } from "./supabase";
 
 const AI_API_BASE = (import.meta.env.VITE_AI_API_BASE as string) || "/api/ai";
 
@@ -112,9 +113,12 @@ export async function aiChat(
       .filter((item) => item && (item.role === "user" || item.role === "assistant") && typeof item.content === "string")
       .slice(-8)
       .map((item) => ({ role: item.role, content: item.content.slice(0, 1000) }));
+    const { data: { session } } = await supabase.auth.getSession();
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
     const res = await fetch(`${AI_API_BASE}/chat`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({ message: message.trim(), history: trimmedHistory, language }),
     });
     if (!res.ok) throw new Error("AI chat failed");
@@ -133,7 +137,7 @@ export async function aiChat(
     } else if (/size|fit|chest|measurement|chart/.test(q)) {
       reply = "Bhai, product page par available sizes aur size guide check karo. Aam tor par S, M, L, XL aur XXL milte hain; product ke hisaab se sizes farq ho sakte hain. 👕📏";
     } else if (/return|refund|exchange|wapas|wapsi/.test(q)) {
-      reply = "Bhai, 7 din ke andar unworn item original tags ke saath return ya free size exchange ke liye request kar sakte ho. 😊🔄";
+      reply = "Bhai, return ke liye item 7 din ke andar unworn aur original tags ke saath hona chahiye. Size exchange ki availability store se confirm kar lein. 😊🔄";
     } else if (/payment|cod|cash on delivery|jazzcash|easypaisa|bank/.test(q)) {
       reply = "Dost, payment ke liye Cash on Delivery (COD), JazzCash, EasyPaisa aur Bank Transfer ke options available hain. 💳✨";
     } else if (/track|tracking|order status|mera order/.test(q)) {
