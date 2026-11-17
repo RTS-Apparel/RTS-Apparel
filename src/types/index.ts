@@ -37,6 +37,7 @@ export interface Category {
 
 export interface Product {
   id: string;
+  legacy_id?: string | null;
   name_en: string;
   name_ur: string | null;
   name_roman_ur?: string | null;
