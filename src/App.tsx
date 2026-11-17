@@ -26,6 +26,7 @@ import TrackOrder from "./pages/TrackOrder";
 import Search from "./pages/Search";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import NotFound from "./pages/NotFound";
 import AgentApply from "./pages/AgentApply";
 import ChatPage from "./pages/ChatPage";
 
@@ -595,6 +596,16 @@ const AnimatedRoutes: React.FC = () => {
               </PageMotion>
               <ToastContainer />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <StorefrontLayout>
+              <PageMotion>
+                <NotFound />
+              </PageMotion>
+            </StorefrontLayout>
           }
         />
       </Routes>
