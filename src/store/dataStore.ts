@@ -677,41 +677,96 @@ export const useDataStore = create<DataState>()(
       addProduct: (productData) => {
         const newProduct: Product = {
           ...productData,
-          id: `prod-${Date.now()}`,
+          id: crypto.randomUUID(),
           created_at: new Date().toISOString(),
         };
-        set((state) => ({
-          products: [newProduct, ...state.products],
-        }));
-        if (isSupabaseConfigured && supabase) {
-          supabase.from("products").insert([newProduct]).then(() => {});
+        set((state) => ({ products: [newProduct, ...state.products] }));
+
+        if (isSupabaseConfigured) {
+          const dbPayload = {
+            id: newProduct.id,
+            name_en: newProduct.name_en,
+            name_ur: newProduct.name_ur,
+            name_roman_ur: newProduct.name_roman_ur,
+            description_en: newProduct.description_en,
+            description_ur: newProduct.description_ur,
+            description_roman_ur: newProduct.description_roman_ur,
+            category_id: newProduct.category_id,
+            price: newProduct.price,
+            discount_percent: newProduct.discount_percent,
+            images: newProduct.images,
+            sizes: newProduct.sizes,
+            colors: newProduct.colors,
+            stock: newProduct.stock,
+            is_active: newProduct.is_active,
+            is_featured: newProduct.is_featured,
+          };
+          void supabase.from("products").insert(dbPayload).select("*").single().then(({ data, error }) => {
+            if (error || !data) {
+              set((state) => ({ products: state.products.filter((product) => product.id !== newProduct.id) }));
+              get().addToast("Product could not be saved to database", "error", error?.message);
+              return;
+            }
+            const category = get().categories.find((item) => item.id === data.category_id);
+            set((state) => ({
+              products: state.products.map((product) => product.id === data.id
+                ? { ...data, price: Number(data.price), discount_percent: Number(data.discount_percent), category_slug: category?.slug || "", category_name: category?.name_en || "" }
+                : product),
+            }));
+            get().addToast("Product saved to Supabase");
+          });
+        } else {
+          get().addToast("Product added locally", "info");
         }
-        get().addToast("Product added to catalog");
         return newProduct;
       },
 
       updateProduct: (id, updates) => {
+        const previous = get().products.find((product) => product.id === id);
+        const updatedAt = new Date().toISOString();
+        const allowedFields = new Set([
+          "name_en", "name_ur", "name_roman_ur", "description_en", "description_ur",
+          "description_roman_ur", "category_id", "price", "discount_percent",
+          "images", "sizes", "colors", "stock", "is_active", "is_featured",
+        ]);
+        const dbUpdates = Object.fromEntries(
+          Object.entries(updates).filter(([key]) => allowedFields.has(key))
+        );
         set((state) => ({
-          products: state.products.map((p) =>
-            p.id === id
-              ? { ...p, ...updates, updated_at: new Date().toISOString() }
-              : p
-          ),
+          products: state.products.map((product) => product.id === id
+            ? { ...product, ...updates, updated_at: updatedAt }
+            : product),
         }));
-        if (isSupabaseConfigured && supabase) {
-          supabase.from("products").update(updates).eq("id", id).then(() => {});
+
+        if (isSupabaseConfigured) {
+          void supabase.from("products").update({ ...dbUpdates, updated_at: updatedAt }).eq("id", id).select("id").single().then(({ error }) => {
+            if (error) {
+              if (previous) set((state) => ({ products: state.products.map((product) => product.id === id ? previous : product) }));
+              get().addToast("Product update could not be saved", "error", error.message);
+              return;
+            }
+            get().addToast("Product updated in Supabase");
+          });
+        } else {
+          get().addToast("Product updated locally", "info");
         }
-        get().addToast("Product updated");
       },
 
       deleteProduct: (id) => {
-        set((state) => ({
-          products: state.products.filter((p) => p.id !== id),
-        }));
-        if (isSupabaseConfigured && supabase) {
-          supabase.from("products").delete().eq("id", id).then(() => {});
+        const previous = get().products.find((product) => product.id === id);
+        set((state) => ({ products: state.products.filter((product) => product.id !== id) }));
+        if (isSupabaseConfigured) {
+          void supabase.from("products").delete().eq("id", id).then(({ error }) => {
+            if (error) {
+              if (previous) set((state) => ({ products: [previous, ...state.products] }));
+              get().addToast("Product could not be deleted", "error", error.message);
+              return;
+            }
+            get().addToast("Product deleted from Supabase", "info");
+          });
+        } else {
+          get().addToast("Product deleted locally", "info");
         }
-        get().addToast("Product deleted", "info");
       },
 
       addCategory: ({
@@ -725,7 +780,7 @@ export const useDataStore = create<DataState>()(
           0
         );
         const newCat: Category = {
-          id: `cat-${Date.now()}`,
+          id: crypto.randomUUID(),
           name_en,
           name_ur,
           name_roman_ur: name_roman_ur || name_en,
@@ -734,25 +789,54 @@ export const useDataStore = create<DataState>()(
           discount_percent,
           is_active: true,
         };
-        set((state) => ({
-          categories: [...state.categories, newCat],
-        }));
-        get().addToast(`Category "${name_en}" created`);
+        set((state) => ({ categories: [...state.categories, newCat] }));
+        if (isSupabaseConfigured) {
+          void supabase.from("categories").insert({
+            id: newCat.id,
+            name_en: newCat.name_en,
+            name_ur: newCat.name_ur,
+            name_roman_ur: newCat.name_roman_ur,
+            slug: newCat.slug,
+            display_order: newCat.display_order,
+            discount_percent: newCat.discount_percent,
+            is_active: newCat.is_active,
+          }).select("*").single().then(({ data, error }) => {
+            if (error || !data) {
+              set((state) => ({ categories: state.categories.filter((category) => category.id !== newCat.id) }));
+              get().addToast("Category could not be saved", "error", error?.message);
+              return;
+            }
+            set((state) => ({ categories: state.categories.map((category) => category.id === newCat.id ? data : category) }));
+            get().addToast(`Category "${name_en}" saved to Supabase`);
+          });
+        } else {
+          get().addToast(`Category "${name_en}" added locally`, "info");
+        }
       },
 
       updateCategory: (id, updates) => {
+        const previous = get().categories.find((category) => category.id === id);
+        const nextUpdates = {
+          ...updates,
+          ...(updates.name_en ? { slug: slugify(updates.name_en) } : {}),
+        };
         set((state) => ({
-          categories: state.categories.map((c) =>
-            c.id === id
-              ? {
-                  ...c,
-                  ...updates,
-                  slug: updates.name_en ? slugify(updates.name_en) : c.slug,
-                }
-              : c
-          ),
+          categories: state.categories.map((category) => category.id === id
+            ? { ...category, ...nextUpdates }
+            : category),
         }));
-        get().addToast("Category updated");
+        if (isSupabaseConfigured) {
+          void supabase.from("categories").update(nextUpdates).eq("id", id).select("id").single().then(({ error }) => {
+            if (error) {
+              if (previous) set((state) => ({ categories: state.categories.map((category) => category.id === id ? previous : category) }));
+              get().addToast("Category update could not be saved", "error", error.message);
+              return;
+            }
+            get().addToast("Category updated in Supabase");
+          });
+        } else {
+          get().addToast("Category updated locally", "info");
+        }
       },
 
       reorderCategory: (id, direction) => {
@@ -769,6 +853,15 @@ export const useDataStore = create<DataState>()(
         sorted[swapIdx].display_order = currentOrder;
 
         set({ categories: [...sorted] });
+        if (isSupabaseConfigured) {
+          const moved = [sorted[idx], sorted[swapIdx]];
+          void Promise.all(moved.map((category) =>
+            supabase.from("categories").update({ display_order: category.display_order }).eq("id", category.id)
+          )).then((results) => {
+            const failed = results.find((result) => result.error);
+            if (failed?.error) get().addToast("Category order could not be saved", "error", failed.error.message);
+          });
+        }
       },
 
       deleteCategory: (id) => {
@@ -783,11 +876,21 @@ export const useDataStore = create<DataState>()(
             message: "Cannot delete category that still contains products.",
           };
         }
-        set((state) => ({
-          categories: state.categories.filter((c) => c.id !== id),
-        }));
-        get().addToast("Category deleted", "info");
-        return { success: true, message: "Category deleted." };
+        const previous = get().categories.find((category) => category.id === id);
+        set((state) => ({ categories: state.categories.filter((category) => category.id !== id) }));
+        if (isSupabaseConfigured) {
+          void supabase.from("categories").delete().eq("id", id).then(({ error }) => {
+            if (error) {
+              if (previous) set((state) => ({ categories: [...state.categories, previous].sort((a, b) => a.display_order - b.display_order) }));
+              get().addToast("Category could not be deleted", "error", error.message);
+              return;
+            }
+            get().addToast("Category deleted from Supabase", "info");
+          });
+        } else {
+          get().addToast("Category deleted locally", "info");
+        }
+        return { success: true, message: "Category deletion requested." };
       },
 
       placeOrder: (payload) => {
