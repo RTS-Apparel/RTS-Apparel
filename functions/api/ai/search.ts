@@ -12,7 +12,7 @@ interface Env {
 
 interface SearchRequest {
   query: string;
-  language?: "en" | "ur";
+  language?: "en" | "ur" | "roman_ur";
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
@@ -23,7 +23,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       return json({ error: "Missing or empty 'query' field" }, 400);
     }
 
-    const query = body.query.trim();
+    const query = body.query.trim().slice(0, 250);
     const language = body.language || "en";
 
     if (!context.env || !context.env.AI) {
@@ -36,20 +36,18 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
-    // Step 1: Generate multilingual embedding for the search query
-    await context.env.AI.run("@cf/baai/bge-m3", { text: [query] });
-
-    // Step 2: Extract search keywords via LLM
+    // Expand the query into multilingual terms; the storefront matches these against live Supabase products.
     const keywordResult = (await context.env.AI.run("@cf/meta/llama-3.1-8b-instruct", {
       messages: [
         {
           role: "system",
           content:
             "You are a product search assistant for ARTS APPAREL, a men's fashion store in Pakistan. " +
-            "Extract 3-5 relevant product search keywords from the user's query. " +
-            "The store sells: Shirts, Trousers, Kurta Shalwar, Hoodies, Jackets. " +
+            "Extract 4-8 concise product search terms and useful English, Roman Urdu, and Urdu synonyms from the user's query. " +
+            "Include garment type, colour, fabric, fit and category terms when implied, but do not invent a specific product. " +
+            "The store sells men's shirts, trousers, kurta shalwar, waistcoats, hoodies, jackets, T-shirts and jeans. " +
             "Respond ONLY with a valid JSON array of strings. No explanation, no markdown. " +
-            'Example: ["blue shirt", "shirts", "blue", "cotton"]',
+            'Example: ["blue shirt", "blue", "neeli shirt", "shirts", "cotton"]',
         },
         {
           role: "user",
@@ -66,7 +64,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         .trim();
       const parsed = JSON.parse(cleaned);
       if (Array.isArray(parsed)) {
-        keywords = parsed.filter((k): k is string => typeof k === "string");
+        keywords = parsed.filter((k): k is string => typeof k === "string").map((k) => k.trim().slice(0, 80)).filter(Boolean).slice(0, 8);
       }
     } catch {
       keywords = [query];
