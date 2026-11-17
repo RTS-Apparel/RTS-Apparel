@@ -133,7 +133,7 @@ export const SearchPage: React.FC = () => {
 
         {keywords.length > 0 && (
           <div className="flex flex-wrap items-center gap-2 text-xs text-[#666666]">
-            <span className="font-medium text-[#1A1A1A]">AI Semantic Keywords:</span>
+            <span className="font-medium text-[#1A1A1A]">{aiUsed ? "AI Search Keywords:" : "Basic Search Keywords:"}</span>
             {keywords.map((kw, i) => (
               <React.Fragment key={kw}>
                 <span className="font-mono font-semibold text-[#E63946]">
