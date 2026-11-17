@@ -3,6 +3,7 @@ import { ArrowLeft, Bot, Send } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { aiChat } from "../lib/ai";
+import { useDataStore } from "../store/dataStore";
 
 interface ChatTurn {
   id: string;
@@ -15,6 +16,7 @@ const formattedTime = () => new Date().toLocaleTimeString([], { hour: "2-digit",
 
 export const ChatPage: React.FC = () => {
   const navigate = useNavigate();
+  const language = useDataStore((state) => state.language);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<ChatTurn[]>([{
@@ -43,7 +45,7 @@ export const ChatPage: React.FC = () => {
     setInput("");
     setIsLoading(true);
     try {
-      const response = await aiChat(content, history.slice(0, -1), "roman_ur");
+      const response = await aiChat(content, history.slice(0, -1), language);
       setMessages((prev) => [...prev, { id: `ai-${Date.now()}`, role: "assistant", content: response.reply || "Maazrat, abhi jawab nahi mil saka. Dobara koshish karein.", timestamp: formattedTime() }]);
     } catch {
       setMessages((prev) => [...prev, { id: `ai-error-${Date.now()}`, role: "assistant", content: "Maazrat Bhai, connection mein masla aa gaya. Thori dair baad dobara koshish karein.", timestamp: formattedTime() }]);
