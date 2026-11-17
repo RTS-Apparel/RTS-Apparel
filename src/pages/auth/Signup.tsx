@@ -15,10 +15,12 @@ export const SignupPage: React.FC = () => {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setSuccess(null);
 
     const res = await signup({
       full_name: fullName,
@@ -30,6 +32,11 @@ export const SignupPage: React.FC = () => {
 
     if (!res.success) {
       setError(res.error || "Could not create account.");
+      return;
+    }
+
+    if (res.requiresEmailConfirmation) {
+      setSuccess("Your account has been created. Please check your email and confirm your address before logging in.");
       return;
     }
 
@@ -111,9 +118,16 @@ export const SignupPage: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Minimum 6 characters"
+              minLength={6}
               className="w-full h-11 px-3.5 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-sm text-[#1A1A1A] placeholder:text-[#999999] focus:border-2 focus:border-[#E63946] focus:outline-none"
             />
           </div>
+
+          {success && (
+            <p role="status" className="text-xs text-[#166534] bg-[#DCFCE7] border border-[#86EFAC] rounded-[6px] p-3 font-medium">
+              {success}
+            </p>
+          )}
 
           {error && (
             <p className="text-xs text-[#E63946] bg-[#F8D7DA] border border-[#E63946] rounded-[6px] p-3 font-medium flex items-center gap-2">
