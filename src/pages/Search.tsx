@@ -71,10 +71,6 @@ export const SearchPage: React.FC = () => {
       return true;
     }
 
-    if (!aiUsed) {
-      return (prod.name_roman_ur || "").toLowerCase().includes(qLower);
-    }
-
     const cat = categories.find((c) => c.id === prod.category_id);
     const haystack = [
       prod.name_en,
