@@ -15,7 +15,8 @@ import { useCart } from "../hooks/useCart";
 import { useCartStore } from "../store/cartStore";
 import { useAuth } from "../hooks/useAuth";
 import { useDataStore } from "../store/dataStore";
-import { PaymentMethod } from "../types";
+import { PaymentMethod, Order, OrderItem } from "../types";
+import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import { calculateDiscountedPrice, formatPKR } from "../lib/utils";
 import { CUSTOMER_TRANSLATIONS, getProductName } from "../lib/i18n";
 import { pageVariants, buttonHover, buttonTap } from "../lib/animations";
@@ -31,6 +32,7 @@ export const CheckoutPage: React.FC = () => {
   } = useCart();
 
   const selectedCity = useCartStore((s) => s.selectedCity);
+  const referralCode = useCartStore((s) => s.referralCode);
   const setSelectedCity = useCartStore((s) => s.setSelectedCity);
 
   const allDeliveryRates = useDataStore((s) => s.deliveryRates);
@@ -41,19 +43,14 @@ export const CheckoutPage: React.FC = () => {
 
   const deliveryRates = allDeliveryRates.filter((r) => r.is_active);
 
-  const [customerName, setCustomerName] = useState(
-    user?.full_name || "Ahmed Raza Khan"
-  );
-  const [customerPhone, setCustomerPhone] = useState(
-    user?.phone || "03058165623"
-  );
-  const [deliveryAddress, setDeliveryAddress] = useState(
-    "House 42-B, Street 9, Phase 5 DHA"
-  );
+  const [customerName, setCustomerName] = useState(user?.full_name || "");
+  const [customerPhone, setCustomerPhone] = useState(user?.phone || "");
+  const [deliveryAddress, setDeliveryAddress] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod");
   const [paymentReference, setPaymentReference] = useState("");
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const selectedCityRate =
     deliveryRates.find((r) => r.city_name === selectedCity)?.charge ?? 250;
@@ -75,63 +72,113 @@ export const CheckoutPage: React.FC = () => {
     );
   }
 
-  const handleSubmitOrder = (e: React.FormEvent) => {
+  const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
     setError(null);
 
-    if (
-      !customerName.trim() ||
-      !customerPhone.trim() ||
-      !deliveryAddress.trim()
-    ) {
-      setError(
-        "Please complete your full name, phone number, and street address."
-      );
+    if (!customerName.trim() || !customerPhone.trim() || !deliveryAddress.trim()) {
+      setError("Please complete your full name, phone number, and street address.");
       return;
     }
 
     if (paymentMethod !== "cod" && !paymentReference.trim()) {
-      setError(
-        "Please provide the Transaction ID / Reference Number for your digital transfer."
-      );
+      setError("Please provide the Transaction ID / Reference Number for your digital transfer.");
       return;
     }
 
-    const orderItems = enrichedItems.map((item) => ({
-      product_id: item.product.id,
-      name_en: item.product.name_en,
-      name_ur: item.product.name_ur,
-      size: item.size,
-      color: item.color,
-      quantity: item.quantity,
-      unit_price: item.product.price,
-      discount_percent: item.effectiveDiscount,
-      final_unit_price: calculateDiscountedPrice(
-        item.product.price,
-        item.effectiveDiscount
-      ),
-      image: item.product.images[0],
-    }));
+    if (!isSupabaseConfigured) {
+      setError("Secure order service is not configured. Please contact support.");
+      return;
+    }
 
-    const createdOrder = placeOrder({
-      customer_id: user?.id || null,
-      customer_name: customerName.trim(),
-      customer_phone: customerPhone.trim(),
-      delivery_address: deliveryAddress.trim(),
-      delivery_city: selectedCity,
-      delivery_charge: selectedCityRate,
-      items: orderItems,
-      subtotal: totals.originalSubtotal,
-      discount_amount: totals.discountAmount,
-      total_amount: grandTotal,
-      payment_method: paymentMethod,
-      payment_proof_url: paymentReference.trim() || null,
-      referral_code: null,
-      notes: notes.trim() || null,
-    });
+    setIsSubmitting(true);
+    try {
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      if (authError || !authData.user) {
+        throw new Error("Please sign in to your account before placing an order.");
+      }
 
-    clearCart();
-    navigate(`/order-confirmation/${createdOrder.id}`);
+      const { data, error: orderError } = await supabase.rpc("place_customer_order", {
+        p_order: {
+          customer_name: customerName.trim(),
+          customer_phone: customerPhone.trim(),
+          delivery_city: selectedCity,
+          delivery_address: deliveryAddress.trim(),
+          payment_method: paymentMethod,
+          transaction_id: paymentReference.trim() || null,
+          referral_code: referralCode || null,
+          notes: notes.trim() || null,
+          items: enrichedItems.map((item) => ({
+            product_id: item.product.id,
+            quantity: item.quantity,
+            size: item.size,
+            color: item.color,
+          })),
+        },
+      });
+
+      if (orderError) throw orderError;
+      if (!data?.order?.id) throw new Error("The order was not confirmed by the database.");
+
+      const savedItems: OrderItem[] = (data.items || []).map((item: any) => ({
+        id: item.id,
+        order_id: item.order_id,
+        product_id: item.product_id || "",
+        product_name_en: item.product_name_en,
+        name_en: item.product_name_en,
+        product_image: item.product_image || "",
+        image: item.product_image || "",
+        quantity: Number(item.quantity),
+        size: item.size || "",
+        color: item.color || "",
+        unit_price: Number(item.unit_price),
+        final_unit_price: Number(item.unit_price),
+        original_price: Number(item.original_price),
+        discount_percent: Number(item.original_price) > 0
+          ? Math.round((1 - Number(item.unit_price) / Number(item.original_price)) * 100)
+          : 0,
+      }));
+
+      const row = data.order;
+      const savedOrder: Order = {
+        id: row.id,
+        order_number: row.order_number,
+        customer_id: row.customer_id,
+        customer_name: row.customer_name,
+        customer_phone: row.customer_phone,
+        agent_id: row.agent_id,
+        referral_code: row.referral_code,
+        status: row.status,
+        payment_method: row.payment_method,
+        payment_status: row.payment_status,
+        transaction_id: row.transaction_id,
+        subtotal: Number(row.subtotal),
+        delivery_charge: Number(row.delivery_charge),
+        discount_amount: Number(row.discount_amount),
+        total_amount: Number(row.total_amount),
+        delivery_city: row.delivery_city,
+        delivery_address: row.delivery_address,
+        notes: row.customer_note || notes.trim() || null,
+        admin_note: row.admin_note,
+        created_at: row.created_at,
+        updated_at: row.updated_at,
+        items: savedItems,
+      };
+
+      useDataStore.setState((state) => ({
+        orders: [savedOrder, ...state.orders.filter((order) => order.id !== savedOrder.id)],
+        orderItems: [...savedItems, ...state.orderItems.filter((item) => item.order_id !== savedOrder.id)],
+      }));
+
+      clearCart();
+      navigate(`/order-confirmation/${savedOrder.id}`);
+    } catch (submitError) {
+      console.error("Supabase order creation failed:", submitError);
+      setError(submitError instanceof Error ? submitError.message : "Order could not be saved. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -451,13 +498,14 @@ export const CheckoutPage: React.FC = () => {
 
           <motion.button
             type="submit"
-            whileHover={buttonHover}
-            whileTap={buttonTap}
-            className="btn-primary-futuristic w-full h-12 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[#C1121F] transition-colors"
+            disabled={isSubmitting}
+            whileHover={isSubmitting ? undefined : buttonHover}
+            whileTap={isSubmitting ? undefined : buttonTap}
+            className="btn-primary-futuristic w-full h-12 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[#C1121F] disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
           >
             <PackageCheck size={16} className="text-[#FFFFFF]" />
             <span>
-              {t.placeOrder} — {formatPKR(grandTotal)}
+              {isSubmitting ? "Saving Order..." : `${t.placeOrder} — ${formatPKR(grandTotal)}`}
             </span>
           </motion.button>
         </div>
