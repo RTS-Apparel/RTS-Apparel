@@ -12,6 +12,9 @@ import { ProtectedRoute } from "./components/common/ProtectedRoute";
 import { pageVariants } from "./lib/animations";
 import { useAuthStore } from "./store/authStore";
 import { useDataStore } from "./store/dataStore";
+import { useProducts } from "./hooks/useProducts";
+import { supabase, isSupabaseConfigured } from "./lib/supabase";
+import { Order, OrderItem } from "./types";
 
 import Home from "./pages/Home";
 import Category from "./pages/Category";
@@ -601,10 +604,108 @@ const AnimatedRoutes: React.FC = () => {
 
 export function App() {
   const initAuth = useAuthStore((s) => s.initAuth);
+  const userId = useAuthStore((s) => s.user?.id || null);
+
+  // Load the live Supabase catalog for storefront and admin routes alike.
+  useProducts();
 
   useEffect(() => {
     void initAuth();
   }, [initAuth]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadAccountData = async () => {
+      if (!isSupabaseConfigured || !userId) {
+        useDataStore.setState({ orders: [], orderItems: [] });
+        return;
+      }
+
+      const [ordersResult, ratesResult] = await Promise.all([
+        supabase
+          .from("orders")
+          .select("*, order_items(*)")
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("city_delivery_rates")
+          .select("*")
+          .eq("is_active", true)
+          .order("city_name"),
+      ]);
+
+      if (cancelled) return;
+
+      if (ordersResult.error) {
+        console.error("Unable to load Supabase orders:", ordersResult.error.message);
+      } else {
+        const allItems: OrderItem[] = [];
+        const orders: Order[] = (ordersResult.data || []).map((row: any) => {
+          const items: OrderItem[] = (row.order_items || []).map((item: any) => ({
+            id: item.id,
+            order_id: item.order_id,
+            product_id: item.product_id || "",
+            product_name_en: item.product_name_en,
+            name_en: item.product_name_en,
+            product_image: item.product_image || "",
+            image: item.product_image || "",
+            quantity: Number(item.quantity),
+            size: item.size || "",
+            color: item.color || "",
+            unit_price: Number(item.unit_price),
+            final_unit_price: Number(item.unit_price),
+            original_price: Number(item.original_price),
+            discount_percent: Number(item.original_price) > 0
+              ? Math.round((1 - Number(item.unit_price) / Number(item.original_price)) * 100)
+              : 0,
+          }));
+          allItems.push(...items);
+
+          return {
+            id: row.id,
+            order_number: row.order_number,
+            customer_id: row.customer_id,
+            customer_name: row.customer_name,
+            customer_phone: row.customer_phone,
+            agent_id: row.agent_id,
+            referral_code: row.referral_code,
+            status: row.status,
+            payment_method: row.payment_method,
+            payment_status: row.payment_status,
+            transaction_id: row.transaction_id,
+            subtotal: Number(row.subtotal),
+            delivery_charge: Number(row.delivery_charge),
+            discount_amount: Number(row.discount_amount),
+            total_amount: Number(row.total_amount),
+            delivery_city: row.delivery_city,
+            delivery_address: row.delivery_address,
+            admin_note: row.admin_note,
+            created_at: row.created_at,
+            updated_at: row.updated_at,
+            items,
+          };
+        });
+
+        useDataStore.setState({ orders, orderItems: allItems });
+      }
+
+      if (ratesResult.error) {
+        console.error("Unable to load delivery rates:", ratesResult.error.message);
+      } else {
+        useDataStore.setState({
+          deliveryRates: (ratesResult.data || []).map((rate: any) => ({
+            ...rate,
+            charge: Number(rate.charge),
+          })),
+        });
+      }
+    };
+
+    void loadAccountData();
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
 
   return (
     <BrowserRouter>
