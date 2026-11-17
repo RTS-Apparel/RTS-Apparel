@@ -14,8 +14,7 @@ export const OrderConfirmationPage: React.FC = () => {
   const orderItems = useDataStore((s) => s.orderItems);
 
   const order =
-    orders.find((o) => o.id === targetRef || o.order_number === targetRef) ||
-    orders[0];
+    orders.find((o) => o.id === targetRef || o.order_number === targetRef);
   const items = orderItems.filter((i) => i.order_id === order?.id);
 
   if (!order) {
