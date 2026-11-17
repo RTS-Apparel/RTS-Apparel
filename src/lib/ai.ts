@@ -28,7 +28,7 @@ export async function aiSearch(
   query: string,
   language: CustomerLanguage = "en"
 ): Promise<AISearchResponse> {
-  const apiLang: "en" | "ur" = language === "ur" ? "ur" : "en";
+  const apiLang: "en" | "ur" | "roman_ur" = language;
   try {
     const res = await fetch(`${AI_API_BASE}/search`, {
       method: "POST",
