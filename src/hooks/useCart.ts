@@ -13,7 +13,7 @@ export function useCart(selectedCity?: string) {
 
   const enrichedItems = cart.items.map((item) => {
     const latestProduct =
-      products.find((p) => p.id === item.product_id) || item.product;
+      products.find((p) => p.id === item.product_id || p.legacy_id === item.product_id) || item.product;
     const category = categories.find((c) => c.id === latestProduct.category_id);
     const effectiveDiscount = getEffectiveDiscountPercent(
       latestProduct,
