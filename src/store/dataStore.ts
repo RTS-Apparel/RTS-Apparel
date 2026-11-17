@@ -890,35 +890,58 @@ export const useDataStore = create<DataState>()(
       },
 
       updateOrderStatus: (orderId, status, paymentStatus, adminNote) => {
-        set((state) => {
-          const updatedOrders = state.orders.map((o) =>
-            o.id === orderId
+        const previous = get().orders.find((order) => order.id === orderId);
+        const updatedAt = new Date().toISOString();
+        set((state) => ({
+          orders: state.orders.map((order) =>
+            order.id === orderId
               ? {
-                  ...o,
+                  ...order,
                   status,
-                  payment_status: paymentStatus ?? o.payment_status,
-                  admin_note: adminNote !== undefined ? adminNote : o.admin_note,
-                  updated_at: new Date().toISOString(),
+                  payment_status: paymentStatus ?? order.payment_status,
+                  admin_note: adminNote !== undefined ? adminNote : order.admin_note,
+                  updated_at: updatedAt,
                 }
-              : o
-          );
+              : order
+          ),
+          commissions: status === "cancelled"
+            ? state.commissions.map((commission) =>
+                commission.order_id === orderId && commission.status !== "paid"
+                  ? { ...commission, status: "cancelled" as CommissionStatus }
+                  : commission
+              )
+            : state.commissions,
+        }));
 
-          // Business Rule #8: If order is cancelled, linked commission is also cancelled
-          const updatedCommissions =
-            status === "cancelled"
-              ? state.commissions.map((c) =>
-                  c.order_id === orderId && c.status !== "paid"
-                    ? { ...c, status: "cancelled" as CommissionStatus }
-                    : c
-                )
-              : state.commissions;
+        const isDatabaseId = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(orderId);
+        if (isSupabaseConfigured && isDatabaseId) {
+          const update: Record<string, unknown> = { status, updated_at: updatedAt };
+          if (paymentStatus !== undefined) update.payment_status = paymentStatus;
+          if (adminNote !== undefined) update.admin_note = adminNote;
 
-          return {
-            orders: updatedOrders,
-            commissions: updatedCommissions,
-          };
-        });
-        get().addToast(`Order status updated to ${status.toUpperCase()}`);
+          void supabase.from("orders").update(update).eq("id", orderId).then(async ({ error }) => {
+            if (error) {
+              if (previous) {
+                set((state) => ({
+                  orders: state.orders.map((order) => order.id === orderId ? previous : order),
+                }));
+              }
+              get().addToast("Order update could not be saved", "error", error.message);
+              return;
+            }
+            if (status === "cancelled") {
+              const { error: commissionError } = await supabase
+                .from("commissions")
+                .update({ status: "cancelled" })
+                .eq("order_id", orderId)
+                .neq("status", "paid");
+              if (commissionError) console.error("Commission cancellation failed:", commissionError.message);
+            }
+            get().addToast(`Order status updated to ${status.toUpperCase()}`);
+          });
+        } else {
+          get().addToast(`Order status updated to ${status.toUpperCase()}`);
+        }
       },
 
       approveAgent: (userId) => {
