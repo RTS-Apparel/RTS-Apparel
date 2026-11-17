@@ -30,7 +30,7 @@ interface AuthState {
     join_reason?: string;
     city?: string;
     whatsapp?: string;
-  }) => Promise<{ success: boolean; user?: User; error?: string }>;
+  }) => Promise<{ success: boolean; user?: User; error?: string; requiresEmailConfirmation?: boolean }>;
   logout: () => void;
   switchDemoRole: (role: UserRole | "guest") => User | null;
 }
@@ -236,63 +236,112 @@ export const useAuthStore = create<AuthState>()(
       signup: async (payload) => {
         set({ isLoading: true });
         try {
-          const dataStore = useDataStore.getState();
-          const existing = dataStore.users.find(
-            (u) =>
-              payload.email &&
-              u.email?.toLowerCase() === payload.email.trim().toLowerCase()
-          );
-          if (existing) {
+          if (!isSupabaseConfigured) {
             set({ isLoading: false });
             return {
               success: false,
-              error: "An account with this email already exists.",
+              error: "Account registration is temporarily unavailable. Please try again later.",
             };
           }
 
-          if (isSupabaseConfigured && payload.email && payload.password) {
-            const { data: signUpData } = await supabase.auth.signUp({
-              email: payload.email.trim(),
-              password: payload.password,
-            });
-            if (signUpData?.user) {
-              await supabase.from("users").insert({
-                id: signUpData.user.id,
-                full_name: payload.full_name.trim(),
-                phone: payload.phone.trim(),
-                role: payload.role,
-                is_approved: payload.role === "customer",
-                is_blocked: false,
-              });
-            }
+          const cleanEmail = payload.email.trim().toLowerCase();
+          const cleanName = payload.full_name.trim();
+          const cleanPhone = payload.phone.trim();
+
+          if (!cleanEmail || !cleanName || !cleanPhone || !payload.password) {
+            set({ isLoading: false });
+            return {
+              success: false,
+              error: "Please complete your name, email, phone number, and password.",
+            };
           }
 
-          const newUser = dataStore.registerUser({
-            email: payload.email.trim(),
-            full_name: payload.full_name.trim(),
-            phone: payload.phone.trim(),
-            role: payload.role,
-            referral_code: null,
-            is_approved: payload.role === "customer",
-            is_blocked: false,
-            join_reason: payload.join_reason,
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+            email: cleanEmail,
+            password: payload.password,
+            options: {
+              data: {
+                full_name: cleanName,
+                phone: cleanPhone,
+                requested_role: payload.role,
+                join_reason: payload.join_reason || null,
+              },
+            },
           });
 
-          if (payload.role === "customer") {
+          if (signUpError) {
+            set({ isLoading: false });
+            return { success: false, error: signUpError.message };
+          }
+
+          if (!signUpData.user) {
+            set({ isLoading: false });
+            return {
+              success: false,
+              error: "Account could not be created. Please try again.",
+            };
+          }
+
+          // When email confirmation is enabled, Supabase creates the profile
+          // through the auth.users trigger but does not issue a session yet.
+          if (!signUpData.session) {
             set({
-              user: newUser,
-              role: newUser.role,
-              session: { user: { id: newUser.id, email: newUser.email } },
-              currentUserId: newUser.id,
+              user: null,
+              role: null,
+              session: null,
+              currentUserId: null,
               isLoading: false,
             });
-          } else {
-            set({ isLoading: false });
+            return { success: true, requiresEmailConfirmation: true };
           }
-          return { success: true, user: newUser };
+
+          const { data: userData, error: profileError } = await supabase
+            .from("users")
+            .select("*")
+            .eq("id", signUpData.user.id)
+            .single();
+
+          if (profileError || !userData) {
+            await supabase.auth.signOut();
+            set({
+              user: null,
+              role: null,
+              session: null,
+              currentUserId: null,
+              isLoading: false,
+            });
+            return {
+              success: false,
+              error: "Your account was created, but its profile could not be loaded. Please contact support.",
+            };
+          }
+
+          const mappedUser: User = {
+            id: userData.id,
+            email: userData.email || signUpData.user.email || cleanEmail,
+            full_name: userData.full_name || cleanName,
+            phone: userData.phone || cleanPhone,
+            role: (userData.role as UserRole) || "customer",
+            referral_code: userData.referral_code || null,
+            is_approved: Boolean(userData.is_approved),
+            is_blocked: Boolean(userData.is_blocked),
+            created_at: userData.created_at || new Date().toISOString(),
+          };
+
+          set({
+            user: mappedUser,
+            role: mappedUser.role,
+            session: signUpData.session,
+            currentUserId: mappedUser.id,
+            isLoading: false,
+          });
+          return { success: true, user: mappedUser };
         } catch (err) {
           set({ isLoading: false });
-          return { success: false, error: String(err) };
+          return {
+            success: false,
+            error: err instanceof Error ? err.message : "Account could not be created. Please try again.",
+          };
         }
       },
 
