@@ -680,6 +680,7 @@ export function App() {
             delivery_city: row.delivery_city,
             delivery_address: row.delivery_address,
             admin_note: row.admin_note,
+            notes: row.customer_note || null,
             created_at: row.created_at,
             updated_at: row.updated_at,
             items,
