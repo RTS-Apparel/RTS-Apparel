@@ -16,54 +16,54 @@ import { useProducts } from "./hooks/useProducts";
 import { supabase, isSupabaseConfigured } from "./lib/supabase";
 import { Order, OrderItem } from "./types";
 
-import Home from "./pages/Home";
-import Category from "./pages/Category";
-import ProductDetail from "./pages/ProductDetail";
-import Cart from "./pages/Cart";
-import Checkout from "./pages/Checkout";
-import OrderConfirmation from "./pages/OrderConfirmation";
-import TrackOrder from "./pages/TrackOrder";
-import Search from "./pages/Search";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import NotFound from "./pages/NotFound";
-import AgentApply from "./pages/AgentApply";
-import ChatPage from "./pages/ChatPage";
+const Home = React.lazy(() => import("./pages/Home"));
+const Category = React.lazy(() => import("./pages/Category"));
+const ProductDetail = React.lazy(() => import("./pages/ProductDetail"));
+const Cart = React.lazy(() => import("./pages/Cart"));
+const Checkout = React.lazy(() => import("./pages/Checkout"));
+const OrderConfirmation = React.lazy(() => import("./pages/OrderConfirmation"));
+const TrackOrder = React.lazy(() => import("./pages/TrackOrder"));
+const Search = React.lazy(() => import("./pages/Search"));
+const About = React.lazy(() => import("./pages/About"));
+const Contact = React.lazy(() => import("./pages/Contact"));
+const NotFound = React.lazy(() => import("./pages/NotFound"));
+const AgentApply = React.lazy(() => import("./pages/AgentApply"));
+const ChatPage = React.lazy(() => import("./pages/ChatPage"));
 
-import Login from "./pages/auth/Login";
-import Signup from "./pages/auth/Signup";
-import PendingApproval from "./pages/auth/PendingApproval";
+const Login = React.lazy(() => import("./pages/auth/Login"));
+const Signup = React.lazy(() => import("./pages/auth/Signup"));
+const PendingApproval = React.lazy(() => import("./pages/auth/PendingApproval"));
 
-import AccountDashboard from "./pages/account/Dashboard";
-import AccountOrders from "./pages/account/Orders";
-import AccountOrderDetail from "./pages/account/OrderDetail";
-import AccountProfile from "./pages/account/Profile";
-import AccountAddresses from "./pages/account/Addresses";
-import AccountWishlist from "./pages/account/Wishlist";
+const AccountDashboard = React.lazy(() => import("./pages/account/Dashboard"));
+const AccountOrders = React.lazy(() => import("./pages/account/Orders"));
+const AccountOrderDetail = React.lazy(() => import("./pages/account/OrderDetail"));
+const AccountProfile = React.lazy(() => import("./pages/account/Profile"));
+const AccountAddresses = React.lazy(() => import("./pages/account/Addresses"));
+const AccountWishlist = React.lazy(() => import("./pages/account/Wishlist"));
 
-import TeamLogin from "./pages/team/TeamLogin";
-import TeamDashboard from "./pages/team/TeamDashboard";
-import MyReferrals from "./pages/team/MyReferrals";
-import Commission from "./pages/team/Commission";
-import Withdrawal from "./pages/team/Withdrawal";
-import TeamProfile from "./pages/team/TeamProfile";
+const TeamLogin = React.lazy(() => import("./pages/team/TeamLogin"));
+const TeamDashboard = React.lazy(() => import("./pages/team/TeamDashboard"));
+const MyReferrals = React.lazy(() => import("./pages/team/MyReferrals"));
+const Commission = React.lazy(() => import("./pages/team/Commission"));
+const Withdrawal = React.lazy(() => import("./pages/team/Withdrawal"));
+const TeamProfile = React.lazy(() => import("./pages/team/TeamProfile"));
 
-import AdminLogin from "./pages/admin/AdminLogin";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminProducts from "./pages/admin/Products";
-import AdminProductForm from "./pages/admin/ProductForm";
-import AdminCategories from "./pages/admin/Categories";
-import AdminOrders from "./pages/admin/Orders";
-import AdminOrderDetail from "./pages/admin/OrderDetail";
-import AdminCustomers from "./pages/admin/Customers";
-import AdminDiscounts from "./pages/admin/Discounts";
-import AdminTeamMembers from "./pages/admin/TeamMembers";
-import AdminCommissions from "./pages/admin/Commissions";
-import AdminWithdrawals from "./pages/admin/Withdrawals";
-import AdminDeliveryRates from "./pages/admin/DeliveryRates";
-import AdminBanners from "./pages/admin/Banners";
-import AdminReports from "./pages/admin/Reports";
-import AdminSiteSettings from "./pages/admin/SiteSettings";
+const AdminLogin = React.lazy(() => import("./pages/admin/AdminLogin"));
+const AdminDashboard = React.lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminProducts = React.lazy(() => import("./pages/admin/Products"));
+const AdminProductForm = React.lazy(() => import("./pages/admin/ProductForm"));
+const AdminCategories = React.lazy(() => import("./pages/admin/Categories"));
+const AdminOrders = React.lazy(() => import("./pages/admin/Orders"));
+const AdminOrderDetail = React.lazy(() => import("./pages/admin/OrderDetail"));
+const AdminCustomers = React.lazy(() => import("./pages/admin/Customers"));
+const AdminDiscounts = React.lazy(() => import("./pages/admin/Discounts"));
+const AdminTeamMembers = React.lazy(() => import("./pages/admin/TeamMembers"));
+const AdminCommissions = React.lazy(() => import("./pages/admin/Commissions"));
+const AdminWithdrawals = React.lazy(() => import("./pages/admin/Withdrawals"));
+const AdminDeliveryRates = React.lazy(() => import("./pages/admin/DeliveryRates"));
+const AdminBanners = React.lazy(() => import("./pages/admin/Banners"));
+const AdminReports = React.lazy(() => import("./pages/admin/Reports"));
+const AdminSiteSettings = React.lazy(() => import("./pages/admin/SiteSettings"));
 
 const PageMotion: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <motion.div
@@ -102,6 +102,13 @@ const AnimatedRoutes: React.FC = () => {
 
   return (
     <AnimatePresence mode="wait">
+      <React.Suspense
+        fallback={
+          <div className="min-h-[45vh] grid place-items-center text-xs font-semibold tracking-widest text-[#666666]">
+            LOADING ARTS APPAREL...
+          </div>
+        }
+      >
       <Routes location={location} key={location.pathname}>
         {/* Floating customer assistant over the storefront */}
         <Route
@@ -609,6 +616,7 @@ const AnimatedRoutes: React.FC = () => {
           }
         />
       </Routes>
+      </React.Suspense>
     </AnimatePresence>
   );
 };
