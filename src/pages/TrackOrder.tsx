@@ -22,6 +22,7 @@ type PublicTrackedOrder = {
   created_at: string;
   updated_at: string;
   delivery_city: string;
+  delivery_charge: number;
   total_amount: number;
   items: Array<{
     product_name_en: string;
