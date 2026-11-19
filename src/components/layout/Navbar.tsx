@@ -17,7 +17,6 @@ import { useAuth } from "../../hooks/useAuth";
 import { useCart } from "../../hooks/useCart";
 import { CUSTOMER_TRANSLATIONS, getCategoryName } from "../../lib/i18n";
 import { CustomerLanguage } from "../../types";
-import { BrandLogo } from "../common/BrandLogo";
 import { CategoryIcon } from "../common/CategoryIcon";
 
 export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) => {
@@ -176,25 +175,16 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
             <Link
               to="/"
               aria-label="ARTS APPAREL Home"
-              className="inline-flex min-w-0 items-center gap-2"
+              className="inline-flex min-w-0 flex-1 items-center justify-center sm:flex-none"
             >
-              <BrandLogo size="lg" variant="light" />
-              <span className="sm:hidden inline-flex flex-col justify-center leading-none whitespace-nowrap">
-                <span className="text-[36px] font-extrabold tracking-[-0.075em] leading-none text-[#171717]">
-                  <span className="relative left-[-9px] top-[1px] inline-block origin-center rotate-[-18deg] align-baseline font-serif not-italic font-black tracking-[-0.12em] text-[0.9em] leading-none">𝓐</span><span className="font-serif font-black tracking-[-0.055em] text-[#E63946]">RTS</span>
-                </span>
-                <span className="mt-1 text-[9px] font-bold tracking-[0.29em] text-[#171717]">
-                  APPAREL
-                </span>
-              </span>
               <img
-                src="/images/rts-shirt-hanger.svg"
-                alt="T-shirt hanging on a clothes hanger"
-                className="sm:hidden h-[52px] w-[43px] shrink-0 object-contain"
-                width={43}
-                height={52}
+                src="/images/arts-apparel-complete-header.svg"
+                alt="ARTS Apparel"
+                className="h-[58px] w-full max-w-[220px] object-contain sm:h-[76px] sm:max-w-[285px] lg:h-[104px] lg:max-w-[350px]"
+                width={720}
+                height={250}
               />
-            </Link>
+            </Link>     </Link>
           </div>
         </div>
 
