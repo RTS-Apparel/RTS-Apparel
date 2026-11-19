@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 250" role="img" aria-labelledby="title">
+<title id="title">ARTS Apparel — premium garment logo</title>
+<defs>
+ <linearGradient id="red" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ff4b4b"/><stop offset=".48" stop-color="#e00016"/><stop offset="1" stop-color="#8e0010"/></linearGradient>
+ <linearGradient id="black" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#555"/><stop offset=".45" stop-color="#050505"/><stop offset="1" stop-color="#242424"/></linearGradient>
+ <linearGradient id="shine" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset=".45" stop-color="#aaa"/><stop offset="1" stop-color="#333"/></linearGradient>
+ <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="2"/><feOffset dy="2"/><feComponentTransfer><feFuncA type="linear" slope=".55"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<!-- decorative calligraphic A -->
+<path d="M25 174 C4 191 4 214 29 218 C55 224 86 195 111 152 C130 119 153 64 188 25 C164 41 137 64 118 91 C95 125 73 168 51 179 C38 186 25 181 25 174Z" fill="url(#black)" stroke="#ddd" stroke-width="2.5" filter="url(#shadow)"/>
+<path d="M64 187 C105 193 143 173 176 142 C190 128 203 110 216 88 C197 134 171 172 139 197 C112 218 74 229 38 217" fill="none" stroke="url(#shine)" stroke-width="5" stroke-linecap="round"/>
+<!-- RTS serif wordmark -->
+<g font-family="Georgia, 'Times New Roman', serif" font-weight="900" font-size="150" letter-spacing="-9" fill="url(#red)" stroke="#8b0010" stroke-width="1.5" paint-order="stroke fill" filter="url(#shadow)">
+ <text x="170" y="160">RTS</text>
+</g>
+<!-- hanger and shirt icon -->
+<path d="M535 47 C534 29 547 17 561 20 C574 23 578 39 566 49 C559 55 555 58 555 68" fill="none" stroke="url(#shine)" stroke-width="8" stroke-linecap="round"/>
+<path d="M555 67 L483 109 Q476 114 482 120 L646 120 Q653 114 645 109 L572 67" fill="none" stroke="url(#shine)" stroke-width="8" stroke-linejoin="round"/>
+<path d="M512 111 C501 111 491 119 482 129 L455 158 L477 178 L495 164 L491 216 Q490 228 503 228 L620 228 Q632 228 631 216 L627 164 L646 178 L667 158 L640 129 C631 119 621 111 610 111 C599 126 586 133 561 133 C538 133 523 126 512 111Z" fill="url(#black)" stroke="#080808" stroke-width="5" stroke-linejoin="round"/>
+<path d="M512 112 C524 130 538 139 561 139 C584 139 599 130 610 112" fill="none" stroke="#e63946" stroke-width="5"/>
+<path d="M495 164 L477 178 M627 164 L646 178" stroke="#e63946" stroke-width="4" stroke-linecap="round"/>
+<!-- underline and apparel -->
+<path d="M38 232 Q250 245 455 232 M650 232 L682 232" fill="none" stroke="url(#red)" stroke-width="4" stroke-linecap="round"/>
+<text x="260" y="238" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="25" letter-spacing="16" font-weight="700" fill="#151515">APPAREL</text>
+</svg>
