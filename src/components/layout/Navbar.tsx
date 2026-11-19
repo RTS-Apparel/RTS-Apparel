@@ -187,6 +187,13 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
                   APPAREL
                 </span>
               </span>
+              <img
+                src="/images/rts-shirt-hanger.svg"
+                alt="T-shirt hanging on a clothes hanger"
+                className="sm:hidden h-[52px] w-[43px] shrink-0 object-contain"
+                width={43}
+                height={52}
+              />
             </Link>
           </div>
         </div>
