@@ -18,6 +18,7 @@ import { useCart } from "../../hooks/useCart";
 import { CUSTOMER_TRANSLATIONS, getCategoryName } from "../../lib/i18n";
 import { CustomerLanguage } from "../../types";
 import { CategoryIcon } from "../common/CategoryIcon";
+import { BrandLogo } from "../common/BrandLogo";
 
 export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) => {
   const categories = useDataStore((s) => s.categories);
@@ -175,12 +176,13 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
             <Link
               to="/"
               aria-label="ARTS APPAREL Home"
-              className="inline-flex min-w-0 flex-1 items-center justify-center sm:flex-none"
+              className="inline-flex min-w-0 flex-1 items-center justify-start gap-2 sm:gap-3"
             >
+              <BrandLogo size="sm" variant="light" className="shrink-0" />
               <img
                 src="/images/arts-apparel-complete-header.svg"
-                alt="ARTS Apparel — premium garment logo"
-                className="block h-auto w-[min(54vw,230px)] max-h-[62px] object-contain sm:w-[min(38vw,340px)] sm:max-h-[88px] lg:w-[420px] lg:max-h-[136px]"
+                alt="ARTS Apparel — premium garment wordmark"
+                className="block h-auto w-[min(43vw,190px)] max-h-[52px] object-contain sm:w-[min(34vw,290px)] sm:max-h-[76px] lg:w-[320px] lg:max-h-[88px]"
                 width={720}
                 height={250}
                 fetchPriority="high"
