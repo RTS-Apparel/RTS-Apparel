@@ -6,6 +6,7 @@
 
 @layer base {
   :root {
+    --rts-ui-build: 20261119-3;
     --font-serif-display: "Playfair Display", Georgia, serif;
     --font-sans-ui: "Inter", system-ui, -apple-system, sans-serif;
     --font-mono-code: "JetBrains Mono", monospace;
