@@ -215,8 +215,6 @@ export const TeamWithdrawalPage: React.FC = () => {
                           className={`inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase ${
                             w.status === "paid"
                               ? "bg-[#D4EDDA] text-[#155724]"
-                              : w.status === "rejected"
-                              ? "bg-[#F8D7DA] text-[#721C24]"
                               : "bg-[#FFF3CD] text-[#856404]"
                           }`}
                         >
