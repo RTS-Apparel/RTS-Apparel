@@ -17,7 +17,6 @@ import { useAuth } from "../../hooks/useAuth";
 import { useCart } from "../../hooks/useCart";
 import { CUSTOMER_TRANSLATIONS, getCategoryName } from "../../lib/i18n";
 import { CustomerLanguage } from "../../types";
-import { BrandLogo } from "../common/BrandLogo";
 import { CategoryIcon } from "../common/CategoryIcon";
 
 export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) => {
@@ -176,9 +175,17 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
             <Link
               to="/"
               aria-label="ARTS APPAREL Home"
-              className="inline-flex min-w-0 items-center justify-center sm:flex-none"
+              className="inline-flex min-w-0 flex-1 items-center justify-center sm:flex-none"
             >
-              <BrandLogo size="lg" variant="light" />
+              <img
+                src="/images/arts-apparel-complete-header.svg"
+                alt="ARTS Apparel — premium garment logo"
+                className="block h-auto w-[min(54vw,230px)] max-h-[62px] object-contain sm:w-[min(38vw,340px)] sm:max-h-[88px] lg:w-[420px] lg:max-h-[136px]"
+                width={720}
+                height={250}
+                fetchPriority="high"
+                decoding="async"
+              />
             </Link>
           </div>
         </div>
