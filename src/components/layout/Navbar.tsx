@@ -184,7 +184,7 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
                 width={720}
                 height={250}
               />
-            </Link>     </Link>
+            </Link>
           </div>
         </div>
 
