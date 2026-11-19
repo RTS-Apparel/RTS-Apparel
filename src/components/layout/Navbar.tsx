@@ -173,8 +173,20 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
                 <ArrowLeft className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
               </button>
             )}
-            <Link to="/" aria-label="ARTS APPAREL Home">
+            <Link
+              to="/"
+              aria-label="ARTS APPAREL Home"
+              className="inline-flex min-w-0 items-center gap-2"
+            >
               <BrandLogo size="lg" variant="light" />
+              <span className="sm:hidden inline-flex flex-col justify-center leading-none whitespace-nowrap">
+                <span className="text-[25px] font-extrabold tracking-[-0.075em] text-[#171717]">
+                  <span className="inline-block font-serif italic font-black tracking-[-0.12em]">A</span><span className="text-[#E63946]">RTS</span>
+                </span>
+                <span className="mt-1 text-[10px] font-bold tracking-[0.29em] text-[#171717]">
+                  APPAREL
+                </span>
+              </span>
             </Link>
           </div>
         </div>
