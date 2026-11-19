@@ -31,17 +31,42 @@
             }, { once: true });
             (document.body || document.documentElement).appendChild(panel);
           }
-          panel.textContent = "ARTS APPAREL — JavaScript startup error\\n\\n" + String(message);
+          panel.textContent = "ARTS APPAREL — JavaScript startup error\n\n" + String(message);
         }
+
         window.addEventListener("error", function (event) {
-          // Resource load failures (especially product images) are handled by their
-          // own onError fallbacks. They are not JavaScript startup exceptions.
-          if (event.target && event.target !== window && event.target.tagName !== "SCRIPT") return;
-          showRuntimeError((event.error && event.error.stack ? event.error.stack + "\\n" : "") + (event.filename ? event.filename + ":" + event.lineno + ":" + event.colno + "\\n" : "") + (event.message || "Unknown JavaScript error"));
+          // Ignore failed non-app resources. In particular, an external analytics
+          // beacon must never cover the storefront with a fatal startup panel.
+          if (event.target && event.target !== window) {
+            if (event.target.tagName !== "SCRIPT") return;
+            var scriptUrl = event.target.src || "";
+            var isSameOriginAppBundle = false;
+            try {
+              var parsedUrl = new URL(scriptUrl, window.location.href);
+              isSameOriginAppBundle =
+                parsedUrl.origin === window.location.origin &&
+                parsedUrl.pathname.indexOf("/assets/") === 0;
+            } catch (_) {}
+            if (!isSameOriginAppBundle) return;
+            showRuntimeError("Unable to load application bundle: " + scriptUrl);
+            return;
+          }
+
+          var details = event.error && event.error.stack
+            ? event.error.stack
+            : (event.message || "Unknown JavaScript runtime error");
+          if (event.filename) {
+            details += "\n" + event.filename + ":" + event.lineno + ":" + event.colno;
+          }
+          showRuntimeError(details);
         }, true);
+
         window.addEventListener("unhandledrejection", function (event) {
           var reason = event.reason;
-          showRuntimeError(reason && (reason.stack || reason.message) || reason || "Unhandled promise rejection");
+          var details = reason && (reason.stack || reason.message)
+            ? (reason.stack || reason.message)
+            : String(reason || "Unhandled promise rejection");
+          showRuntimeError(details);
         });
       })();
     </script>
