@@ -3,62 +3,77 @@ import { useSearchParams } from "react-router-dom";
 import { Search, MapPin, Phone, ShieldCheck, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useDataStore } from "../store/dataStore";
+import { supabase } from "../lib/supabase";
 import { formatPKR } from "../lib/utils";
 import { OrderStatusTimeline } from "../components/orders/OrderStatusTimeline";
 import { OrderStatusBadge } from "../components/orders/OrderStatusBadge";
 import { CUSTOMER_TRANSLATIONS } from "../lib/i18n";
 import { pageVariants } from "../lib/animations";
 import { PageHeading } from "../components/layout/PageHeading";
+import type { OrderStatus } from "../types";
 
 function normalizePhone(phone: string): string {
   return phone.replace(/[^0-9]/g, "");
 }
 
+type PublicTrackedOrder = {
+  order_number: string;
+  status: OrderStatus;
+  created_at: string;
+  updated_at: string;
+  delivery_city: string;
+  total_amount: number;
+  items: Array<{
+    product_name_en: string;
+    quantity: number;
+    size: string;
+    color: string;
+    unit_price: number;
+  }>;
+};
+
 export const TrackOrderPage: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const orders = useDataStore((s) => s.orders);
   const language = useDataStore((s) => s.language);
   const t = CUSTOMER_TRANSLATIONS[language];
 
   const [orderNumInput, setOrderNumInput] = useState(searchParams.get("order") || "");
   const [phoneInput, setPhoneInput] = useState("");
-  const [verifiedOrderId, setVerifiedOrderId] = useState<string | null>(null);
-  const [verificationError, setVerificationError] = useState<string | null>(
-    null
-  );
+  const [matchedOrder, setMatchedOrder] = useState<PublicTrackedOrder | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [verificationError, setVerificationError] = useState<string | null>(null);
 
-  const matchedOrder = orders.find((o) => o.id === verifiedOrderId);
-
-  const handleVerifyTrack = (e: React.FormEvent) => {
+  const handleVerifyTrack = async (e: React.FormEvent) => {
     e.preventDefault();
     setVerificationError(null);
 
-    const cleanOrderNum = orderNumInput.trim().toLowerCase();
+    const cleanOrderNum = orderNumInput.trim().toUpperCase();
     const cleanPhone = normalizePhone(phoneInput);
 
-    if (!cleanOrderNum || !cleanPhone) {
-      setVerificationError(
-        "Both Order Number and Customer Phone Number are required to protect your privacy."
-      );
-      setVerifiedOrderId(null);
+    if (cleanOrderNum.length < 5 || cleanPhone.length < 10 || cleanPhone.length > 15) {
+      setVerificationError("Please enter a valid order number and customer phone number.");
+      setMatchedOrder(null);
       return;
     }
 
-    const found = orders.find(
-      (o) =>
-        o.order_number.toLowerCase() === cleanOrderNum &&
-        normalizePhone(o.customer_phone) === cleanPhone
-    );
-
-    if (!found) {
+    setIsSearching(true);
+    setMatchedOrder(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("track-order", {
+        body: { order_number: cleanOrderNum, phone: cleanPhone },
+      });
+      if (error) throw error;
+      if (!data?.order) throw new Error("No matching order found. Check both details and try again.");
+      setMatchedOrder(data.order as PublicTrackedOrder);
+    } catch (lookupError) {
       setVerificationError(
-        "No matching order found for this Order Number and Phone Number combination. Please verify both fields."
+        lookupError instanceof Error && lookupError.message.includes("Too many")
+          ? lookupError.message
+          : "No matching order found. Check the order number and phone number."
       );
-      setVerifiedOrderId(null);
-      return;
+    } finally {
+      setIsSearching(false);
     }
-
-    setVerifiedOrderId(found.id);
   };
 
   return (
@@ -120,10 +135,11 @@ export const TrackOrderPage: React.FC = () => {
           </p>
           <button
             type="submit"
-            className="btn-primary-futuristic h-11 px-6 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-xs hover:bg-[#C1121F] transition-colors shrink-0 inline-flex items-center gap-2"
+            disabled={isSearching}
+            className="btn-primary-futuristic disabled:opacity-60 disabled:cursor-not-allowed h-11 px-6 rounded-[6px] bg-[#E63946] text-[#FFFFFF] font-semibold text-xs hover:bg-[#C1121F] transition-colors shrink-0 inline-flex items-center gap-2"
           >
             <MapPin size={16} />
-            <span>{t.trackBtn}</span>
+            <span>{isSearching ? "Checking..." : t.trackBtn}</span>
           </button>
         </div>
 
@@ -158,26 +174,18 @@ export const TrackOrderPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-[#E0E0E0] text-xs">
             <div className="space-y-2">
               <h3 className="font-mono uppercase tracking-wider text-[#666666]">
-                {t.dispatchDetails}
+                Delivery Details
               </h3>
-              <p className="text-sm font-semibold text-[#1A1A1A]">
-                {matchedOrder.customer_name}
+              <p className="text-sm font-semibold text-[#1A1A1A]">{matchedOrder.delivery_city}</p>
+              <p className="text-xs text-[#666666]">
+                Placed {new Date(matchedOrder.created_at).toLocaleDateString()}
               </p>
-              <p className="text-[#666666] flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-[#E63946]" />
-                <span>
-                  {matchedOrder.delivery_address}, {matchedOrder.delivery_city}
-                </span>
+              <p className="text-xs text-[#666666]">
+                Last updated {new Date(matchedOrder.updated_at).toLocaleDateString()}
               </p>
-              <p className="text-[#666666] flex items-center gap-1.5 font-mono">
-                <Phone className="w-3.5 h-3.5 text-[#E63946]" />
-                <span>{matchedOrder.customer_phone}</span>
+              <p className="text-xs text-[#666666]">
+                Your private delivery address and phone number are hidden on this public tracking page.
               </p>
-              {matchedOrder.referral_code && (
-                <p className="text-[#E63946] font-mono pt-1 font-semibold">
-                  Partner Referral Code: {matchedOrder.referral_code}
-                </p>
-              )}
             </div>
 
             <div className="space-y-2">
@@ -190,9 +198,9 @@ export const TrackOrderPage: React.FC = () => {
                   className="flex justify-between text-[#1A1A1A] font-mono tabular-nums"
                 >
                   <span>
-                    {it.name_en} ({it.size}) × {it.quantity}
+                    {it.product_name_en} ({it.size}) × {it.quantity}
                   </span>
-                  <span>{formatPKR(it.final_unit_price * it.quantity)}</span>
+                  <span>{formatPKR(it.unit_price * it.quantity)}</span>
                 </div>
               ))}
               <div className="flex justify-between text-[#666666] font-mono tabular-nums pt-1">
