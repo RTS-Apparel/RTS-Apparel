@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Explicitly scan the app source so production builds include every Tailwind utility. */
+@source "./";
+@source "../index.html";
+
 @layer base {
   :root {
     --font-serif-display: "Playfair Display", Georgia, serif;
