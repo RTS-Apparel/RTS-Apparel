@@ -181,7 +181,7 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
               <BrandLogo size="lg" variant="light" />
               <span className="sm:hidden inline-flex flex-col justify-center leading-none whitespace-nowrap">
                 <span className="text-[25px] font-extrabold tracking-[-0.075em] text-[#171717]">
-                  <span className="inline-block font-serif italic font-black tracking-[-0.12em]">A</span><span className="text-[#E63946]">RTS</span>
+                  <span className="inline-block font-serif italic font-black tracking-[-0.12em] text-[1.12em]">𝓐</span><span className="text-[#E63946]">RTS</span>
                 </span>
                 <span className="mt-1 text-[10px] font-bold tracking-[0.29em] text-[#171717]">
                   APPAREL
