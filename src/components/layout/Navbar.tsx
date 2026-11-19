@@ -179,7 +179,7 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
               className="inline-flex min-w-0 items-center justify-center sm:flex-none"
             >
               <BrandLogo size="lg" variant="light" />
-            </Link>     </Link>
+            </Link>
           </div>
         </div>
 
