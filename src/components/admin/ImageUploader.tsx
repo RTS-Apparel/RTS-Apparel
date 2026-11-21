@@ -10,7 +10,6 @@ import {
   ArrowRight,
   Star,
 } from "lucide-react";
-import { PRODUCT_ARTWORKS } from "../../lib/artworks";
 import { supabase, isSupabaseConfigured } from "../../lib/supabase";
 
 export interface PendingUploadItem {
@@ -449,27 +448,6 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
         </button>
       </div>
 
-      {/* Studio Preset Library */}
-      <div>
-        <p className="text-[11px] uppercase tracking-wider text-[#1A1A1A] mb-2 flex items-center gap-1.5 font-semibold">
-          <ImageIcon className="w-3.5 h-3.5 text-[#E63946]" />
-          <span>Quick-Select ARTS APPAREL Studio Lookbook Presets:</span>
-        </p>
-        <div className="flex flex-wrap gap-1.5">
-          {Object.entries(PRODUCT_ARTWORKS)
-            .slice(0, 8)
-            .map(([key, url]) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => addImage(url)}
-                className="px-2.5 py-1 rounded-[4px] text-[11px] bg-[#F5F5F5] border border-[#E0E0E0] text-[#1A1A1A] hover:border-[#E63946] hover:text-[#E63946] transition-colors capitalize font-medium"
-              >
-                + {key.replace(/([A-Z])/g, " $1")}
-              </button>
-            ))}
-        </div>
-      </div>
     </div>
   );
 };
