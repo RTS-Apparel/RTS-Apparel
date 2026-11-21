@@ -125,10 +125,11 @@ export const AdminProductForm: React.FC = () => {
       .map((c) => c.trim())
       .filter(Boolean);
 
-    const finalImages =
-      uploadedUrls.length > 0
-        ? uploadedUrls.slice(0, 6)
-        : [PRODUCT_ARTWORKS.kurtaObsidian];
+    const finalImages = uploadedUrls.slice(0, 6);
+    if (!categoryId || finalImages.length === 0) {
+      addToast("Please select a category and add at least one real product image", "error");
+      return;
+    }
 
     const payload = {
       name_en: nameEn.trim(),
@@ -141,8 +142,8 @@ export const AdminProductForm: React.FC = () => {
       price: Number(price) || 0,
       discount_percent: Number(discountPercent) || 0,
       stock: Number(stock) || 0,
-      sizes: sizes.length > 0 ? sizes : ["M", "L"],
-      colors: colors.length > 0 ? colors : ["Black"],
+      sizes,
+      colors,
       images: finalImages,
       is_active: isActive,
       is_featured: isFeatured,
