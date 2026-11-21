@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Plus, Trash2, ArrowUp, ArrowDown, Upload, Image } from "lucide-react";
 import { motion } from "framer-motion";
 import { useDataStore } from "../../store/dataStore";
-import { PRODUCT_ARTWORKS } from "../../lib/artworks";
 import { supabase, isSupabaseConfigured } from "../../lib/supabase";
 import { AdminSidebar } from "../../components/layout/AdminSidebar";
 import { PageHeading } from "../../components/layout/PageHeading";
@@ -19,7 +18,7 @@ export const AdminBanners: React.FC = () => {
 
   const [titleEn, setTitleEn] = useState("");
   const [titleUr, setTitleUr] = useState("");
-  const [linkUrl, setLinkUrl] = useState("/category/kurta-shalwar");
+  const [linkUrl, setLinkUrl] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [uploading, setUploading] = useState(false);
@@ -43,10 +42,13 @@ export const AdminBanners: React.FC = () => {
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!titleEn.trim()) return;
+    if (!titleEn.trim() || !selectedFile) {
+      addToast("Please add a banner image before saving", "error");
+      return;
+    }
 
     setUploading(true);
-    let finalImageUrl = previewUrl || PRODUCT_ARTWORKS.bannerFestive;
+    let finalImageUrl = "";
 
     if (selectedFile && isSupabaseConfigured) {
       try {
@@ -56,23 +58,29 @@ export const AdminBanners: React.FC = () => {
           .from("banners")
           .upload(path, selectedFile, { cacheControl: "3600", upsert: false });
 
-        if (!error) {
-          const { data } = supabase.storage.from("banners").getPublicUrl(path);
-          if (data?.publicUrl) {
-            finalImageUrl = data.publicUrl;
-          }
-        }
-      } catch {
-        addToast("Using local banner preview", "info");
+        if (error) throw error;
+        const { data } = supabase.storage.from("banners").getPublicUrl(path);
+        if (!data?.publicUrl) throw new Error("Banner image URL could not be created");
+        finalImageUrl = data.publicUrl;
+      } catch (error) {
+        addToast("Banner image upload failed", "error", error instanceof Error ? error.message : undefined);
+        setUploading(false);
+        return;
       }
+    }
+
+    if (!finalImageUrl) {
+      addToast("Banner image could not be saved. Please upload it again.", "error");
+      setUploading(false);
+      return;
     }
 
     addBanner({
       title_en: titleEn.trim(),
-      title_ur: titleUr.trim() || "شاہی ملبوسات",
-      subtitle_en: "Limited Atelier Release — ARTS APPAREL",
+      title_ur: titleUr.trim(),
+      subtitle_en: "",
       image_url: finalImageUrl,
-      link_url: linkUrl.trim() || "/category/kurta-shalwar",
+      link_url: linkUrl.trim() || null,
       display_order: banners.length + 1,
       is_active: true,
     });
