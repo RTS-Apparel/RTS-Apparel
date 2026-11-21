@@ -5,7 +5,7 @@ import {
   calculateDiscountedPrice,
   getEffectiveDiscountPercent,
 } from "../lib/utils";
-import { Product } from "../types";
+import { Product, SiteSettings } from "../types";
 
 let storefrontLoadStarted = false;
 
@@ -13,10 +13,12 @@ async function loadStorefrontData() {
   if (!isSupabaseConfigured || storefrontLoadStarted) return;
   storefrontLoadStarted = true;
 
-  const [categoryResult, productResult, bannerResult] = await Promise.all([
+  const [categoryResult, productResult, bannerResult, rateResult, settingsResult] = await Promise.all([
     supabase.from("categories").select("*").eq("is_active", true).order("display_order"),
     supabase.from("products").select("*").eq("is_active", true).order("created_at", { ascending: false }),
     supabase.from("banners").select("*").eq("is_active", true).order("display_order"),
+    supabase.from("city_delivery_rates").select("*").eq("is_active", true).order("city_name"),
+    supabase.from("site_settings").select("key,value"),
   ]);
 
   if (categoryResult.error) {
@@ -56,6 +58,41 @@ async function loadStorefrontData() {
       cta_link: banner.link_url || "",
     }));
     useDataStore.setState({ banners });
+  }
+
+  if (rateResult.error) {
+    console.error("Unable to load delivery rates:", rateResult.error.message);
+  } else {
+    useDataStore.setState({
+      deliveryRates: (rateResult.data || []).map((rate: any) => ({
+        ...rate,
+        charge: Number(rate.charge),
+      })),
+    });
+  }
+
+  if (settingsResult.error) {
+    console.error("Unable to load site settings:", settingsResult.error.message);
+  } else {
+    const values = Object.fromEntries(
+      (settingsResult.data || []).map((item: any) => [item.key, item.value || ""])
+    );
+    const siteSettings: SiteSettings = {
+      jazzcash_number: values.jazzcash_number || "",
+      easypaisa_number: values.easypaisa_number || "",
+      bank_name: values.bank_name || "",
+      bank_account_title: values.bank_account_title || "",
+      bank_iban: values.bank_iban || "",
+      whatsapp_number: values.whatsapp_number || "",
+      contact_phone: values.contact_phone || "",
+      contact_email: values.contact_email || "",
+      physical_address: values.physical_address || "",
+      shop_address: values.physical_address || "",
+      instagram_url: values.instagram_url || "",
+      facebook_url: values.facebook_url || "",
+      tiktok_url: values.tiktok_url || "",
+    };
+    useDataStore.setState({ siteSettings });
   }
 }
 
