@@ -3,7 +3,6 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, Loader2, Shirt } from "lucide-react";
 import { motion } from "framer-motion";
 import { useDataStore } from "../../store/dataStore";
-import { PRODUCT_ARTWORKS } from "../../lib/artworks";
 import { AdminSidebar } from "../../components/layout/AdminSidebar";
 import { PageHeading } from "../../components/layout/PageHeading";
 import {
@@ -42,30 +41,28 @@ export const AdminProductForm: React.FC = () => {
     existing?.description_roman_ur || ""
   );
   const [categoryId, setCategoryId] = useState(
-    existing?.category_id || categories[0]?.id || "cat-kurta"
+    existing?.category_id || categories[0]?.id || ""
   );
-  const [price, setPrice] = useState(String(existing?.price || 11500));
+  const [price, setPrice] = useState(String(existing?.price ?? 0));
   const [discountPercent, setDiscountPercent] = useState(
     String(existing?.discount_percent || 0)
   );
-  const [stock, setStock] = useState(String(existing?.stock || 20));
+  const [stock, setStock] = useState(String(existing?.stock ?? 0));
   const [sizes, setSizes] = useState<string[]>(
-    existing?.sizes || ["S", "M", "L", "XL"]
+    existing?.sizes || []
   );
   const [colorsInput, setColorsInput] = useState(
-    existing?.colors.join(", ") || "Obsidian Black, Midnight Gold"
+    existing?.colors.join(", ") || ""
   );
   const [images, setImages] = useState<string[]>(
-    existing?.images && existing.images.length > 0
-      ? existing.images
-      : [PRODUCT_ARTWORKS.kurtaObsidian]
+    existing?.images || []
   );
   const [pendingFiles, setPendingFiles] = useState<PendingUploadItem[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadErrors, setUploadErrors] = useState<string[]>([]);
 
   const [isActive, setIsActive] = useState(existing?.is_active ?? true);
-  const [isFeatured, setIsFeatured] = useState(existing?.is_featured ?? true);
+  const [isFeatured, setIsFeatured] = useState(existing?.is_featured ?? false);
 
   const toggleSize = (sz: string) => {
     setSizes((prev) =>
