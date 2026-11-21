@@ -14,7 +14,7 @@ import { useAuthStore } from "./store/authStore";
 import { useDataStore } from "./store/dataStore";
 import { useProducts } from "./hooks/useProducts";
 import { supabase, isSupabaseConfigured } from "./lib/supabase";
-import { Order, OrderItem, User, Commission, WithdrawalRequest } from "./types";
+import type { Order, OrderItem, User, Commission as CommissionRecord, WithdrawalRequest } from "./types";
 
 const Home = React.lazy(() => import("./pages/Home"));
 const Category = React.lazy(() => import("./pages/Category"));
@@ -724,7 +724,7 @@ export function App() {
       if (commissionsResult.error) {
         console.error("Unable to load Supabase commissions:", commissionsResult.error.message);
       } else {
-        const commissions: Commission[] = (commissionsResult.data || []).map((row: any) => ({
+        const commissions: CommissionRecord[] = (commissionsResult.data || []).map((row: any) => ({
           ...row,
           amount: row.amount == null ? null : Number(row.amount),
         }));
