@@ -14,7 +14,7 @@ import { useAuthStore } from "./store/authStore";
 import { useDataStore } from "./store/dataStore";
 import { useProducts } from "./hooks/useProducts";
 import { supabase, isSupabaseConfigured } from "./lib/supabase";
-import { Order, OrderItem } from "./types";
+import { Order, OrderItem, User, Commission, WithdrawalRequest } from "./types";
 
 const Home = React.lazy(() => import("./pages/Home"));
 const Category = React.lazy(() => import("./pages/Category"));
@@ -641,16 +641,14 @@ export function App() {
         return;
       }
 
-      const [ordersResult, ratesResult] = await Promise.all([
+      const [ordersResult, usersResult, commissionsResult, withdrawalsResult] = await Promise.all([
         supabase
           .from("orders")
           .select("*, order_items(*)")
           .order("created_at", { ascending: false }),
-        supabase
-          .from("city_delivery_rates")
-          .select("*")
-          .eq("is_active", true)
-          .order("city_name"),
+        supabase.from("users").select("*").order("created_at", { ascending: false }),
+        supabase.from("commissions").select("*").order("created_at", { ascending: false }),
+        supabase.from("withdrawal_requests").select("*").order("created_at", { ascending: false }),
       ]);
 
       if (cancelled) return;
@@ -709,15 +707,38 @@ export function App() {
         useDataStore.setState({ orders, orderItems: allItems });
       }
 
-      if (ratesResult.error) {
-        console.error("Unable to load delivery rates:", ratesResult.error.message);
+      if (usersResult.error) {
+        console.error("Unable to load Supabase users:", usersResult.error.message);
       } else {
-        useDataStore.setState({
-          deliveryRates: (ratesResult.data || []).map((rate: any) => ({
-            ...rate,
-            charge: Number(rate.charge),
-          })),
-        });
+        const users: User[] = (usersResult.data || []).map((row: any) => ({
+          ...row,
+          full_name: row.full_name || "",
+          phone: row.phone || "",
+          referral_code: row.referral_code || null,
+          is_approved: Boolean(row.is_approved),
+          is_blocked: Boolean(row.is_blocked),
+        }));
+        useDataStore.setState({ users });
+      }
+
+      if (commissionsResult.error) {
+        console.error("Unable to load Supabase commissions:", commissionsResult.error.message);
+      } else {
+        const commissions: Commission[] = (commissionsResult.data || []).map((row: any) => ({
+          ...row,
+          amount: row.amount == null ? null : Number(row.amount),
+        }));
+        useDataStore.setState({ commissions });
+      }
+
+      if (withdrawalsResult.error) {
+        console.error("Unable to load Supabase withdrawals:", withdrawalsResult.error.message);
+      } else {
+        const withdrawals: WithdrawalRequest[] = (withdrawalsResult.data || []).map((row: any) => ({
+          ...row,
+          amount: Number(row.amount),
+        }));
+        useDataStore.setState({ withdrawalRequests: withdrawals });
       }
     };
 
