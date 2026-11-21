@@ -26,7 +26,6 @@ import {
   buttonHover,
   buttonTap,
 } from "../lib/animations";
-import { demoBanners } from "../data/demoData";
 
 export const HomePage: React.FC = () => {
   const {
@@ -40,15 +39,7 @@ export const HomePage: React.FC = () => {
   const language = useDataStore((s) => s.language);
   const t = CUSTOMER_TRANSLATIONS[language];
 
-  const slides =
-    activeBanners.length > 0
-      ? activeBanners
-      : demoBanners.map((b) => ({
-          ...b,
-          title_en: b.title,
-          subtitle_en: b.subtitle,
-          created_at: new Date().toISOString(),
-        }));
+  const slides = activeBanners;
 
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -69,8 +60,7 @@ export const HomePage: React.FC = () => {
   const heroCta = heroBanner?.cta_text || t.shopNow;
   const heroWords = heroTitle.split(/\s+/);
 
-  const saleItems = activeProducts.filter((p) => p.discount_percent > 0);
-  const displaySale = saleItems.length > 0 ? saleItems : saleProducts;
+  const displaySale = saleProducts;
 
   return (
     <div className="space-y-10 sm:space-y-16 pb-10 sm:pb-12 bg-[#FFFFFF]">
