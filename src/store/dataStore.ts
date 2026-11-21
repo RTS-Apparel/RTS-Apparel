@@ -19,7 +19,6 @@ import {
   User,
   WithdrawalRequest,
 } from "../types";
-import { PRODUCT_ARTWORKS } from "../lib/artworks";
 import {
   formatOrderNumber,
   generateReferralCode,
@@ -35,404 +34,31 @@ export interface ToastMessage {
   type: "success" | "error" | "info";
 }
 
-import {
-  demoProducts,
-  demoBanners,
-  demoAgents,
-  demoOrders,
-  demoCityRates,
-  demoSiteSettings,
-} from "../data/demoData";
-
-const CATEGORY_SLUG_TO_ID: Record<string, string> = {
-  shirts: "cat-shirts",
-  trousers: "cat-trousers",
-  "kurta-shalwar": "cat-kurta",
-  hoodies: "cat-hoodies",
-  jackets: "cat-jackets",
-};
-
-const INITIAL_CATEGORIES: Category[] = [
-  {
-    id: "cat-shirts",
-    name_en: "Shirts",
-    name_ur: "شرٹس",
-    name_roman_ur: "Shirts",
-    slug: "shirts",
-    display_order: 1,
-    discount_percent: 0,
-    is_active: true,
-  },
-  {
-    id: "cat-trousers",
-    name_en: "Trousers",
-    name_ur: "ٹراؤزر",
-    name_roman_ur: "Trousers",
-    slug: "trousers",
-    display_order: 2,
-    discount_percent: 0,
-    is_active: true,
-  },
-  {
-    id: "cat-kurta",
-    name_en: "Kurta Shalwar",
-    name_ur: "کرتہ شلوار",
-    name_roman_ur: "Kurta Shalwar",
-    slug: "kurta-shalwar",
-    display_order: 3,
-    discount_percent: 0,
-    is_active: true,
-  },
-  {
-    id: "cat-hoodies",
-    name_en: "Hoodies",
-    name_ur: "ہوڈیز",
-    name_roman_ur: "Hoodies",
-    slug: "hoodies",
-    display_order: 4,
-    discount_percent: 0,
-    is_active: true,
-  },
-  {
-    id: "cat-jackets",
-    name_en: "Jackets",
-    name_ur: "جیکٹس",
-    name_roman_ur: "Jackets",
-    slug: "jackets",
-    display_order: 5,
-    discount_percent: 0,
-    is_active: true,
-  },
-];
-
-const INITIAL_PRODUCTS: Product[] = demoProducts.map((dp, index) => ({
-  id: dp.id,
-  name_en: dp.name_en,
-  name_ur: dp.name_ur,
-  name_roman_ur: dp.name_en,
-  description_en: dp.description_en,
-  description_ur: dp.description_en,
-  description_roman_ur: dp.description_en,
-  category_id: CATEGORY_SLUG_TO_ID[dp.category_slug] || "cat-shirts",
-  category_slug: dp.category_slug,
-  category_name: dp.category_name,
-  price: dp.price,
-  discount_percent: dp.discount_percent,
-  discounted_price: dp.discounted_price,
-  images: dp.images,
-  sizes: dp.sizes,
-  colors: dp.colors,
-  stock: dp.stock,
-  is_active: true,
-  is_featured: dp.is_featured,
-  is_new: dp.is_new,
-  created_at:
-    dp.created_at ||
-    new Date(Date.now() - (demoProducts.length - index) * 86400000).toISOString(),
-}));
-
-const currentYear = new Date().getFullYear();
-const today = new Date();
-const daysAgo = (n: number) => {
-  const d = new Date(today);
-  d.setDate(d.getDate() - n);
-  return d.toISOString().split("T")[0];
-};
-
-const INITIAL_USERS: User[] = [
-  {
-    id: "user-admin-1",
-    email: "admin@rtsapparel.pk",
-    full_name: "Tariq Mehmood (ARTS APPAREL Owner)",
-    phone: "03058165623",
-    role: "admin",
-    referral_code: "RTS-ADMIN001",
-    is_approved: true,
-    is_blocked: false,
-    created_at: `${daysAgo(60)}T08:00:00Z`,
-  },
-  ...demoAgents.map((ag, idx) => ({
-    id: ag.id,
-    email:
-      idx === 0
-        ? "ali@rtsapparel.pk"
-        : idx === 1
-        ? "usman@rtsapparel.pk"
-        : idx === 2
-        ? "bilal@rtsapparel.pk"
-        : "hamza@rtsapparel.pk",
-    full_name: ag.full_name,
-    phone: ag.phone,
-    role: "agent" as const,
-    referral_code: ag.referral_code,
-    total_referrals: ag.total_referrals,
-    total_commission_earned: ag.total_commission_earned,
-    is_approved: ag.is_approved,
-    is_blocked: ag.is_blocked,
-    payment_method: "jazzcash" as const,
-    payment_account_details: `JazzCash: ${ag.phone} (${ag.full_name})`,
-    join_reason: !ag.is_approved
-      ? "Fashion promoter in Sadiqabad & Rahimyar Khan"
-      : undefined,
-    created_at: `${daysAgo(30 - idx)}T10:00:00Z`,
-  })),
-  {
-    id: "user-customer-1",
-    email: "zain@rtsapparel.pk",
-    full_name: "Muhammad Tariq",
-    phone: "03001234567",
-    role: "customer",
-    referral_code: null,
-    is_approved: true,
-    is_blocked: false,
-    created_at: `${daysAgo(25)}T16:00:00Z`,
-  },
-];
-
-const INITIAL_ORDER_ITEMS: OrderItem[] = [
-  {
-    id: "oi-1",
-    order_id: "ord-1001",
-    product_id: "shirt-001",
-    product_name_en: "Classic White Oxford Shirt",
-    name_en: "Classic White Oxford Shirt",
-    product_image: demoProducts[0].images[0],
-    image: demoProducts[0].images[0],
-    quantity: 2,
-    size: "L",
-    color: "White",
-    unit_price: 2720,
-    final_unit_price: 2720,
-    original_price: 3200,
-  },
-  {
-    id: "oi-2",
-    order_id: "ord-1002",
-    product_id: "kurta-002",
-    product_name_en: "Embroidered Eid Kurta Set",
-    name_en: "Embroidered Eid Kurta Set",
-    product_image: demoProducts[8].images[0],
-    image: demoProducts[8].images[0],
-    quantity: 1,
-    size: "L",
-    color: "Beige",
-    unit_price: 7800,
-    final_unit_price: 7800,
-    original_price: 7800,
-  },
-  {
-    id: "oi-3",
-    order_id: "ord-1003",
-    product_id: "jacket-001",
-    product_name_en: "Classic Leather Biker Jacket",
-    name_en: "Classic Leather Biker Jacket",
-    product_image: demoProducts[12].images[0],
-    image: demoProducts[12].images[0],
-    quantity: 1,
-    size: "L",
-    color: "Black",
-    unit_price: 11250,
-    final_unit_price: 11250,
-    original_price: 12500,
-  },
-  {
-    id: "oi-4",
-    order_id: "ord-1004",
-    product_id: "trouser-003",
-    product_name_en: "Cargo Pants Street Style",
-    name_en: "Cargo Pants Street Style",
-    product_image: demoProducts[6].images[0],
-    image: demoProducts[6].images[0],
-    quantity: 1,
-    size: "34",
-    color: "Olive",
-    unit_price: 3500,
-    final_unit_price: 3500,
-    original_price: 3500,
-  },
-  {
-    id: "oi-5",
-    order_id: "ord-1005",
-    product_id: "hoodie-001",
-    product_name_en: "Premium Oversized Hoodie",
-    name_en: "Premium Oversized Hoodie",
-    product_image: demoProducts[10].images[0],
-    image: demoProducts[10].images[0],
-    quantity: 1,
-    size: "XL",
-    color: "Black",
-    unit_price: 4420,
-    final_unit_price: 4420,
-    original_price: 5200,
-  },
-];
-
-const INITIAL_ORDERS: Order[] = demoOrders.map((doItem, idx) => {
-  const orderId = `ord-${1001 + idx}`;
-  const matchedAgent = demoAgents.find(
-    (ag) => ag.referral_code && ag.referral_code === doItem.referral_code
-  );
-  const cityRate =
-    demoCityRates.find(
-      (c) => c.city_name.toLowerCase() === doItem.delivery_city.toLowerCase()
-    )?.charge || 200;
-
-  return {
-    id: orderId,
-    order_number: doItem.order_number,
-    customer_id: idx === 0 ? "user-customer-1" : null,
-    customer_name: doItem.customer_name,
-    customer_phone: doItem.customer_phone,
-    agent_id: matchedAgent ? matchedAgent.id : null,
-    referral_code: doItem.referral_code,
-    status: doItem.status,
-    payment_method: doItem.payment_method,
-    payment_status:
-      doItem.status === "delivered" ||
-      doItem.status === "shipped" ||
-      doItem.status === "confirmed" ||
-      doItem.status === "packed"
-        ? "verified"
-        : "pending",
-    transaction_id:
-      doItem.payment_method === "cod" ? null : `TXN-${currentYear}-00${idx + 1}`,
-    subtotal: Math.max(0, doItem.total_amount - cityRate),
-    delivery_charge: cityRate,
-    discount_amount: 0,
-    total_amount: doItem.total_amount,
-    delivery_city: doItem.delivery_city,
-    delivery_address: `Main Boulevard, ${doItem.delivery_city}, Pakistan`,
-    admin_note: null,
-    created_at: `${doItem.created_at}T12:00:00Z`,
-    items: INITIAL_ORDER_ITEMS.filter((i) => i.order_id === orderId),
-  };
-});
-
-const INITIAL_COMMISSIONS: Commission[] = [
-  {
-    id: "comm-1",
-    order_id: "ord-1001",
-    agent_id: "agent-001",
-    amount: 550,
-    status: "paid",
-    admin_note: "Paid via JazzCash",
-    paid_at: `${daysAgo(4)}T14:00:00Z`,
-    created_at: `${daysAgo(5)}T11:20:00Z`,
-  },
-  {
-    id: "comm-2",
-    order_id: "ord-1003",
-    agent_id: "agent-002",
-    amount: 1125,
-    status: "approved",
-    admin_note: "10% referral commission",
-    paid_at: null,
-    created_at: `${daysAgo(2)}T15:45:00Z`,
-  },
-  {
-    id: "comm-3",
-    order_id: "ord-1005",
-    agent_id: "agent-003",
-    amount: 450,
-    status: "pending",
-    admin_note: "Pending delivery completion",
-    paid_at: null,
-    created_at: `${daysAgo(0)}T19:10:00Z`,
-  },
-];
-
-const INITIAL_WITHDRAWALS: WithdrawalRequest[] = [
-  {
-    id: "wd-1",
-    agent_id: "agent-001",
-    amount: 4500,
-    payment_method: "jazzcash",
-    account_details: "JazzCash: 03001234567 — Ali Hassan",
-    status: "pending",
-    paid_at: null,
-    admin_note: null,
-    created_at: `${daysAgo(2)}T18:00:00Z`,
-  },
-  {
-    id: "wd-2",
-    agent_id: "agent-002",
-    amount: 3200,
-    payment_method: "easypaisa",
-    account_details: "EasyPaisa: 03129876543 — Usman Ahmed",
-    status: "pending",
-    paid_at: null,
-    admin_note: null,
-    created_at: `${daysAgo(1)}T10:00:00Z`,
-  },
-];
-
-const INITIAL_DELIVERY_RATES: DeliveryRate[] = demoCityRates.map(
-  (cr, idx) => ({
-    id: `city-${idx + 1}`,
-    city_name: cr.city_name,
-    charge: cr.charge,
-    is_active: true,
-  })
-);
-
-const INITIAL_BANNERS: Banner[] = demoBanners.map((b) => ({
-  id: b.id,
-  title: b.title,
-  title_en: b.title,
-  title_ur: b.title,
-  title_roman_ur: b.title,
-  subtitle: b.subtitle,
-  subtitle_en: b.subtitle,
-  subtitle_ur: b.subtitle,
-  subtitle_roman_ur: b.subtitle,
-  cta_text: b.cta_text,
-  image_url: b.image_url,
-  link_url: b.link_url,
-  cta_link: b.link_url,
-  display_order: b.display_order,
-  is_active: b.is_active,
-  created_at: `${daysAgo(10)}T00:00:00Z`,
-}));
-
+const INITIAL_CATEGORIES: Category[] = [];
+const INITIAL_PRODUCTS: Product[] = [];
+const INITIAL_USERS: User[] = [];
+const INITIAL_ORDER_ITEMS: OrderItem[] = [];
+const INITIAL_ORDERS: Order[] = [];
+const INITIAL_COMMISSIONS: Commission[] = [];
+const INITIAL_WITHDRAWALS: WithdrawalRequest[] = [];
+const INITIAL_DELIVERY_RATES: DeliveryRate[] = [];
+const INITIAL_BANNERS: Banner[] = [];
 const INITIAL_SETTINGS: SiteSettings = {
-  jazzcash_number: demoSiteSettings.jazzcash_number,
-  easypaisa_number: demoSiteSettings.easypaisa_number,
-  bank_name: demoSiteSettings.bank_name,
-  bank_account_title: demoSiteSettings.bank_account_title,
-  bank_iban: demoSiteSettings.bank_iban,
-  whatsapp_number: demoSiteSettings.whatsapp_number,
-  contact_phone: demoSiteSettings.contact_phone,
-  contact_email: demoSiteSettings.contact_email,
-  physical_address: demoSiteSettings.shop_address,
-  shop_address: demoSiteSettings.shop_address,
-  instagram_url: demoSiteSettings.instagram_url,
-  facebook_url: demoSiteSettings.facebook_url,
-  tiktok_url: demoSiteSettings.tiktok_url,
+  jazzcash_number: "",
+  easypaisa_number: "",
+  bank_name: "",
+  bank_account_title: "",
+  bank_iban: "",
+  whatsapp_number: "",
+  contact_phone: "",
+  contact_email: "",
+  physical_address: "",
+  shop_address: "",
+  instagram_url: "",
+  facebook_url: "",
+  tiktok_url: "",
 };
-
-
-const INITIAL_ADDRESSES: SavedAddress[] = [
-  {
-    id: "addr-1",
-    user_id: "user-customer-1",
-    label: "Home (DHA Lahore)",
-    recipient_name: "Saad Ahmed",
-    phone: "0301-7766554",
-    city: "Lahore",
-    address_line: "House 42-B, Block Z, DHA Phase 3, Lahore",
-    is_default: true,
-  },
-  {
-    id: "addr-2",
-    user_id: "user-customer-1",
-    label: "Executive Office (Gulberg)",
-    recipient_name: "Saad Ahmed",
-    phone: "0301-7766554",
-    city: "Lahore",
-    address_line: "Suite 402, Tricon Corporate Centre, Jail Road, Lahore",
-    is_default: false,
-  },
-];
+const INITIAL_ADDRESSES: SavedAddress[] = [];
 
 interface DataState {
   categories: Category[];
@@ -547,6 +173,8 @@ interface DataState {
   updateSiteSettings: (settings: Partial<SiteSettings>) => void;
 }
 
+try { localStorage.removeItem("arts-apparel-data-v8"); } catch {}
+
 const initialCustomerLang = ((): CustomerLanguage => {
   try {
     const saved = localStorage.getItem("rts_customer_lang");
@@ -577,7 +205,7 @@ export const useDataStore = create<DataState>()(
       banners: INITIAL_BANNERS,
       siteSettings: INITIAL_SETTINGS,
       addresses: INITIAL_ADDRESSES,
-      wishlist: ["shirt-001", "jacket-001"],
+      wishlist: [],
       toasts: [],
       language: initialCustomerLang,
       adminLanguage: initialAdminLang,
@@ -1252,7 +880,7 @@ export const useDataStore = create<DataState>()(
       },
     }),
     {
-      name: "arts-apparel-data-v8",
+      name: "arts-apparel-data-v9",
       partialize: (state) => ({
         categories: state.categories,
         products: state.products,
