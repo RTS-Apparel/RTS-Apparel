@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Settings } from "lucide-react";
 import { motion } from "framer-motion";
 import { useDataStore } from "../../store/dataStore";
@@ -14,6 +14,10 @@ export const AdminSiteSettings: React.FC = () => {
   const t = ADMIN_TRANSLATIONS[adminLanguage];
 
   const [form, setForm] = useState(siteSettings);
+
+  useEffect(() => {
+    setForm(siteSettings);
+  }, [siteSettings]);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
