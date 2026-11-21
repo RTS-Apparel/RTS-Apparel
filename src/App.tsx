@@ -637,7 +637,15 @@ export function App() {
 
     const loadAccountData = async () => {
       if (!isSupabaseConfigured || !userId) {
-        useDataStore.setState({ orders: [], orderItems: [] });
+        useDataStore.setState({
+          orders: [],
+          orderItems: [],
+          users: [],
+          commissions: [],
+          withdrawalRequests: [],
+          addresses: [],
+          wishlist: [],
+        });
         return;
       }
 
