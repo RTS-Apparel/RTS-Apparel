@@ -244,8 +244,20 @@ export const AdminBanners: React.FC = () => {
 
           <div className="space-y-1">
             <label htmlFor="bn-image-url" className="text-xs font-medium text-[#1A1A1A]">Or paste direct image URL</label>
-            <input id="bn-image-url" type="url" value={imageUrl} onChange={(e) => { setImageUrl(e.target.value); if (e.target.value.trim()) { setSelectedFile(null); setPreviewUrl(e.target.value.trim()); } }} placeholder="https://example.com/hero-banner.jpg" className="w-full h-10 px-3 rounded-[6px] bg-white border border-[#E0E0E0] text-xs font-mono" />
-            <p className="text-[11px] text-[#666666]">Upload a file OR paste a direct public image URL.</p>
+            <input id="bn-image-url" type="url" value={imageUrl} onChange={(e) => { setImageUrl(e.target.value); if (e.target.value.trim()) { setSelectedFile(null); setPreviewUrl(e.target.value.trim()); } }} placeholder="https://example.com/hero-banner.jpg" className="w-full h-11 px-3 rounded-[6px] bg-white border border-[#B8B8B8] text-sm font-mono text-[#111111] placeholder:text-[#777777] focus:outline-none focus:ring-2 focus:ring-[#E63946] focus:border-[#E63946] selection:bg-[#FADADD] selection:text-[#111111]" />
+            <p className="text-[11px] text-[#555555]">Upload a file OR paste a direct public image URL.</p>
+            {previewUrl && (
+              <div className="mt-3 rounded-[8px] border border-[#D0D0D0] bg-[#F5F5F5] p-3 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-semibold text-[#1A1A1A]">Image Preview</span>
+                  <span className="text-[10px] text-[#555555]">URL image</span>
+                </div>
+                <div className="w-full max-w-xl aspect-[16/9] rounded-md overflow-hidden bg-white border border-[#D0D0D0]">
+                  <img src={previewUrl} alt="Banner URL preview" className="w-full h-full object-contain" onError={() => addToast("Image preview load nahi hui. Direct public image URL check karein.", "error")} />
+                </div>
+                <p className="text-[10px] text-[#444444] break-all">{imageUrl}</p>
+              </div>
+            )}
           </div>
           <div className="flex items-center justify-end">
             <button
