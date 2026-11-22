@@ -10,10 +10,6 @@ import { pageVariants } from "../../lib/animations";
 
 export const AdminBanners: React.FC = () => {
   const banners = useDataStore((s) => s.banners);
-  const addBanner = useDataStore((s) => s.addBanner);
-  const updateBanner = useDataStore((s) => s.updateBanner);
-  const reorderBanner = useDataStore((s) => s.reorderBanner);
-  const deleteBanner = useDataStore((s) => s.deleteBanner);
   const addToast = useDataStore((s) => s.addToast);
 
   const [titleEn, setTitleEn] = useState("");
