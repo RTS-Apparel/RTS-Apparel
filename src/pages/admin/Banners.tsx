@@ -15,6 +15,7 @@ export const AdminBanners: React.FC = () => {
   const [titleEn, setTitleEn] = useState("");
   const [titleUr, setTitleUr] = useState("");
   const [linkUrl, setLinkUrl] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [uploading, setUploading] = useState(false);
@@ -38,8 +39,8 @@ export const AdminBanners: React.FC = () => {
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!titleEn.trim() || !selectedFile) {
-      addToast("Please add a banner image before saving", "error");
+    if (!titleEn.trim() || (!selectedFile && !imageUrl.trim())) {
+      addToast("Please upload an image or paste an image URL", "error");
       return;
     }
 
@@ -54,15 +55,18 @@ export const AdminBanners: React.FC = () => {
 
     let uploadedPath = "";
     try {
-      const cleanName = selectedFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-      uploadedPath = `banners/${Date.now()}_${cleanName}`;
-      const { error: uploadError } = await supabase.storage
-        .from("banners")
-        .upload(uploadedPath, selectedFile, { cacheControl: "3600", upsert: false });
-      if (uploadError) throw uploadError;
-
-      const { data: urlData } = supabase.storage.from("banners").getPublicUrl(uploadedPath);
-      finalImageUrl = urlData.publicUrl;
+      if (imageUrl.trim()) {
+        const parsed = new URL(imageUrl.trim());
+        if (!["http:", "https:"].includes(parsed.protocol)) throw new Error("Use a valid https image URL");
+        finalImageUrl = imageUrl.trim();
+      } else if (selectedFile) {
+        const cleanName = selectedFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        uploadedPath = "banners/" + Date.now() + "_" + cleanName;
+        const { error: uploadError } = await supabase.storage.from("banners").upload(uploadedPath, selectedFile, { cacheControl: "3600", upsert: false });
+        if (uploadError) throw uploadError;
+        const { data: urlData } = supabase.storage.from("banners").getPublicUrl(uploadedPath);
+        finalImageUrl = urlData.publicUrl;
+      }
       if (!finalImageUrl) throw new Error("Banner image URL could not be created");
 
       const { data: savedBanner, error: insertError } = await supabase
@@ -87,6 +91,7 @@ export const AdminBanners: React.FC = () => {
       setLinkUrl("");
       setSelectedFile(null);
       setPreviewUrl("");
+      setImageUrl("");
     } catch (error) {
       if (uploadedPath) {
         await supabase.storage.from("banners").remove([uploadedPath]).catch(() => undefined);
@@ -173,7 +178,7 @@ export const AdminBanners: React.FC = () => {
           onSubmit={handleAdd}
           className="rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] p-5 space-y-4 shadow-xs"
         >
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
             <div className="space-y-1">
               <label htmlFor="bn-en" className="text-xs font-medium text-[#1A1A1A]">
                 Banner Headline (EN) *
@@ -237,6 +242,11 @@ export const AdminBanners: React.FC = () => {
             </div>
           </div>
 
+          <div className="space-y-1">
+            <label htmlFor="bn-image-url" className="text-xs font-medium text-[#1A1A1A]">Or paste direct image URL</label>
+            <input id="bn-image-url" type="url" value={imageUrl} onChange={(e) => { setImageUrl(e.target.value); if (e.target.value.trim()) { setSelectedFile(null); setPreviewUrl(e.target.value.trim()); } }} placeholder="https://example.com/hero-banner.jpg" className="w-full h-10 px-3 rounded-[6px] bg-white border border-[#E0E0E0] text-xs font-mono" />
+            <p className="text-[11px] text-[#666666]">Upload a file OR paste a direct public image URL.</p>
+          </div>
           <div className="flex items-center justify-end">
             <button
               type="submit"
