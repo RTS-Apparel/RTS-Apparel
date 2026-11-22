@@ -50,45 +50,105 @@ export const AdminBanners: React.FC = () => {
     setUploading(true);
     let finalImageUrl = "";
 
-    if (selectedFile && isSupabaseConfigured) {
-      try {
-        const cleanName = selectedFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-        const path = `banners/${Date.now()}_${cleanName}`;
-        const { error } = await supabase.storage
-          .from("banners")
-          .upload(path, selectedFile, { cacheControl: "3600", upsert: false });
-
-        if (error) throw error;
-        const { data } = supabase.storage.from("banners").getPublicUrl(path);
-        if (!data?.publicUrl) throw new Error("Banner image URL could not be created");
-        finalImageUrl = data.publicUrl;
-      } catch (error) {
-        addToast("Banner image upload failed", "error", error instanceof Error ? error.message : undefined);
-        setUploading(false);
-        return;
-      }
-    }
-
-    if (!finalImageUrl) {
-      addToast("Banner image could not be saved. Please upload it again.", "error");
+    if (!isSupabaseConfigured) {
+      addToast("Supabase backend is not configured", "error");
       setUploading(false);
       return;
     }
 
-    addBanner({
-      title_en: titleEn.trim(),
-      title_ur: titleUr.trim(),
-      subtitle_en: "",
-      image_url: finalImageUrl,
-      link_url: linkUrl.trim() || null,
-      display_order: banners.length + 1,
-      is_active: true,
-    });
-    setTitleEn("");
-    setTitleUr("");
-    setSelectedFile(null);
-    setPreviewUrl("");
-    setUploading(false);
+    let uploadedPath = "";
+    try {
+      const cleanName = selectedFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      uploadedPath = `banners/${Date.now()}_${cleanName}`;
+      const { error: uploadError } = await supabase.storage
+        .from("banners")
+        .upload(uploadedPath, selectedFile, { cacheControl: "3600", upsert: false });
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage.from("banners").getPublicUrl(uploadedPath);
+      finalImageUrl = urlData.publicUrl;
+      if (!finalImageUrl) throw new Error("Banner image URL could not be created");
+
+      const { data: savedBanner, error: insertError } = await supabase
+        .from("banners")
+        .insert({
+          title_en: titleEn.trim(),
+          title_ur: titleUr.trim(),
+          subtitle_en: "",
+          image_url: finalImageUrl,
+          link_url: linkUrl.trim() || null,
+          display_order: banners.length + 1,
+          is_active: true,
+        })
+        .select("*")
+        .single();
+
+      if (insertError) throw insertError;
+      useDataStore.setState((state) => ({ banners: [...state.banners, savedBanner] }));
+      addToast("Homepage hero banner saved successfully");
+      setTitleEn("");
+      setTitleUr("");
+      setLinkUrl("");
+      setSelectedFile(null);
+      setPreviewUrl("");
+    } catch (error) {
+      if (uploadedPath) {
+        await supabase.storage.from("banners").remove([uploadedPath]).catch(() => undefined);
+      }
+      addToast(
+        "Banner could not be saved",
+        "error",
+        error instanceof Error ? error.message : "Please try again"
+      );
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleToggle = async (id: string, isActive: boolean) => {
+    const { error } = await supabase.from("banners").update({ is_active: !isActive }).eq("id", id);
+    if (error) {
+      addToast("Banner status could not be updated", "error", error.message);
+      return;
+    }
+    useDataStore.setState((state) => ({
+      banners: state.banners.map((banner) => banner.id === id ? { ...banner, is_active: !isActive } : banner),
+    }));
+  };
+
+  const handleReorder = async (id: string, direction: "up" | "down") => {
+    const ordered = [...useDataStore.getState().banners].sort((a, b) => a.display_order - b.display_order);
+    const index = ordered.findIndex((banner) => banner.id === id);
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (index < 0 || targetIndex < 0 || targetIndex >= ordered.length) return;
+    const current = ordered[index];
+    const target = ordered[targetIndex];
+    const results = await Promise.all([
+      supabase.from("banners").update({ display_order: target.display_order }).eq("id", current.id),
+      supabase.from("banners").update({ display_order: current.display_order }).eq("id", target.id),
+    ]);
+    const failed = results.find((result) => result.error);
+    if (failed?.error) {
+      addToast("Banner order could not be saved", "error", failed.error.message);
+      return;
+    }
+    useDataStore.setState((state) => ({
+      banners: state.banners.map((banner) => banner.id === current.id
+        ? { ...banner, display_order: target.display_order }
+        : banner.id === target.id
+          ? { ...banner, display_order: current.display_order }
+          : banner),
+    }));
+  };
+
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from("banners").delete().eq("id", id);
+    if (error) {
+      addToast("Banner could not be deleted", "error", error.message);
+      return;
+    }
+    useDataStore.setState((state) => ({ banners: state.banners.filter((banner) => banner.id !== id) }));
+    addToast("Banner deleted", "info");
   };
 
   return (
@@ -223,7 +283,7 @@ export const AdminBanners: React.FC = () => {
                 <div className="flex items-center gap-1.5">
                   <button
                     type="button"
-                    onClick={() => reorderBanner(ban.id, "up")}
+                    onClick={() => void handleReorder(ban.id, "up")}
                     aria-label={`Move ${ban.title_en} up`}
                     className="p-1.5 rounded bg-[#F5F5F5] border border-[#E0E0E0] text-[#1A1A1A] hover:border-[#E63946] hover:text-[#E63946]"
                   >
@@ -231,7 +291,7 @@ export const AdminBanners: React.FC = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => reorderBanner(ban.id, "down")}
+                    onClick={() => void handleReorder(ban.id, "down")}
                     aria-label={`Move ${ban.title_en} down`}
                     className="p-1.5 rounded bg-[#F5F5F5] border border-[#E0E0E0] text-[#1A1A1A] hover:border-[#E63946] hover:text-[#E63946]"
                   >
@@ -239,9 +299,7 @@ export const AdminBanners: React.FC = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() =>
-                      updateBanner(ban.id, { is_active: !ban.is_active })
-                    }
+                    onClick={() => void handleToggle(ban.id, ban.is_active)}
                     className={`px-3 py-1 rounded-full text-xs font-bold ${
                       ban.is_active
                         ? "bg-[#D4EDDA] text-[#155724]"
@@ -252,7 +310,7 @@ export const AdminBanners: React.FC = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => deleteBanner(ban.id)}
+                    onClick={() => void handleDelete(ban.id)}
                     aria-label="Delete banner"
                     className="p-1.5 rounded bg-[#C1121F] text-[#FFFFFF] hover:bg-[#E63946]"
                   >
