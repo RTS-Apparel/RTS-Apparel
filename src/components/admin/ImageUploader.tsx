@@ -430,22 +430,33 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
       )}
 
       {/* Optional Direct URL Input */}
-      <div className="flex gap-2">
-        <input
-          type="text"
-          value={customUrl}
-          onChange={(e) => setCustomUrl(e.target.value)}
-          placeholder="Or paste direct image URL (https://...)"
-          className="flex-1 h-9 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] px-3 text-xs text-[#1A1A1A] focus:border-2 focus:border-[#E63946] focus:outline-none placeholder:text-[#999999]"
-        />
-        <button
-          type="button"
-          onClick={() => addImage(customUrl)}
-          className="px-4 h-9 rounded-[6px] bg-[#E63946] text-[#FFFFFF] text-xs font-semibold flex items-center gap-1.5 hover:bg-[#C1121F] transition-colors"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>Add URL</span>
-        </button>
+      <div className="rounded-[8px] border border-[#D0D0D0] bg-[#F5F5F5] p-3 space-y-2">
+        <label htmlFor="product-image-url" className="block text-xs font-semibold text-[#1A1A1A]">Add image using direct URL</label>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <input
+            id="product-image-url"
+            type="url"
+            value={customUrl}
+            onChange={(e) => setCustomUrl(e.target.value)}
+            placeholder="Paste direct image URL (https://...)"
+            className="flex-1 min-w-0 h-11 rounded-[6px] bg-white border border-[#AFAFAF] px-3 text-sm font-mono text-[#111111] placeholder:text-[#777777] focus:border-[#E63946] focus:ring-2 focus:ring-[#E63946] focus:outline-none selection:bg-[#FADADD]"
+          />
+          <button
+            type="button"
+            onClick={() => addImage(customUrl)}
+            className="px-4 h-11 rounded-[6px] bg-[#E63946] text-white text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-[#C1121F] transition-colors"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Add URL</span>
+          </button>
+        </div>
+        {customUrl.trim() && (
+          <div className="rounded-[6px] border border-[#D0D0D0] bg-white p-2 space-y-2">
+            <p className="text-[11px] font-semibold text-[#333333]">URL image preview</p>
+            <img src={customUrl.trim()} alt="Pasted product image preview" className="w-40 h-40 object-contain rounded bg-[#F5F5F5]" onError={(e) => { e.currentTarget.style.display = "none"; }} />
+            <p className="text-[10px] text-[#444444] break-all">{customUrl}</p>
+          </div>
+        )}
       </div>
 
     </div>
