@@ -10,6 +10,7 @@ import {
   Globe,
   Heart,
   ArrowLeft,
+  Facebook,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDataStore } from "../../store/dataStore";
@@ -23,6 +24,8 @@ import { BrandLogo } from "../common/BrandLogo";
 export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) => {
   const categories = useDataStore((s) => s.categories);
   const whatsappNumber = useDataStore((s) => s.siteSettings.whatsapp_number);
+  const facebookUrl = useDataStore((s) => s.siteSettings.facebook_url);
+  const tiktokUrl = useDataStore((s) => s.siteSettings.tiktok_url);
   const language = useDataStore((s) => s.language);
   const setLanguage = useDataStore((s) => s.setLanguage);
   const wishlist = useDataStore((s) => s.wishlist);
@@ -147,7 +150,7 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
       </div>
 
       {/* Main Navigation Row */}
-      <div className="relative max-w-7xl mx-auto w-full min-w-0 px-2 sm:px-4 lg:px-6 h-[68px] sm:h-24 lg:h-40 flex items-center justify-between gap-1.5 sm:gap-3 bg-[#FFFFFF]">
+      <div className="relative max-w-7xl mx-auto w-full min-w-0 px-2 sm:px-4 lg:px-6 h-[68px] sm:h-24 lg:h-24 flex items-center justify-between gap-1.5 sm:gap-3 bg-[#FFFFFF]">
         <div className="flex min-w-0 items-center gap-1 sm:gap-3 shrink-0">
           <button
             type="button"
@@ -192,69 +195,17 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
           </div>
         </div>
 
-        {/* Desktop Category Links */}
-        <nav className="hidden lg:flex min-w-0 items-center gap-1 shrink">
-          <Link
-            to="/"
-            className={`text-xs uppercase tracking-[0.12em] px-3 py-2 rounded-[6px] font-semibold transition-colors ${
-              location.pathname === "/"
-                ? "bg-[#E63946] text-[#FFFFFF]"
-                : "text-[#1A1A1A] hover:text-[#E63946]"
-            }`}
-          >
-            <span>{t.home}</span>
-          </Link>
-
-          {activeCategories.map((cat) => {
-            const active = location.pathname === `/category/${cat.slug}`;
-            const catName = getCategoryName(cat, language);
-            return (
-              <Link
-                key={cat.id}
-                to={`/category/${cat.slug}`}
-                className={`inline-flex items-center gap-2 whitespace-nowrap text-xs uppercase tracking-[0.12em] px-3 py-2 rounded-[6px] font-semibold transition-colors ${
-                  active
-                    ? "bg-[#E63946] text-[#FFFFFF]"
-                    : "text-[#1A1A1A] hover:text-[#E63946]"
-                }`}
-              >
-                <CategoryIcon name={catName} slug={cat.slug} size="sm" animated={false} className="!h-6 !w-6 rounded-md" />
-                <span>{catName}</span>
-              </Link>
-            );
-          })}
-
-          <Link
-            to="/track"
-            className={`text-xs uppercase tracking-[0.12em] px-3 py-2 rounded-[6px] flex items-center gap-1.5 font-semibold transition-colors ${
-              location.pathname === "/track"
-                ? "bg-[#E63946] text-[#FFFFFF]"
-                : "text-[#1A1A1A] hover:text-[#E63946]"
-            }`}
-          >
-            <Truck
-              className={`w-3.5 h-3.5 ${
-                location.pathname === "/track"
-                  ? "text-[#FFFFFF]"
-                  : "text-[#E63946]"
-              }`}
-            />
-            <span>{t.orderTracking}</span>
-          </Link>
-        </nav>
-
-        {/* Actions */}
-        <div className="flex min-w-0 shrink-0 items-center gap-0.5 sm:gap-2.5">
-          <form
+        {/* Header actions */}
+        <div className="flex min-w-0 shrink-0 items-center gap-0.5 sm:gap-2.5">          <form
             onSubmit={handleSearch}
-            className="hidden md:flex items-center relative lg:absolute lg:top-2 lg:right-[180px] lg:z-10"
+            className="hidden md:flex items-center relative shrink min-w-0"
           >
             <input
               type="text"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               placeholder={t.searchPlaceholder}
-              className="bg-[#FFFFFF] border border-[#E0E0E0] rounded-[6px] focus:border-2 focus:border-[#E63946] text-xs text-[#1A1A1A] px-3 py-2 pr-8 w-44 lg:w-52 focus:outline-none transition-colors placeholder:text-[#999999]"
+              className="bg-[#FFFFFF] border border-[#E0E0E0] rounded-[6px] focus:border-2 focus:border-[#E63946] text-xs text-[#1A1A1A] px-3 py-2 pr-8 w-44 lg:w-56 focus:outline-none transition-colors placeholder:text-[#999999]"
             />
             <motion.button
               type="submit"
@@ -266,7 +217,18 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
               <Search size={18} />
             </motion.button>
           </form>
-
+          {facebookUrl && (
+            <a href={facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="Facebook" title="Facebook" className="inline-flex p-2 text-[#1877F2] hover:opacity-75 transition-opacity">
+              <Facebook size={20} />
+            </a>
+          )}
+          {tiktokUrl && (
+            <a href={tiktokUrl} target="_blank" rel="noopener noreferrer" aria-label="TikTok" title="TikTok" className="inline-flex p-2 text-[#111111] hover:text-[#E63946] transition-colors">
+              <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5" fill="currentColor">
+                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.56v13.67a2.9 2.9 0 0 1-2.9 2.75 2.9 2.9 0 1 1 2.9-2.9c0-.2-.02-.4-.05-.59V11.3a6.45 6.45 0 1 0 3.61 5.8V9.94a8.35 8.35 0 0 0 4.88 1.57V7.95a4.84 4.84 0 0 1-1.11-.13Z"/>
+              </svg>
+            </a>
+          )}
           <motion.div
             whileHover={{ scale: 1.15 }}
             whileTap={{ scale: 0.9 }}
@@ -294,30 +256,6 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
               </AnimatePresence>
             </Link>
           </motion.div>
-
-          {user && user.role !== "admin" ? (
-            <div className="flex items-center gap-1.5">
-              <Link
-                to="/account"
-                className="p-2 text-[#1A1A1A] hover:text-[#E63946] transition-colors flex items-center gap-1.5 text-xs"
-                title={user.full_name}
-              >
-                <User size={20} className="text-[#1A1A1A]" />
-                <span className="hidden xl:inline max-w-[100px] truncate text-[#1A1A1A] font-semibold">
-                  {user.full_name}
-                </span>
-              </Link>
-              <button
-                type="button"
-                onClick={() => logout()}
-                className="p-2 text-[#666666] hover:text-[#E63946] transition-colors"
-                title={t.signOut}
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </div>
-          ) : null}
-
           <motion.button
             type="button"
             onClick={() => setDrawerOpen(true)}
@@ -349,6 +287,61 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
             </AnimatePresence>
           </motion.button>
         </div>
+      </div>
+
+      {/* Separate category navigation row below the main header */}
+      <div className="hidden lg:block border-t border-[#EEEEEE] bg-white">
+        <nav className="max-w-7xl mx-auto flex min-w-0 items-center justify-center gap-1 overflow-x-auto px-4 py-2">
+          <nav className="hidden lg:flex min-w-0 items-center gap-1 shrink">
+                    <Link
+                      to="/"
+                      className={`text-xs uppercase tracking-[0.12em] px-3 py-2 rounded-[6px] font-semibold transition-colors ${
+                        location.pathname === "/"
+                          ? "bg-[#E63946] text-[#FFFFFF]"
+                          : "text-[#1A1A1A] hover:text-[#E63946]"
+                      }`}
+                    >
+                      <span>{t.home}</span>
+                    </Link>
+          
+                    {activeCategories.map((cat) => {
+                      const active = location.pathname === `/category/${cat.slug}`;
+                      const catName = getCategoryName(cat, language);
+                      return (
+                        <Link
+                          key={cat.id}
+                          to={`/category/${cat.slug}`}
+                          className={`inline-flex items-center gap-2 whitespace-nowrap text-xs uppercase tracking-[0.12em] px-3 py-2 rounded-[6px] font-semibold transition-colors ${
+                            active
+                              ? "bg-[#E63946] text-[#FFFFFF]"
+                              : "text-[#1A1A1A] hover:text-[#E63946]"
+                          }`}
+                        >
+                          <CategoryIcon name={catName} slug={cat.slug} size="sm" animated={false} className="!h-6 !w-6 rounded-md" />
+                          <span>{catName}</span>
+                        </Link>
+                      );
+                    })}
+          
+                    <Link
+                      to="/track"
+                      className={`text-xs uppercase tracking-[0.12em] px-3 py-2 rounded-[6px] flex items-center gap-1.5 font-semibold transition-colors ${
+                        location.pathname === "/track"
+                          ? "bg-[#E63946] text-[#FFFFFF]"
+                          : "text-[#1A1A1A] hover:text-[#E63946]"
+                      }`}
+                    >
+                      <Truck
+                        className={`w-3.5 h-3.5 ${
+                          location.pathname === "/track"
+                            ? "text-[#FFFFFF]"
+                            : "text-[#E63946]"
+                        }`}
+                      />
+                      <span>{t.orderTracking}</span>
+                    </Link>
+                  </nav>
+        </nav>
       </div>
 
     </motion.header>
