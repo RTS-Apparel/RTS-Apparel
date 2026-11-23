@@ -286,7 +286,9 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
         </div>
       </div>
 
-      {/* Separate category navigation row below the main header */}
+    </motion.header>
+
+      {/* Category navigation is outside the sticky main header */}
       <div className="hidden lg:block border-t border-[#EEEEEE] bg-white">
         <nav className="max-w-7xl mx-auto flex min-w-0 items-center justify-center gap-1 overflow-x-auto px-4 py-2">
                     <Link
@@ -339,8 +341,7 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
         </nav>
       </div>
 
-    </motion.header>
-  );
+
 };
 
 export default Navbar;
