@@ -16,54 +16,74 @@ import { useProducts } from "./hooks/useProducts";
 import { supabase, isSupabaseConfigured } from "./lib/supabase";
 import type { Order, OrderItem, User, Commission as CommissionRecord, WithdrawalRequest } from "./types";
 
-const Home = React.lazy(() => import("./pages/Home"));
-const Category = React.lazy(() => import("./pages/Category"));
-const ProductDetail = React.lazy(() => import("./pages/ProductDetail"));
-const Cart = React.lazy(() => import("./pages/Cart"));
-const Checkout = React.lazy(() => import("./pages/Checkout"));
-const OrderConfirmation = React.lazy(() => import("./pages/OrderConfirmation"));
-const TrackOrder = React.lazy(() => import("./pages/TrackOrder"));
-const Search = React.lazy(() => import("./pages/Search"));
-const About = React.lazy(() => import("./pages/About"));
-const Contact = React.lazy(() => import("./pages/Contact"));
-const NotFound = React.lazy(() => import("./pages/NotFound"));
-const AgentApply = React.lazy(() => import("./pages/AgentApply"));
-const ChatPage = React.lazy(() => import("./pages/ChatPage"));
+// Recover automatically when a tab holds an outdated Vite chunk URL after deployment.
+const lazyWithChunkRecovery = <T extends React.ComponentType<any>>(
+  importer: () => Promise<{ default: T }>
+) =>
+  React.lazy(async () => {
+    try {
+      const module = await importer();
+      sessionStorage.removeItem("rts-chunk-reload-attempted");
+      return module;
+    } catch (error) {
+      const alreadyRetried = sessionStorage.getItem("rts-chunk-reload-attempted");
+      if (!alreadyRetried) {
+        sessionStorage.setItem("rts-chunk-reload-attempted", "1");
+        window.location.reload();
+        return new Promise<{ default: T }>(() => undefined);
+      }
+      throw error;
+    }
+  });
 
-const Login = React.lazy(() => import("./pages/auth/Login"));
-const Signup = React.lazy(() => import("./pages/auth/Signup"));
-const PendingApproval = React.lazy(() => import("./pages/auth/PendingApproval"));
+const Home = lazyWithChunkRecovery(() => import("./pages/Home"));
+const Category = lazyWithChunkRecovery(() => import("./pages/Category"));
+const ProductDetail = lazyWithChunkRecovery(() => import("./pages/ProductDetail"));
+const Cart = lazyWithChunkRecovery(() => import("./pages/Cart"));
+const Checkout = lazyWithChunkRecovery(() => import("./pages/Checkout"));
+const OrderConfirmation = lazyWithChunkRecovery(() => import("./pages/OrderConfirmation"));
+const TrackOrder = lazyWithChunkRecovery(() => import("./pages/TrackOrder"));
+const Search = lazyWithChunkRecovery(() => import("./pages/Search"));
+const About = lazyWithChunkRecovery(() => import("./pages/About"));
+const Contact = lazyWithChunkRecovery(() => import("./pages/Contact"));
+const NotFound = lazyWithChunkRecovery(() => import("./pages/NotFound"));
+const AgentApply = lazyWithChunkRecovery(() => import("./pages/AgentApply"));
+const ChatPage = lazyWithChunkRecovery(() => import("./pages/ChatPage"));
 
-const AccountDashboard = React.lazy(() => import("./pages/account/Dashboard"));
-const AccountOrders = React.lazy(() => import("./pages/account/Orders"));
-const AccountOrderDetail = React.lazy(() => import("./pages/account/OrderDetail"));
-const AccountProfile = React.lazy(() => import("./pages/account/Profile"));
-const AccountAddresses = React.lazy(() => import("./pages/account/Addresses"));
-const AccountWishlist = React.lazy(() => import("./pages/account/Wishlist"));
+const Login = lazyWithChunkRecovery(() => import("./pages/auth/Login"));
+const Signup = lazyWithChunkRecovery(() => import("./pages/auth/Signup"));
+const PendingApproval = lazyWithChunkRecovery(() => import("./pages/auth/PendingApproval"));
 
-const TeamLogin = React.lazy(() => import("./pages/team/TeamLogin"));
-const TeamDashboard = React.lazy(() => import("./pages/team/TeamDashboard"));
-const MyReferrals = React.lazy(() => import("./pages/team/MyReferrals"));
-const Commission = React.lazy(() => import("./pages/team/Commission"));
-const Withdrawal = React.lazy(() => import("./pages/team/Withdrawal"));
-const TeamProfile = React.lazy(() => import("./pages/team/TeamProfile"));
+const AccountDashboard = lazyWithChunkRecovery(() => import("./pages/account/Dashboard"));
+const AccountOrders = lazyWithChunkRecovery(() => import("./pages/account/Orders"));
+const AccountOrderDetail = lazyWithChunkRecovery(() => import("./pages/account/OrderDetail"));
+const AccountProfile = lazyWithChunkRecovery(() => import("./pages/account/Profile"));
+const AccountAddresses = lazyWithChunkRecovery(() => import("./pages/account/Addresses"));
+const AccountWishlist = lazyWithChunkRecovery(() => import("./pages/account/Wishlist"));
 
-const AdminLogin = React.lazy(() => import("./pages/admin/AdminLogin"));
-const AdminDashboard = React.lazy(() => import("./pages/admin/AdminDashboard"));
-const AdminProducts = React.lazy(() => import("./pages/admin/Products"));
-const AdminProductForm = React.lazy(() => import("./pages/admin/ProductForm"));
-const AdminCategories = React.lazy(() => import("./pages/admin/Categories"));
-const AdminOrders = React.lazy(() => import("./pages/admin/Orders"));
-const AdminOrderDetail = React.lazy(() => import("./pages/admin/OrderDetail"));
-const AdminCustomers = React.lazy(() => import("./pages/admin/Customers"));
-const AdminDiscounts = React.lazy(() => import("./pages/admin/Discounts"));
-const AdminTeamMembers = React.lazy(() => import("./pages/admin/TeamMembers"));
-const AdminCommissions = React.lazy(() => import("./pages/admin/Commissions"));
-const AdminWithdrawals = React.lazy(() => import("./pages/admin/Withdrawals"));
-const AdminDeliveryRates = React.lazy(() => import("./pages/admin/DeliveryRates"));
-const AdminBanners = React.lazy(() => import("./pages/admin/Banners"));
-const AdminReports = React.lazy(() => import("./pages/admin/Reports"));
-const AdminSiteSettings = React.lazy(() => import("./pages/admin/SiteSettings"));
+const TeamLogin = lazyWithChunkRecovery(() => import("./pages/team/TeamLogin"));
+const TeamDashboard = lazyWithChunkRecovery(() => import("./pages/team/TeamDashboard"));
+const MyReferrals = lazyWithChunkRecovery(() => import("./pages/team/MyReferrals"));
+const Commission = lazyWithChunkRecovery(() => import("./pages/team/Commission"));
+const Withdrawal = lazyWithChunkRecovery(() => import("./pages/team/Withdrawal"));
+const TeamProfile = lazyWithChunkRecovery(() => import("./pages/team/TeamProfile"));
+
+const AdminLogin = lazyWithChunkRecovery(() => import("./pages/admin/AdminLogin"));
+const AdminDashboard = lazyWithChunkRecovery(() => import("./pages/admin/AdminDashboard"));
+const AdminProducts = lazyWithChunkRecovery(() => import("./pages/admin/Products"));
+const AdminProductForm = lazyWithChunkRecovery(() => import("./pages/admin/ProductForm"));
+const AdminCategories = lazyWithChunkRecovery(() => import("./pages/admin/Categories"));
+const AdminOrders = lazyWithChunkRecovery(() => import("./pages/admin/Orders"));
+const AdminOrderDetail = lazyWithChunkRecovery(() => import("./pages/admin/OrderDetail"));
+const AdminCustomers = lazyWithChunkRecovery(() => import("./pages/admin/Customers"));
+const AdminDiscounts = lazyWithChunkRecovery(() => import("./pages/admin/Discounts"));
+const AdminTeamMembers = lazyWithChunkRecovery(() => import("./pages/admin/TeamMembers"));
+const AdminCommissions = lazyWithChunkRecovery(() => import("./pages/admin/Commissions"));
+const AdminWithdrawals = lazyWithChunkRecovery(() => import("./pages/admin/Withdrawals"));
+const AdminDeliveryRates = lazyWithChunkRecovery(() => import("./pages/admin/DeliveryRates"));
+const AdminBanners = lazyWithChunkRecovery(() => import("./pages/admin/Banners"));
+const AdminReports = lazyWithChunkRecovery(() => import("./pages/admin/Reports"));
+const AdminSiteSettings = lazyWithChunkRecovery(() => import("./pages/admin/SiteSettings"));
 
 const PageMotion: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <motion.div
