@@ -125,7 +125,7 @@ export const AdminProductForm: React.FC = () => {
       .map((c) => c.trim())
       .filter(Boolean);
 
-    const finalImages = uploadedUrls.slice(0, 6);
+    const finalImages = uploadedUrls.slice(0, 12);
     if (!categoryId || finalImages.length === 0) {
       addToast("Please select a category and add at least one real product image", "error");
       return;
@@ -367,7 +367,7 @@ export const AdminProductForm: React.FC = () => {
             onImagesChange={setImages}
             pendingFiles={pendingFiles}
             onPendingFilesChange={setPendingFiles}
-            maxImages={6}
+            maxImages={12}
           />
 
           {uploadErrors.length > 0 && (
