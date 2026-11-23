@@ -147,7 +147,7 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
       </div>
 
       {/* Main Navigation Row */}
-      <div className="max-w-7xl mx-auto w-full min-w-0 px-2 sm:px-4 lg:px-6 h-[68px] sm:h-24 lg:h-40 flex items-center justify-between gap-1.5 sm:gap-3 bg-[#FFFFFF]">
+      <div className="relative max-w-7xl mx-auto w-full min-w-0 px-2 sm:px-4 lg:px-6 h-[68px] sm:h-24 lg:h-40 flex items-center justify-between gap-1.5 sm:gap-3 bg-[#FFFFFF]">
         <div className="flex min-w-0 items-center gap-1 sm:gap-3 shrink-0">
           <button
             type="button"
@@ -247,7 +247,7 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
         <div className="flex min-w-0 shrink-0 items-center gap-0.5 sm:gap-2.5">
           <form
             onSubmit={handleSearch}
-            className="hidden md:flex items-center relative"
+            className="hidden md:flex items-center relative lg:absolute lg:top-2 lg:right-[180px] lg:z-10"
           >
             <input
               type="text"
