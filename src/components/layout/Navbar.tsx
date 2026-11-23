@@ -85,6 +85,7 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
       : "Nationwide Delivery Across Pakistan · Cash on Delivery, JazzCash & EasyPaisa";
 
   return (
+    <>
     <motion.header
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
@@ -340,8 +341,8 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
                     </Link>
         </nav>
       </div>
-
-
+    </>
+  );
 };
 
 export default Navbar;
