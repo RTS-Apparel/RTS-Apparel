@@ -3,10 +3,8 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   ShoppingCart,
   Search,
-  User,
   Menu,
   Truck,
-  LogOut,
   Globe,
   Heart,
   ArrowLeft,
@@ -30,7 +28,6 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
   const setLanguage = useDataStore((s) => s.setLanguage);
   const wishlist = useDataStore((s) => s.wishlist);
 
-  const { user, logout } = useAuth();
   const { totalCount, setDrawerOpen } = useCart();
 
   const [searchText, setSearchText] = useState("");
@@ -196,7 +193,8 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
         </div>
 
         {/* Header actions */}
-        <div className="flex min-w-0 shrink-0 items-center gap-0.5 sm:gap-2.5">          <form
+        <div className="flex min-w-0 shrink-0 items-center gap-0.5 sm:gap-2.5">
+          <form
             onSubmit={handleSearch}
             className="hidden md:flex items-center relative shrink min-w-0"
           >
@@ -292,7 +290,6 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
       {/* Separate category navigation row below the main header */}
       <div className="hidden lg:block border-t border-[#EEEEEE] bg-white">
         <nav className="max-w-7xl mx-auto flex min-w-0 items-center justify-center gap-1 overflow-x-auto px-4 py-2">
-          <nav className="hidden lg:flex min-w-0 items-center gap-1 shrink">
                     <Link
                       to="/"
                       className={`text-xs uppercase tracking-[0.12em] px-3 py-2 rounded-[6px] font-semibold transition-colors ${
