@@ -43,7 +43,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
   onChange,
   pendingFiles = [],
   onPendingFilesChange,
-  maxImages = 6,
+  maxImages = 12,
   productId = "draft",
 }) => {
   const updateImages = (next: string[]) => {
