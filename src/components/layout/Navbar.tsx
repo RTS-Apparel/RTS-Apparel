@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDataStore } from "../../store/dataStore";
-import { useAuth } from "../../hooks/useAuth";
 import { useCart } from "../../hooks/useCart";
 import { CUSTOMER_TRANSLATIONS, getCategoryName } from "../../lib/i18n";
 import { CustomerLanguage } from "../../types";
@@ -337,7 +336,6 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
                       />
                       <span>{t.orderTracking}</span>
                     </Link>
-                  </nav>
         </nav>
       </div>
 
