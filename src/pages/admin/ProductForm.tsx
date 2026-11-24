@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, Loader2, Shirt } from "lucide-react";
 import { motion } from "framer-motion";
@@ -64,6 +64,16 @@ export const AdminProductForm: React.FC = () => {
   const [isActive, setIsActive] = useState(existing?.is_active ?? true);
   const [isFeatured, setIsFeatured] = useState(existing?.is_featured ?? false);
 
+  // Categories load asynchronously from Supabase; choose the first valid option once available.
+  useEffect(() => {
+    if (
+      categories.length > 0 &&
+      !categories.some((category) => category.id === categoryId)
+    ) {
+      setCategoryId(categories[0].id);
+    }
+  }, [categories, categoryId]);
+
   const toggleSize = (sz: string) => {
     setSizes((prev) =>
       prev.includes(sz) ? prev.filter((s) => s !== sz) : [...prev, sz]
@@ -73,6 +83,11 @@ export const AdminProductForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setUploadErrors([]);
+
+    if (!categoryId || !categories.some((category) => category.id === categoryId)) {
+      addToast("Please select a valid product category", "error");
+      return;
+    }
 
     const productId = existing?.id || `prod-${Date.now()}`;
     const uploadedUrls: string[] = [...images];
@@ -257,10 +272,15 @@ export const AdminProductForm: React.FC = () => {
               </label>
               <select
                 id="pf-cat"
+                required
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full h-10 px-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-xs text-[#1A1A1A] focus:outline-none focus:border-2 focus:border-[#E63946]"
+                disabled={categories.length === 0}
+                className="w-full h-10 px-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-xs text-[#1A1A1A] focus:outline-none focus:border-2 focus:border-[#E63946] disabled:opacity-60"
               >
+                <option value="" disabled>
+                  {categories.length === 0 ? "Loading categories..." : "Select a category"}
+                </option>
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name_en}
