@@ -22,6 +22,24 @@ import { CUSTOMER_TRANSLATIONS, getProductName } from "../lib/i18n";
 import { pageVariants, buttonHover, buttonTap } from "../lib/animations";
 import { PageHeading } from "../components/layout/PageHeading";
 
+const PAKISTAN_CITIES = [
+  "Abbottabad", "Ahmedpur East", "Ali Pur", "Arifwala", "Attock", "Badin",
+  "Bahawalnagar", "Bahawalpur", "Bannu", "Bhakkar", "Bhalwal", "Burewala",
+  "Chakwal", "Chichawatni", "Chiniot", "Chishtian", "Dadu", "Daska",
+  "Dera Ghazi Khan", "Dera Ismail Khan", "Dina", "Faisalabad", "Ghotki",
+  "Gojra", "Gujranwala", "Gujrat", "Hafizabad", "Haripur", "Hasilpur",
+  "Hub", "Hyderabad", "Islamabad", "Jacobabad", "Jaranwala", "Jhang",
+  "Jhelum", "Kamalia", "Kamoke", "Karachi", "Kasur", "Khairpur",
+  "Khanewal", "Kharian", "Khushab", "Kohat", "Kot Addu", "Lahore",
+  "Larkana", "Layyah", "Lodhran", "Mandi Bahauddin", "Mansehra", "Mardan",
+  "Mian Channu", "Mianwali", "Mirpur Khas", "Multan", "Muridke", "Muzaffargarh",
+  "Nankana Sahib", "Nawabshah", "Okara", "Pakpattan", "Peshawar", "Rahim Yar Khan",
+  "Rawalpindi", "Sadiqabad", "Sahiwal", "Sargodha", "Shahdadkot", "Shakargarh",
+  "Sheikhupura", "Shikarpur", "Sialkot", "Sukkur", "Swabi", "Tando Adam",
+  "Tando Allahyar", "Taxila", "Thatta", "Timergara", "Toba Tek Singh",
+  "Umerkot", "Vehari", "Wah Cantt", "Wazirabad", "Zhob"
+] as const;
+
 export const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -263,13 +281,15 @@ export const CheckoutPage: React.FC = () => {
               </label>
               <select
                 id="cust-city"
+                required
                 value={selectedCity}
                 onChange={(e) => setSelectedCity(e.target.value)}
                 className="w-full h-11 px-3.5 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-sm text-[#1A1A1A] focus:border-2 focus:border-[#E63946] focus:outline-none"
               >
-                {deliveryRates.map((rate) => (
-                  <option key={rate.id} value={rate.city_name}>
-                    {rate.city_name} — {formatPKR(rate.charge)}
+                <option value="" disabled>Select your city</option>
+                {PAKISTAN_CITIES.map((city) => (
+                  <option key={city} value={city}>
+                    {city} — {city === "Sadiqabad" ? "Free Delivery" : formatPKR(250)}
                   </option>
                 ))}
               </select>
