@@ -64,14 +64,19 @@ export const CheckoutPage: React.FC = () => {
   const [customerName, setCustomerName] = useState(user?.full_name || "");
   const [customerPhone, setCustomerPhone] = useState(user?.phone || "");
   const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [otherCity, setOtherCity] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod");
   const [paymentReference, setPaymentReference] = useState("");
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const isOtherCity = selectedCity === "Other";
+  const finalDeliveryCity = isOtherCity ? otherCity.trim() : selectedCity;
   const selectedCityRate =
-    deliveryRates.find((r) => r.city_name === selectedCity)?.charge ?? 250;
+    selectedCity === "Sadiqabad"
+      ? 0
+      : deliveryRates.find((r) => r.city_name === selectedCity)?.charge ?? 250;
   const grandTotal = totals.subtotal + selectedCityRate;
 
   if (enrichedItems.length === 0) {
@@ -100,6 +105,11 @@ export const CheckoutPage: React.FC = () => {
       return;
     }
 
+    if (!finalDeliveryCity) {
+      setError("Please select a city or enter your city name.");
+      return;
+    }
+
     if (paymentMethod !== "cod" && !paymentReference.trim()) {
       setError("Please provide the Transaction ID / Reference Number for your digital transfer.");
       return;
@@ -121,7 +131,7 @@ export const CheckoutPage: React.FC = () => {
         p_order: {
           customer_name: customerName.trim(),
           customer_phone: customerPhone.trim(),
-          delivery_city: selectedCity,
+          delivery_city: finalDeliveryCity,
           delivery_address: deliveryAddress.trim(),
           payment_method: paymentMethod,
           transaction_id: paymentReference.trim() || null,
@@ -292,8 +302,29 @@ export const CheckoutPage: React.FC = () => {
                     {city} — {city === "Sadiqabad" ? "Free Delivery" : formatPKR(250)}
                   </option>
                 ))}
+                <option value="Other">Other City — {formatPKR(250)}</option>
               </select>
             </div>
+
+            {isOtherCity && (
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="cust-other-city"
+                  className="text-xs font-medium text-[#1A1A1A]"
+                >
+                  Enter Your City
+                </label>
+                <input
+                  id="cust-other-city"
+                  type="text"
+                  required
+                  value={otherCity}
+                  onChange={(e) => setOtherCity(e.target.value)}
+                  placeholder="Enter your city name"
+                  className="w-full h-11 px-3.5 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-sm text-[#1A1A1A] focus:border-2 focus:border-[#E63946] focus:outline-none"
+                />
+              </div>
+            )}
 
             <div className="space-y-1.5">
               <label
