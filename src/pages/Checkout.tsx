@@ -65,6 +65,7 @@ export const CheckoutPage: React.FC = () => {
   const [customerPhone, setCustomerPhone] = useState(user?.phone || "");
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [otherCity, setOtherCity] = useState("");
+  const [citySearch, setCitySearch] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod");
   const [paymentReference, setPaymentReference] = useState("");
   const [notes, setNotes] = useState("");
@@ -284,8 +285,23 @@ export const CheckoutPage: React.FC = () => {
 
             <div className="space-y-1.5">
               <label
-                htmlFor="cust-city"
+                htmlFor="cust-city-search"
                 className="text-xs font-medium text-[#1A1A1A]"
+              >
+                Search City
+              </label>
+              <input
+                id="cust-city-search"
+                type="search"
+                value={citySearch}
+                onChange={(e) => setCitySearch(e.target.value)}
+                placeholder="Type city name to find it..."
+                autoComplete="off"
+                className="w-full h-11 px-3.5 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-sm text-[#1A1A1A] placeholder:text-[#999999] focus:border-2 focus:border-[#E63946] focus:outline-none"
+              />
+              <label
+                htmlFor="cust-city"
+                className="text-xs font-medium text-[#1A1A1A] block pt-1"
               >
                 {t.selectDeliveryCity}
               </label>
@@ -297,13 +313,28 @@ export const CheckoutPage: React.FC = () => {
                 className="w-full h-11 px-3.5 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-sm text-[#1A1A1A] focus:border-2 focus:border-[#E63946] focus:outline-none"
               >
                 <option value="" disabled>Select your city</option>
-                {PAKISTAN_CITIES.map((city) => (
+                {PAKISTAN_CITIES.filter((city) =>
+                  city.toLowerCase().includes(citySearch.trim().toLowerCase())
+                ).map((city) => (
                   <option key={city} value={city}>
                     {city} — {city === "Sadiqabad" ? "Free Delivery" : formatPKR(250)}
                   </option>
                 ))}
-                <option value="Other">Other City — {formatPKR(250)}</option>
+                <option value="Other">
+                  {citySearch.trim() && !PAKISTAN_CITIES.some((city) =>
+                    city.toLowerCase() === citySearch.trim().toLowerCase()
+                  )
+                    ? `Use "${citySearch.trim()}" — ${formatPKR(250)}`
+                    : `Other City — ${formatPKR(250)}`}
+                </option>
               </select>
+              {citySearch.trim() && !PAKISTAN_CITIES.some((city) =>
+                city.toLowerCase().includes(citySearch.trim().toLowerCase())
+              ) && (
+                <p className="text-[11px] text-[#666666]">
+                  City list mein nahi mili? "Other City" select karke apne shehar ka naam enter karein.
+                </p>
+              )}
             </div>
 
             {isOtherCity && (
