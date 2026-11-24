@@ -800,32 +800,80 @@ export const useDataStore = create<DataState>()(
       },
 
       addDeliveryRate: (city_name, charge) => {
+        const cleanCity = city_name.trim();
+        const cleanCharge = Math.max(0, Number(charge) || 0);
+        if (!cleanCity) return;
+        if (isSupabaseConfigured) {
+          void supabase.from("city_delivery_rates")
+            .insert({ city_name: cleanCity, charge: cleanCharge, is_active: true })
+            .select("*").single()
+            .then(({ data, error }) => {
+              if (error || !data) {
+                get().addToast("Delivery rate could not be saved", "error", error?.message);
+                return;
+              }
+              const saved: DeliveryRate = {
+                id: data.id,
+                city_name: data.city_name,
+                charge: Number(data.charge),
+                is_active: Boolean(data.is_active),
+              };
+              set((state) => ({ deliveryRates: [...state.deliveryRates, saved] }));
+              get().addToast(`Added delivery rate for ${cleanCity}`);
+            });
+          return;
+        }
         const newRate: DeliveryRate = {
           id: `city-${Date.now()}`,
-          city_name: city_name.trim(),
-          charge: Number(charge) || 0,
+          city_name: cleanCity,
+          charge: cleanCharge,
           is_active: true,
         };
-        set((state) => ({
-          deliveryRates: [...state.deliveryRates, newRate],
-        }));
-        get().addToast(`Added delivery rate for ${city_name}`);
+        set((state) => ({ deliveryRates: [...state.deliveryRates, newRate] }));
       },
 
       updateDeliveryRate: (id, updates) => {
+        const previous = get().deliveryRates.find((rate) => rate.id === id);
         set((state) => ({
-          deliveryRates: state.deliveryRates.map((r) =>
-            r.id === id ? { ...r, ...updates } : r
+          deliveryRates: state.deliveryRates.map((rate) =>
+            rate.id === id ? { ...rate, ...updates } : rate
           ),
         }));
-        get().addToast("City delivery rate updated");
+        if (isSupabaseConfigured) {
+          void supabase.from("city_delivery_rates")
+            .update(updates).eq("id", id)
+            .then(({ error }) => {
+              if (error) {
+                if (previous) set((state) => ({
+                  deliveryRates: state.deliveryRates.map((rate) => rate.id === id ? previous : rate),
+                }));
+                get().addToast("Delivery rate update failed", "error", error.message);
+                return;
+              }
+              get().addToast("City delivery rate updated");
+            });
+        } else {
+          get().addToast("City delivery rate updated");
+        }
       },
 
       deleteDeliveryRate: (id) => {
+        const previous = get().deliveryRates.find((rate) => rate.id === id);
         set((state) => ({
-          deliveryRates: state.deliveryRates.filter((r) => r.id !== id),
+          deliveryRates: state.deliveryRates.filter((rate) => rate.id !== id),
         }));
-        get().addToast("City removed from delivery table", "info");
+        if (isSupabaseConfigured) {
+          void supabase.from("city_delivery_rates").delete().eq("id", id).then(({ error }) => {
+            if (error) {
+              if (previous) set((state) => ({ deliveryRates: [...state.deliveryRates, previous] }));
+              get().addToast("City could not be removed", "error", error.message);
+              return;
+            }
+            get().addToast("City removed from delivery table", "info");
+          });
+        } else {
+          get().addToast("City removed from delivery table", "info");
+        }
       },
 
       addBanner: (bannerData) => {
