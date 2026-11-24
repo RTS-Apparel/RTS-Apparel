@@ -160,7 +160,16 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
             .from("product-images")
             .upload(path, file, { cacheControl: "3600", upsert: false });
 
-          if (!error && data) {
+          if (error) {
+            setFileStatuses((prev) =>
+              prev.map((s, idx) =>
+                idx === i ? { ...s, progress: 0, error: `Upload failed: ${error.message}` } : s
+              )
+            );
+            continue;
+          }
+
+          if (data) {
             const { data: urlData } = supabase.storage
               .from("product-images")
               .getPublicUrl(path);
@@ -174,7 +183,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
           }
         }
 
-        // Local preview dataURL fallback when Supabase Storage is not configured or bucket is offline
+        // Keep a local staged preview only when Supabase is not configured.
         const dataUrl = await readFileAsDataUrl(file);
         if (onPendingFilesChange) {
           newPendingItems.push({
