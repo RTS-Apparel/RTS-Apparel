@@ -653,6 +653,34 @@ export function App() {
   }, [initAuth]);
 
   useEffect(() => {
+    if (!isSupabaseConfigured) return;
+    let cancelled = false;
+
+    supabase
+      .from("city_delivery_rates")
+      .select("*")
+      .eq("is_active", true)
+      .order("city_name")
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error) {
+          console.error("Unable to load delivery rates:", error.message);
+          return;
+        }
+        useDataStore.setState({
+          deliveryRates: (data || []).map((row: any) => ({
+            id: row.id,
+            city_name: row.city_name,
+            charge: Number(row.charge),
+            is_active: Boolean(row.is_active),
+          })),
+        });
+      });
+
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
     let cancelled = false;
 
     const loadAccountData = async () => {
