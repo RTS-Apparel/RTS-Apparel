@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import {
   Trash2,
@@ -6,7 +6,6 @@ import {
   Minus,
   ShoppingCart,
   ArrowRight,
-  Tag,
   Truck,
   CreditCard,
 } from "lucide-react";
@@ -26,10 +25,6 @@ export const CartPage: React.FC = () => {
     totals,
     updateQuantity,
     removeItem,
-    referralCode,
-    referralAgentName,
-    applyReferralCode,
-    clearReferralCode,
   } = useCart();
 
   const selectedCity = useCartStore((s) => s.selectedCity);
@@ -41,13 +36,6 @@ export const CartPage: React.FC = () => {
   const activeCities = allDeliveryRates.filter((r) => r.is_active);
   const deliveryCharge =
     activeCities.find((r) => r.city_name === selectedCity)?.charge ?? 250;
-
-  const [codeInput, setCodeInput] = useState(referralCode || "");
-
-  const handleApplyReferral = (e: React.FormEvent) => {
-    e.preventDefault();
-    applyReferralCode(codeInput);
-  };
 
   if (enrichedItems.length === 0) {
     return (
@@ -220,46 +208,6 @@ export const CartPage: React.FC = () => {
               ))}
             </select>
           </div>
-
-          <form onSubmit={handleApplyReferral} className="space-y-2">
-            <label className="text-xs text-[#1A1A1A] flex items-center gap-1.5 font-medium">
-              <Tag size={16} className="text-[#E63946]" />
-              <span>{t.agentReferralCode}</span>
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={codeInput}
-                onChange={(e) => setCodeInput(e.target.value.toUpperCase())}
-                placeholder="RTS-ALI123"
-                className="flex-1 h-10 px-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-xs font-mono text-[#1A1A1A] placeholder:text-[#999999] focus:border-2 focus:border-[#E63946] focus:outline-none"
-              />
-              {referralCode ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    clearReferralCode();
-                    setCodeInput("");
-                  }}
-                  className="px-3.5 h-10 rounded-[6px] border-2 border-[#1A1A1A] text-xs text-[#1A1A1A] font-semibold hover:bg-[#1A1A1A] hover:text-[#FFFFFF] transition-colors"
-                >
-                  {t.remove}
-                </button>
-              ) : (
-                <button
-                  type="submit"
-                  className="px-4 h-10 rounded-[6px] border-2 border-[#1A1A1A] text-[#1A1A1A] text-xs font-semibold hover:bg-[#1A1A1A] hover:text-[#FFFFFF] transition-colors"
-                >
-                  {t.apply}
-                </button>
-              )}
-            </div>
-            {referralAgentName && (
-              <p className="text-xs text-[#22C55E] font-medium">
-                ✓ Linked to Partner Agent: {referralAgentName} ({referralCode})
-              </p>
-            )}
-          </form>
 
           <div className="space-y-2 text-sm border-t border-[#E0E0E0] pt-4 font-mono tabular-nums">
             <div className="flex justify-between text-xs text-[#666666]">
