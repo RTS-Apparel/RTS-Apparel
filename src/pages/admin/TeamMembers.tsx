@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Check, X, Ban, Unlock, Users } from "lucide-react";
+import { Check, X, Ban, Unlock, Users, UserPlus } from "lucide-react";
 import { motion } from "framer-motion";
 import { useDataStore } from "../../store/dataStore";
 import { formatPKR } from "../../lib/utils";
 import { AdminSidebar } from "../../components/layout/AdminSidebar";
 import { PageHeading } from "../../components/layout/PageHeading";
 import { pageVariants } from "../../lib/animations";
+import { supabase, isSupabaseConfigured } from "../../lib/supabase";
 
 export const AdminTeamMembers: React.FC = () => {
   const users = useDataStore((s) => s.users);
@@ -15,6 +16,36 @@ export const AdminTeamMembers: React.FC = () => {
   const toggleBlockAgent = useDataStore((s) => s.toggleBlockAgent);
 
   const [tab, setTab] = useState<"pending" | "active" | "blocked">("active");
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newAgent, setNewAgent] = useState({ full_name: "", phone: "", email: "", password: "" });
+  const [savingAgent, setSavingAgent] = useState(false);
+  const [formError, setFormError] = useState("");
+
+  const handleCreateAgent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError("");
+    if (!isSupabaseConfigured) {
+      setFormError("Database connection is not configured.");
+      return;
+    }
+    setSavingAgent(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("admin-create-agent", { body: newAgent });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      if (!data?.agent) throw new Error("Agent account was not returned by the server.");
+      useDataStore.setState((state) => ({
+        users: [data.agent, ...state.users.filter((u) => u.id !== data.agent.id)],
+      }));
+      setNewAgent({ full_name: "", phone: "", email: "", password: "" });
+      setShowAddForm(false);
+      setTab("active");
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : "Agent create nahi ho saka.");
+    } finally {
+      setSavingAgent(false);
+    }
+  };
 
   const agents = users.filter((u) => u.role === "agent");
   const pendingAgents = agents.filter((a) => !a.is_approved && !a.is_blocked);
@@ -49,6 +80,10 @@ export const AdminTeamMembers: React.FC = () => {
             { label: "Team Members" },
           ]}
           actions={
+            <div className="flex flex-wrap items-center gap-3">
+              <button type="button" onClick={() => { setShowAddForm((value) => !value); setFormError(""); }} className="inline-flex items-center gap-2 px-4 py-2 rounded-[6px] bg-[#E63946] text-white text-xs font-semibold hover:bg-[#C1121F]">
+                <UserPlus className="w-4 h-4" /> Add Agent
+              </button>
             <div className="flex gap-1.5 p-1 rounded-[6px] bg-[#2A2A2A] border border-[#333333]">
               <button
                 type="button"
@@ -84,8 +119,29 @@ export const AdminTeamMembers: React.FC = () => {
                 Blocked ({blockedAgents.length})
               </button>
             </div>
+            </div>
           }
         />
+
+        {showAddForm && (
+          <form onSubmit={handleCreateAgent} className="rounded-[8px] bg-white border border-[#E0E0E0] p-5 space-y-4 shadow-xs">
+            <div>
+              <h2 className="text-base font-bold text-[#1A1A1A]">Create New Agent</h2>
+              <p className="text-xs text-[#666666] mt-1">Admin yahan agent ka account aur referral code create karega. Agent turant Active ho jayega.</p>
+            </div>
+            {formError && <p role="alert" className="p-3 rounded bg-red-50 text-red-700 text-xs">{formError}</p>}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <input required value={newAgent.full_name} onChange={(e) => setNewAgent((s) => ({ ...s, full_name: e.target.value }))} placeholder="Agent full name" className="h-10 px-3 rounded border border-[#D4D4D4] text-sm" />
+              <input required type="tel" value={newAgent.phone} onChange={(e) => setNewAgent((s) => ({ ...s, phone: e.target.value }))} placeholder="Phone number" className="h-10 px-3 rounded border border-[#D4D4D4] text-sm" />
+              <input required type="email" value={newAgent.email} onChange={(e) => setNewAgent((s) => ({ ...s, email: e.target.value }))} placeholder="Agent login email" className="h-10 px-3 rounded border border-[#D4D4D4] text-sm" />
+              <input required type="password" minLength={8} value={newAgent.password} onChange={(e) => setNewAgent((s) => ({ ...s, password: e.target.value }))} placeholder="Temporary password (min 8 characters)" className="h-10 px-3 rounded border border-[#D4D4D4] text-sm" />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button type="submit" disabled={savingAgent} className="h-10 px-5 rounded bg-[#1A1A1A] text-white text-xs font-semibold disabled:opacity-50">{savingAgent ? "Creating..." : "Create Agent"}</button>
+              <button type="button" onClick={() => setShowAddForm(false)} className="h-10 px-5 rounded border border-[#D4D4D4] text-xs font-semibold">Cancel</button>
+            </div>
+          </form>
+        )}
 
         <div className="rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
