@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { X, Plus, Minus, Trash2, ShoppingCart, Tag, Truck, CreditCard } from "lucide-react";
+import { X, Plus, Minus, Trash2, ShoppingCart, Truck, CreditCard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../../hooks/useCart";
 import { useCartStore } from "../../store/cartStore";
@@ -17,10 +17,6 @@ export const CartDrawer: React.FC = () => {
     totals,
     updateQuantity,
     removeItem,
-    referralCode,
-    referralAgentName,
-    applyReferralCode,
-    clearReferralCode,
   } = useCart();
 
   const selectedCity = useCartStore((s) => s.selectedCity);
@@ -30,15 +26,7 @@ export const CartDrawer: React.FC = () => {
   const cityRate =
     activeCities.find((r) => r.city_name === selectedCity)?.charge ?? 250;
 
-  const [codeInput, setCodeInput] = useState(referralCode || "");
-  const [codeFeedback, setCodeFeedback] = useState<string | null>(null);
   const navigate = useNavigate();
-
-  const handleApplyCode = (e: React.FormEvent) => {
-    e.preventDefault();
-    const res = applyReferralCode(codeInput);
-    setCodeFeedback(res.message);
-  };
 
   return (
     <AnimatePresence>
@@ -219,49 +207,6 @@ export const CartDrawer: React.FC = () => {
                     ))}
                   </select>
                 </div>
-
-                <form onSubmit={handleApplyCode} className="space-y-1.5">
-                  <label className="text-xs text-[#1A1A1A] flex items-center gap-1.5 font-medium">
-                    <Tag size={16} className="text-[#E63946]" />
-                    <span>Partner Agent Referral Code (e.g. RTS-ALI123)</span>
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={codeInput}
-                      onChange={(e) => setCodeInput(e.target.value.toUpperCase())}
-                      placeholder="RTS-ALI123"
-                      className="flex-1 h-9 px-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-xs font-mono text-[#1A1A1A] placeholder:text-[#999999] focus:border-2 focus:border-[#E63946] focus:outline-none"
-                    />
-                    {referralCode ? (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          clearReferralCode();
-                          setCodeInput("");
-                          setCodeFeedback(null);
-                        }}
-                        className="px-3 h-9 rounded-[6px] border-2 border-[#1A1A1A] text-xs text-[#1A1A1A] font-semibold hover:bg-[#1A1A1A] hover:text-[#FFFFFF] transition-colors"
-                      >
-                        Clear
-                      </button>
-                    ) : (
-                      <button
-                        type="submit"
-                        className="px-3.5 h-9 rounded-[6px] border-2 border-[#1A1A1A] text-[#1A1A1A] text-xs font-semibold hover:bg-[#1A1A1A] hover:text-[#FFFFFF] transition-colors"
-                      >
-                        Apply
-                      </button>
-                    )}
-                  </div>
-                  {(referralAgentName || codeFeedback) && (
-                    <p className="text-xs text-[#22C55E] font-medium">
-                      {referralAgentName
-                        ? `Active Partner: ${referralAgentName} (${referralCode})`
-                        : codeFeedback}
-                    </p>
-                  )}
-                </form>
 
                 <div className="space-y-2.5 border-t border-[#E0E0E0] pt-3">
                   <div className="flex justify-between text-xs text-[#666666] font-mono tabular-nums">
