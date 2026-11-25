@@ -15,7 +15,8 @@ export const AdminOrderDetail: React.FC = () => {
   const orders = useDataStore((s) => s.orders);
   const orderItems = useDataStore((s) => s.orderItems);
   const updateOrderStatus = useDataStore((s) => s.updateOrderStatus);
-  const agents = useDataStore((s) => s.users.filter((u) => u.role === "agent" && u.is_approved && !u.is_blocked));
+  const users = useDataStore((s) => s.users);
+  const agents = users.filter((u) => u.role === "agent" && u.is_approved && !u.is_blocked);
 
   const order = orders.find((o) => o.id === id) || orders[0];
   const items = orderItems.filter((i) => i.order_id === order?.id);
