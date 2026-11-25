@@ -41,7 +41,17 @@ export const AdminTeamMembers: React.FC = () => {
       setShowAddForm(false);
       setTab("active");
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Agent create nahi ho saka.");
+      let message = err instanceof Error ? err.message : "Agent create nahi ho saka.";
+      const response = (err as { context?: Response })?.context;
+      if (response && typeof response.json === "function") {
+        try {
+          const details = await response.clone().json();
+          if (typeof details?.error === "string") message = details.error;
+        } catch {
+          // Keep the original error when the response has no JSON body.
+        }
+      }
+      setFormError(message);
     } finally {
       setSavingAgent(false);
     }
