@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, CheckCircle, ShoppingBag } from "lucide-react";
 import { motion } from "framer-motion";
 import { useDataStore } from "../../store/dataStore";
+import { supabase, isSupabaseConfigured } from "../../lib/supabase";
 import { OrderStatus, PaymentStatus } from "../../types";
 import { formatPKR } from "../../lib/utils";
 import { AdminSidebar } from "../../components/layout/AdminSidebar";
@@ -14,6 +15,7 @@ export const AdminOrderDetail: React.FC = () => {
   const orders = useDataStore((s) => s.orders);
   const orderItems = useDataStore((s) => s.orderItems);
   const updateOrderStatus = useDataStore((s) => s.updateOrderStatus);
+  const agents = useDataStore((s) => s.users.filter((u) => u.role === "agent" && u.is_approved && !u.is_blocked));
 
   const order = orders.find((o) => o.id === id) || orders[0];
   const items = orderItems.filter((i) => i.order_id === order?.id);
@@ -23,8 +25,50 @@ export const AdminOrderDetail: React.FC = () => {
     order?.payment_status || "pending"
   );
   const [adminNote, setAdminNote] = useState(order?.admin_note || "");
+  const [selectedAgentId, setSelectedAgentId] = useState(order?.agent_id || "");
+  const [isSavingAgent, setIsSavingAgent] = useState(false);
+  const [agentMessage, setAgentMessage] = useState("");
 
   if (!order) return null;
+
+
+  const handleSaveAgent = async () => {
+    if (!isSupabaseConfigured) {
+      setAgentMessage("Database connection is not configured.");
+      return;
+    }
+    setIsSavingAgent(true);
+    setAgentMessage("");
+    try {
+      const { data, error } = await supabase.rpc("admin_set_order_agent", {
+        p_order_id: order.id,
+        p_agent_id: selectedAgentId || null,
+      });
+      if (error) throw error;
+      useDataStore.setState((state) => ({
+        orders: state.orders.map((item) => item.id === order.id ? {
+          ...item,
+          agent_id: data?.agent_id ?? null,
+          referral_code: data?.referral_code ?? null,
+          updated_at: data?.updated_at ?? item.updated_at,
+        } : item),
+        commissions: selectedAgentId
+          ? state.commissions.some((commission) => commission.order_id === order.id)
+            ? state.commissions.map((commission) => commission.order_id === order.id
+                ? { ...commission, agent_id: selectedAgentId, amount: Math.round(order.subtotal * 0.1 * 100) / 100, status: commission.status === "paid" ? "paid" : "pending", admin_note: "Assigned manually by admin" }
+                : commission)
+            : [{ id: `commission-${order.id}`, order_id: order.id, agent_id: selectedAgentId, amount: Math.round(order.subtotal * 0.1 * 100) / 100, status: "pending", admin_note: "Assigned manually by admin", paid_at: null, created_at: new Date().toISOString() }, ...state.commissions]
+          : state.commissions.map((commission) => commission.order_id === order.id && commission.status !== "paid"
+              ? { ...commission, status: "cancelled" }
+              : commission),
+      }));
+      setAgentMessage(selectedAgentId ? "Agent assigned and commission linked." : "Agent removed from this order.");
+    } catch (err) {
+      setAgentMessage(err instanceof Error ? err.message : "Could not update agent assignment.");
+    } finally {
+      setIsSavingAgent(false);
+    }
+  };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -135,6 +179,32 @@ export const AdminOrderDetail: React.FC = () => {
               <span>Update Order & Sync Commission</span>
             </button>
           </form>
+
+          <div className="lg:col-span-6 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] p-6 space-y-4 shadow-xs">
+            <h2 className="text-base font-serif-display font-bold text-[#1A1A1A]">
+              Agent Assignment (Admin Only)
+            </h2>
+            <p className="text-xs text-[#666666]">Customer ko koi referral code enter nahi karna hota. Is order ke liye agent yahan se assign ya remove karein.</p>
+            <select
+              value={selectedAgentId}
+              onChange={(e) => setSelectedAgentId(e.target.value)}
+              className="w-full h-10 px-3 rounded-[6px] bg-[#FFFFFF] border border-[#E0E0E0] text-xs text-[#1A1A1A] focus:outline-none focus:border-2 focus:border-[#E63946]"
+            >
+              <option value="">No agent assigned</option>
+              {agents.map((agent) => (
+                <option key={agent.id} value={agent.id}>{agent.full_name} — {agent.referral_code || "No code"}</option>
+              ))}
+            </select>
+            <button
+              type="button"
+              disabled={isSavingAgent || selectedAgentId === (order.agent_id || "")}
+              onClick={handleSaveAgent}
+              className="h-10 px-5 rounded-[6px] bg-[#1A1A1A] text-[#FFFFFF] font-semibold text-xs disabled:opacity-50"
+            >
+              {isSavingAgent ? "Saving..." : selectedAgentId ? "Assign Agent" : "Remove Agent"}
+            </button>
+            {agentMessage && <p className="text-xs text-[#666666]" role="status">{agentMessage}</p>}
+          </div>
 
           <div className="lg:col-span-6 rounded-[8px] bg-[#FFFFFF] border border-[#E0E0E0] p-6 space-y-4 shadow-xs">
             <h2 className="text-base font-serif-display font-bold text-[#1A1A1A]">
