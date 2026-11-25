@@ -50,7 +50,6 @@ export const CheckoutPage: React.FC = () => {
   } = useCart();
 
   const selectedCity = useCartStore((s) => s.selectedCity);
-  const referralCode = useCartStore((s) => s.referralCode);
   const setSelectedCity = useCartStore((s) => s.setSelectedCity);
 
   const allDeliveryRates = useDataStore((s) => s.deliveryRates);
@@ -136,7 +135,7 @@ export const CheckoutPage: React.FC = () => {
           delivery_address: deliveryAddress.trim(),
           payment_method: paymentMethod,
           transaction_id: paymentReference.trim() || null,
-          referral_code: referralCode || null,
+          referral_code: null,
           notes: notes.trim() || null,
           items: enrichedItems.map((item) => ({
             product_id: item.product.id,
