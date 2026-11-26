@@ -21,8 +21,8 @@ import { BrandLogo } from "../common/BrandLogo";
 export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) => {
   const categories = useDataStore((s) => s.categories);
   const whatsappNumber = useDataStore((s) => s.siteSettings.whatsapp_number);
-  const facebookUrl = useDataStore((s) => s.siteSettings.facebook_url);
-  const tiktokUrl = useDataStore((s) => s.siteSettings.tiktok_url);
+  const facebookUrl = useDataStore((s) => s.siteSettings.facebook_url || "https://www.facebook.com/share/1E3Yv7ro6S/");
+  const tiktokUrl = useDataStore((s) => s.siteSettings.tiktok_url || "https://www.tiktok.com/@artsapparel3?_r=1&_t=ZS-9AzeKQChL6N");
   const language = useDataStore((s) => s.language);
   const setLanguage = useDataStore((s) => s.setLanguage);
   const wishlist = useDataStore((s) => s.wishlist);
@@ -147,12 +147,12 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
       </div>
 
       {/* Main Navigation Row */}
-      <div className="relative max-w-7xl mx-auto w-full min-w-0 px-2 sm:px-4 lg:px-6 h-[68px] sm:h-24 lg:h-24 flex items-center justify-between gap-1.5 sm:gap-3 bg-[#FFFFFF]">
-        <div className="flex min-w-0 items-center gap-1 sm:gap-3 shrink-0">
+      <div className="relative max-w-7xl mx-auto w-full min-w-0 px-2 sm:px-4 lg:px-6 min-h-[68px] py-2 sm:py-0 sm:h-24 lg:h-24 flex flex-wrap sm:flex-nowrap items-center justify-between gap-1.5 sm:gap-3 bg-[#FFFFFF]">
+        <div className="flex min-w-0 flex-1 items-center gap-1 sm:gap-3 shrink">
           <button
             type="button"
             onClick={onMenuClick}
-            className="relative z-50 inline-flex h-11 w-11 shrink-0 flex-col items-center justify-center gap-[5px] rounded-lg border-2 border-[#E63946] bg-[#1A1A1A] text-white shadow-md transition-all hover:bg-[#E63946] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E63946] focus-visible:ring-offset-2"
+            className="relative z-50 inline-flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 flex-col items-center justify-center gap-[5px] rounded-lg border-2 border-[#E63946] bg-[#1A1A1A] text-white shadow-md transition-all hover:bg-[#E63946] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E63946] focus-visible:ring-offset-2"
             aria-label="Open shop menu"
             title="Open shop menu"
           >
@@ -182,7 +182,7 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
               <img
                 src="/images/arts-apparel-complete-header.svg"
                 alt="ARTS Apparel — premium garment wordmark"
-                className="block h-auto w-[min(43vw,190px)] max-h-[52px] object-contain sm:w-[min(34vw,290px)] sm:max-h-[76px] lg:w-[320px] lg:max-h-[88px]"
+                className="block h-auto w-[min(34vw,150px)] max-h-[44px] object-contain sm:w-[min(34vw,290px)] sm:max-h-[76px] lg:w-[320px] lg:max-h-[88px]"
                 width={720}
                 height={250}
                 fetchPriority="high"
@@ -193,7 +193,7 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
         </div>
 
         {/* Header actions */}
-        <div className="flex min-w-0 shrink-0 items-center gap-0.5 sm:gap-2.5">
+        <div className="flex w-full sm:w-auto min-w-0 shrink-0 items-center justify-end gap-1 sm:gap-2.5">
           <form
             onSubmit={handleSearch}
             className="hidden md:flex items-center relative shrink min-w-0"
@@ -216,12 +216,12 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
             </motion.button>
           </form>
           {facebookUrl && (
-            <a href={facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="Facebook" title="Facebook" className="inline-flex p-2 text-[#1877F2] hover:opacity-75 transition-opacity">
+            <a href={facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="Facebook" title="Facebook" className="inline-flex h-9 w-9 items-center justify-center p-1.5 text-[#1877F2] hover:opacity-75 transition-opacity">
               <Facebook size={20} />
             </a>
           )}
           {tiktokUrl && (
-            <a href={tiktokUrl} target="_blank" rel="noopener noreferrer" aria-label="TikTok" title="TikTok" className="inline-flex p-2 text-[#111111] hover:text-[#E63946] transition-colors">
+            <a href={tiktokUrl} target="_blank" rel="noopener noreferrer" aria-label="TikTok" title="TikTok" className="inline-flex h-9 w-9 items-center justify-center p-1.5 text-[#111111] hover:text-[#E63946] transition-colors">
               <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5" fill="currentColor">
                 <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.56v13.67a2.9 2.9 0 0 1-2.9 2.75 2.9 2.9 0 1 1 2.9-2.9c0-.2-.02-.4-.05-.59V11.3a6.45 6.45 0 1 0 3.61 5.8V9.94a8.35 8.35 0 0 0 4.88 1.57V7.95a4.84 4.84 0 0 1-1.11-.13Z"/>
               </svg>
@@ -235,7 +235,7 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
             <Link
               to="/account/wishlist"
               aria-label={t.wishlist}
-              className="relative p-2 text-[#1A1A1A] hover:text-[#E63946] transition-colors"
+              className="relative inline-flex h-9 w-9 items-center justify-center p-1.5 text-[#1A1A1A] hover:text-[#E63946] transition-colors"
             >
               <Heart size={20} />
               <AnimatePresence mode="popLayout">
@@ -266,7 +266,7 @@ export const Navbar: React.FC<{ onMenuClick: () => void }> = ({ onMenuClick }) =
             }
             transition={{ duration: 0.4 }}
             aria-label={t.shoppingBag}
-            className="relative p-2 text-[#1A1A1A] hover:text-[#E63946] transition-colors"
+            className="relative inline-flex h-9 w-9 items-center justify-center p-1.5 text-[#1A1A1A] hover:text-[#E63946] transition-colors"
           >
             <ShoppingCart size={20} />
             <AnimatePresence mode="popLayout">
