@@ -26,6 +26,8 @@ export interface Category {
   name_en: string;
   name_ur: string;
   name_roman_ur?: string;
+  image_url?: string | null;
+  icon_key?: string;
   slug: string;
   display_order: number;
   discount_percent: number;
