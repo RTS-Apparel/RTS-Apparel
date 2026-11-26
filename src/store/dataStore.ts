@@ -106,6 +106,8 @@ interface DataState {
     name_en: string;
     name_ur: string;
     name_roman_ur?: string;
+    image_url?: string | null;
+    icon_key?: string;
     discount_percent?: number;
   }) => void;
   updateCategory: (id: string, updates: Partial<Category>) => void;
@@ -401,6 +403,8 @@ export const useDataStore = create<DataState>()(
         name_en,
         name_ur,
         name_roman_ur,
+        image_url = null,
+        icon_key = "tag",
         discount_percent = 0,
       }) => {
         const maxOrder = get().categories.reduce(
@@ -412,6 +416,8 @@ export const useDataStore = create<DataState>()(
           name_en,
           name_ur,
           name_roman_ur: name_roman_ur || name_en,
+          image_url,
+          icon_key,
           slug: slugify(name_en),
           display_order: maxOrder + 1,
           discount_percent,
@@ -424,6 +430,8 @@ export const useDataStore = create<DataState>()(
             name_en: newCat.name_en,
             name_ur: newCat.name_ur,
             name_roman_ur: newCat.name_roman_ur,
+            image_url: newCat.image_url,
+            icon_key: newCat.icon_key,
             slug: newCat.slug,
             display_order: newCat.display_order,
             discount_percent: newCat.discount_percent,
