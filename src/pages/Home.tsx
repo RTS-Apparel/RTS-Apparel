@@ -312,7 +312,7 @@ export const HomePage: React.FC = () => {
                 >
                   <div className="relative z-10 flex items-start justify-between gap-2">
                     <div className="flex min-w-0 items-center gap-3">
-                      <CategoryIcon name={catName} slug={cat.slug} size="lg" />
+                      <CategoryIcon name={catName} slug={cat.slug} size="lg" imageUrl={cat.image_url} iconKey={cat.icon_key} />
                       <div>
                       <h3 className="font-serif-display text-lg font-bold text-[#FFFFFF] group-hover:-translate-y-0.5 transition-all duration-300">
                         {catName}
